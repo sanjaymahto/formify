@@ -1,6 +1,6 @@
-## FormKit - A Visual Form Builder
+## formify - A Visual Form Builder
 
-FormKit is a visual form builder that allows users to create custom forms by dragging and dropping components, configuring their properties, and instantly previewing the result. 
+formify is a visual form builder that allows users to create custom forms by dragging and dropping components, configuring their properties, and instantly previewing the result. 
 
 ### Setup
 
