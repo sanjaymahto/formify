@@ -23,7 +23,7 @@ export function SettingsButton({
           variant="ghost"
           size="sm"
           onClick={() => setIsSettingsOpen(true)}
-          className={`h-10 w-10 p-0 ${className}`}
+          className={`h-10 w-10 p-0 cursor-pointer ${className}`}
           aria-label="Settings"
         >
           <Settings className="h-5 w-5" />

@@ -1,13 +1,11 @@
 import React from 'react';
 import { useFormStore, Field } from '@/lib/store';
+import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -17,20 +15,11 @@ import {
 } from '@/components/ui/select';
 import {
   Settings,
-  Type,
-  FileText,
-  List,
   Upload,
   Calendar,
   Star,
   Sliders,
-  Palette,
-  ToggleLeft,
-  MapPin,
-  CreditCard,
-  Shield,
   Code,
-  Calculator,
   Eye,
   Tags,
   Search,
@@ -53,6 +42,83 @@ interface PropertyPanelProps {
 
 const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   const updateField = useFormStore(state => state.updateField);
+  const { colorPalette } = useSettingsStore();
+
+  const getCheckboxColors = () => {
+    const colors = {
+      default: {
+        border: 'border-blue-500',
+        bg: 'bg-blue-500',
+        focus: 'focus:ring-blue-500/20',
+        hover: 'hover:border-blue-500/50',
+        cssColor: '#3b82f6',
+      },
+      blue: {
+        border: 'border-blue-500',
+        bg: 'bg-blue-500',
+        focus: 'focus:ring-blue-500/20',
+        hover: 'hover:border-blue-500/50',
+        cssColor: '#3b82f6',
+      },
+      green: {
+        border: 'border-green-500',
+        bg: 'bg-green-500',
+        focus: 'focus:ring-green-500/20',
+        hover: 'hover:border-green-500/50',
+        cssColor: '#10b981',
+      },
+      purple: {
+        border: 'border-purple-500',
+        bg: 'bg-purple-500',
+        focus: 'focus:ring-purple-500/20',
+        hover: 'hover:border-purple-500/50',
+        cssColor: '#8b5cf6',
+      },
+      orange: {
+        border: 'border-orange-500',
+        bg: 'bg-orange-500',
+        focus: 'focus:ring-orange-500/20',
+        hover: 'hover:border-orange-500/50',
+        cssColor: '#f97316',
+      },
+      pink: {
+        border: 'border-pink-500',
+        bg: 'bg-pink-500',
+        focus: 'focus:ring-pink-500/20',
+        hover: 'hover:border-pink-500/50',
+        cssColor: '#ec4899',
+      },
+      red: {
+        border: 'border-red-500',
+        bg: 'bg-red-500',
+        focus: 'focus:ring-red-500/20',
+        hover: 'hover:border-red-500/50',
+        cssColor: '#ef4444',
+      },
+      teal: {
+        border: 'border-teal-500',
+        bg: 'bg-teal-500',
+        focus: 'focus:ring-teal-500/20',
+        hover: 'hover:border-teal-500/50',
+        cssColor: '#14b8a6',
+      },
+      indigo: {
+        border: 'border-indigo-500',
+        bg: 'bg-indigo-500',
+        focus: 'focus:ring-indigo-500/20',
+        hover: 'hover:border-indigo-500/50',
+        cssColor: '#6366f1',
+      },
+      yellow: {
+        border: 'border-yellow-500',
+        bg: 'bg-yellow-500',
+        focus: 'focus:ring-yellow-500/20',
+        hover: 'hover:border-yellow-500/50',
+        cssColor: '#eab308',
+      },
+    };
+    return colors[colorPalette] || colors.default;
+  };
 
   if (!field) {
     return (
@@ -100,14 +166,23 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         )}
 
         <div className="flex items-center space-x-2">
-          <Checkbox
+          <input
+            type="checkbox"
             id="required"
             checked={field.required}
-            onCheckedChange={checked =>
-              handleUpdate({ required: checked as boolean })
-            }
+            onChange={(e) => handleUpdate({ required: e.target.checked })}
+            className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+              field.required 
+                ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                : 'border-border'
+            } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+            style={{
+              accentColor: field.required ? getCheckboxColors().cssColor : undefined
+            }}
           />
-          <Label htmlFor="required">Required field</Label>
+          <Label htmlFor="required" className="cursor-pointer select-none">
+            Required field
+          </Label>
         </div>
       </CardContent>
     </Card>
@@ -202,19 +277,30 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="multiple"
               checked={field.fileConfig?.multiple || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   fileConfig: {
                     ...field.fileConfig,
-                    multiple: checked as boolean,
+                    multiple: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.fileConfig?.multiple 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.fileConfig?.multiple ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="multiple">Allow multiple files</Label>
+            <Label htmlFor="multiple" className="cursor-pointer select-none">
+              Allow multiple files
+            </Label>
           </div>
 
           <div className="space-y-2">
@@ -372,19 +458,30 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="showText"
               checked={field.ratingConfig?.showText || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   ratingConfig: {
                     ...field.ratingConfig,
-                    showText: checked as boolean,
+                    showText: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.ratingConfig?.showText 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.ratingConfig?.showText ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="showText">Show text labels</Label>
+            <Label htmlFor="showText" className="cursor-pointer select-none">
+              Show text labels
+            </Label>
           </div>
         </CardContent>
       </Card>
@@ -458,19 +555,30 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="showValue"
               checked={field.sliderConfig?.showValue || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   sliderConfig: {
                     ...field.sliderConfig,
-                    showValue: checked as boolean,
+                    showValue: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.sliderConfig?.showValue 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.sliderConfig?.showValue ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="showValue">Show current value</Label>
+            <Label htmlFor="showValue" className="cursor-pointer select-none">
+              Show current value
+            </Label>
           </div>
         </CardContent>
       </Card>
@@ -718,69 +826,87 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="customClass">Custom CSS Class</Label>
-            <Input
-              id="customClass"
-              value={field.advanced?.customClass || ''}
-              onChange={e =>
-                handleUpdate({
-                  advanced: {
-                    ...field.advanced,
-                    customClass: e.target.value,
-                  },
-                })
-              }
-              placeholder="custom-field-class"
-            />
-          </div>
+
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="hidden"
               checked={field.advanced?.hidden || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
-                    hidden: checked as boolean,
+                    hidden: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.advanced?.hidden 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.advanced?.hidden ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="hidden">Hidden field</Label>
+            <Label htmlFor="hidden" className="cursor-pointer select-none">
+              Hidden field
+            </Label>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="readonly"
               checked={field.advanced?.readonly || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
-                    readonly: checked as boolean,
+                    readonly: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.advanced?.readonly 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.advanced?.readonly ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="readonly">Read-only</Label>
+            <Label htmlFor="readonly" className="cursor-pointer select-none">
+              Read-only
+            </Label>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
               id="disabled"
               checked={field.advanced?.disabled || false}
-              onCheckedChange={checked =>
+              onChange={(e) =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
-                    disabled: checked as boolean,
+                    disabled: e.target.checked,
                   },
                 })
               }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.advanced?.disabled 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.advanced?.disabled ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label htmlFor="disabled">Disabled</Label>
+            <Label htmlFor="disabled" className="cursor-pointer select-none">
+              Disabled
+            </Label>
           </div>
         </CardContent>
       </Card>

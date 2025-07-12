@@ -2,20 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { FormTemplate } from './templates';
 
-// Utility function to get timestamp only on client side
+// Utility function to get timestamp 
 const getClientTimestamp = (): number => {
   if (typeof window === 'undefined') {
     return 0; // Return 0 for server-side rendering
   }
   return Date.now();
-};
-
-// Utility function to generate unique ID only on client side
-const generateUniqueId = (): string => {
-  if (typeof window === 'undefined') {
-    return 'temp-id'; // Return temporary ID for server-side rendering
-  }
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 };
 
 export type FieldType =
@@ -124,6 +116,7 @@ interface Command {
 
 export interface FormState {
   fields: Field[];
+  formTitle: string;
   selectedFieldId: string | null;
   isPreviewMode: boolean;
   history: Command[];
@@ -136,6 +129,7 @@ export interface FormState {
   removeField: (id: string) => void;
   reorderFields: (fromIndex: number, toIndex: number) => void;
   setSelectedField: (id: string | null) => void;
+  setFormTitle: (title: string) => void;
   togglePreviewMode: () => void;
   exportForm: () => FormData;
   importForm: (formData: FormData) => void;
@@ -155,6 +149,7 @@ export const useFormStore = create<FormState>()(
   persist(
     (set, get) => ({
       fields: [],
+      formTitle: 'Untitled Form',
       selectedFieldId: null,
       isPreviewMode: false,
       history: [],
@@ -251,6 +246,28 @@ export const useFormStore = create<FormState>()(
 
       setSelectedField: id => set({ selectedFieldId: id }),
 
+      setFormTitle: (title: string) => {
+        const currentState = get();
+        const newHistory = currentState.history.slice(0, currentState.historyIndex + 1);
+        newHistory.push({
+          type: 'update',
+          data: { 
+            id: 'form-title', 
+            oldField: { id: 'form-title', type: 'text', label: currentState.formTitle, required: false },
+            updates: { label: title },
+            index: -1 
+          },
+          timestamp: getClientTimestamp(),
+        });
+
+        set(() => ({
+          formTitle: title,
+          history: newHistory,
+          historyIndex: newHistory.length - 1,
+          isDirty: true,
+        }));
+      },
+
       togglePreviewMode: () =>
         set(state => ({
           isPreviewMode: !state.isPreviewMode,
@@ -262,7 +279,7 @@ export const useFormStore = create<FormState>()(
         const formData: FormData = {
           fields: state.fields,
           version: '1.0.0',
-          name: 'My Form',
+          name: state.formTitle,
           description: 'Form created with FormKit',
           createdAt: new Date().toISOString(),
         };
@@ -280,6 +297,7 @@ export const useFormStore = create<FormState>()(
 
         set({
           fields: formData.fields,
+          formTitle: formData.name || 'Untitled Form',
           selectedFieldId: null,
           isPreviewMode: false,
           history: newHistory,
@@ -299,6 +317,7 @@ export const useFormStore = create<FormState>()(
 
         set({
           fields: template.formData.fields,
+          formTitle: template.formData.name || template.name,
           selectedFieldId: null,
           isPreviewMode: false,
           history: newHistory,
@@ -318,6 +337,7 @@ export const useFormStore = create<FormState>()(
 
         set({
           fields: [],
+          formTitle: 'Untitled Form',
           selectedFieldId: null,
           isPreviewMode: false,
           history: newHistory,
@@ -367,6 +387,7 @@ export const useFormStore = create<FormState>()(
 
         set({
           fields: autoSaveData.formData.fields,
+          formTitle: autoSaveData.formData.name || 'Untitled Form',
           selectedFieldId: null,
           isPreviewMode: false,
           history: newHistory,

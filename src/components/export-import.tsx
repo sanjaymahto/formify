@@ -98,7 +98,7 @@ export function ExportImportButtons() {
         size="sm"
         onClick={handleExport}
         disabled={fields.length === 0}
-        className="flex items-center space-x-2"
+        className="flex items-center space-x-2 cursor-pointer"
       >
         <Download className="h-4 w-4" />
         <span>Export</span>
@@ -108,7 +108,7 @@ export function ExportImportButtons() {
         variant="outline"
         size="sm"
         onClick={() => fileInputRef.current?.click()}
-        className="flex items-center space-x-2"
+        className="flex items-center space-x-2 cursor-pointer"
       >
         <Upload className="h-4 w-4" />
         <span>Import</span>
@@ -119,7 +119,7 @@ export function ExportImportButtons() {
         size="sm"
         onClick={handleClear}
         disabled={fields.length === 0}
-        className="flex items-center space-x-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+        className="flex items-center space-x-2 text-red-600 hover:bg-red-50 hover:text-red-700 cursor-pointer"
       >
         <Trash2 className="h-4 w-4" />
         <span>Clear</span>

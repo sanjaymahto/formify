@@ -259,10 +259,7 @@ export default function Home() {
       {/* Footer - bottom left */}
       <footer className="w-full px-8 pb-8 pt-12">
         <div className="mx-auto flex max-w-screen-xl flex-col items-start gap-4">
-          <span className="mb-1 text-2xl font-bold tracking-tight text-neutral-700">
-            formify*
-          </span>
-          <span className="text-xs text-neutral-400">© {year} Formify</span>
+          <span className="text-xs text-neutral-400">© {year} formify*</span>
           <div className="mt-2 flex items-center gap-4">
             <a
               href="#"

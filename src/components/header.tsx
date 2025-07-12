@@ -1,19 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
-import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle } from 'lucide-react';
+import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, Sparkles } from 'lucide-react';
 import { ExportImportButtons } from './export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
 import { SettingsButton } from './settings-button';
+import { TemplateSelector } from './template-selector';
 import Link from 'next/link';
 
 const Header = () => {
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const {
     isPreviewMode,
     togglePreviewMode,
     fields,
+    formTitle,
     toggleAutoSave,
     autoSaveEnabled,
     lastSaved,
@@ -70,6 +74,7 @@ const Header = () => {
 
   const themeColors = getThemeToggleColors();
 
+  //Last saved form time
   const formatLastSaved = (timestamp: number | null) => {
     if (!timestamp) return null;
     const now = Date.now();
@@ -93,9 +98,11 @@ const Header = () => {
           </span>
         </Link>
         <div className="h-6 w-px bg-border"></div>
-        <h1 className="text-lg font-semibold">
-          {isPreviewMode ? 'Form Preview' : 'Form Builder'}
-        </h1>
+        <div className="flex flex-col">
+          <h1 className="text-lg font-semibold">
+            {isPreviewMode ? 'Form Preview' : formTitle}
+          </h1>
+        </div>
         <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <span className="rounded bg-gray-100 px-2 py-1 dark:bg-gray-800">
             {fields.length} field{fields.length !== 1 ? 's' : ''}
@@ -123,10 +130,23 @@ const Header = () => {
 
         {!isPreviewMode && (
           <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTemplateSelector(true)}
+            className="flex items-center gap-2 cursor-pointer"
+            title="Choose a template to get started quickly"
+          >
+            <Sparkles className="h-4 w-4" />
+            Templates
+          </Button>
+        )}
+
+        {!isPreviewMode && (
+          <Button
             variant="ghost"
             size="sm"
             onClick={toggleAutoSave}
-            className={`h-8 px-2 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
+            className={`h-8 px-2 text-xs cursor-pointer ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
             title={`Auto-save is ${autoSaveEnabled ? 'enabled' : 'disabled'}`}
           >
             <Save className="mr-1 h-3 w-3" />
@@ -145,7 +165,7 @@ const Header = () => {
           onClick={() =>
             updateSettings({ theme: theme === 'light' ? 'dark' : 'light' })
           }
-          className="bg-background/50 h-8 w-8 border-2 backdrop-blur-sm transition-all duration-200 hover:scale-110"
+          className="bg-background/50 h-8 w-8 border-2 backdrop-blur-sm transition-all duration-200 hover:scale-110 cursor-pointer"
           title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
         >
           {theme === 'light' ? (
@@ -159,7 +179,7 @@ const Header = () => {
           variant={isPreviewMode ? 'default' : 'outline'}
           size="sm"
           onClick={togglePreviewMode}
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 cursor-pointer"
           title={
             isPreviewMode
               ? 'Switch to edit mode (Ctrl+P)'
@@ -183,7 +203,7 @@ const Header = () => {
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 cursor-pointer"
             title="Save form (Ctrl+S)"
           >
             <Save className="h-4 w-4" />
@@ -191,6 +211,10 @@ const Header = () => {
           </Button>
         )}
       </div>
+      
+      {showTemplateSelector && (
+        <TemplateSelector onClose={() => setShowTemplateSelector(false)} />
+      )}
     </header>
   );
 };

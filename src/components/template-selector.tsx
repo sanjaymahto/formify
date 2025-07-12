@@ -59,7 +59,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 cursor-pointer"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -84,6 +84,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                 variant={selectedCategory === 'All' ? 'gradient' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory('All')}
+                className="cursor-pointer"
               >
                 All
               </Button>
@@ -95,6 +96,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                   }
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
+                  className="cursor-pointer"
                 >
                   {category}
                 </Button>
@@ -157,7 +159,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
               {filteredTemplates.length} template
               {filteredTemplates.length !== 1 ? 's' : ''} available
             </p>
-            <Button variant="glass" onClick={onClose}>
+            <Button variant="glass" onClick={onClose} className="cursor-pointer">
               Start from Scratch
             </Button>
           </div>

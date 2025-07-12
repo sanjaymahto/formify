@@ -37,9 +37,10 @@ import {
 
 interface PreviewProps {
   fields: Field[];
+  formTitle?: string;
 }
 
-const Preview: React.FC<PreviewProps> = ({ fields }) => {
+const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -656,7 +657,7 @@ const Preview: React.FC<PreviewProps> = ({ fields }) => {
     <div className="mx-auto max-w-2xl p-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Form Preview</CardTitle>
+          <CardTitle className="text-2xl font-bold">{formTitle}</CardTitle>
           <p className="text-muted-foreground">
             This is how your form will appear to users
           </p>

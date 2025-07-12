@@ -9,7 +9,7 @@ import { useFormStore } from '@/lib/store';
 import { useAutoSave } from '@/hooks/use-auto-save';
 
 export default function BuilderPage() {
-  const { isPreviewMode, fields, selectedFieldId } = useFormStore();
+  const { isPreviewMode, fields, selectedFieldId, formTitle } = useFormStore();
 
   // Initialize auto-save
   useAutoSave();
@@ -20,7 +20,7 @@ export default function BuilderPage() {
       <div className="flex flex-1 overflow-hidden">
         {!isPreviewMode && <Sidebar />}
         <main className="flex-1 overflow-auto">
-          {isPreviewMode ? <Preview fields={fields} /> : <Canvas />}
+          {isPreviewMode ? <Preview fields={fields} formTitle={formTitle} /> : <Canvas />}
         </main>
         {!isPreviewMode && (
           <PropertyPanel

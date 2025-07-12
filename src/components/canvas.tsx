@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormStore, Field } from '@/lib/store';
+import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +19,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { TemplateSelector } from '@/components/template-selector';
+import { FormTitle } from '@/components/form-title';
 import {
   Trash2,
   GripVertical,
@@ -33,11 +36,10 @@ import {
   Layers,
   Grid3X3,
   Columns,
-  Minus,
   Section,
   Folder,
-  Image,
   PenTool,
+  Sparkles,
 } from 'lucide-react';
 
 interface FieldRendererProps {
@@ -45,6 +47,12 @@ interface FieldRendererProps {
   isSelected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onDragStart: (fieldId: string) => void;
+  onDragOver: (e: React.DragEvent, fieldId: string) => void;
+  onDragLeave: () => void;
+  onDrop: (e: React.DragEvent, fieldId: string) => void;
+  isDragOver: boolean;
+  isDragging: boolean;
 }
 
 const FieldRenderer: React.FC<FieldRendererProps> = ({
@@ -52,8 +60,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
   isSelected,
   onSelect,
   onDelete,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  isDragOver,
+  isDragging,
 }) => {
   const updateField = useFormStore(state => state.updateField);
+  const { colorPalette } = useSettingsStore();
 
   const handleLabelChange = (value: string) => {
     updateField(field.id, { label: value });
@@ -61,6 +76,82 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
   const handleRequiredChange = (checked: boolean) => {
     updateField(field.id, { required: checked });
+  };
+
+  const getCheckboxColors = () => {
+    const colors = {
+      default: {
+        border: 'border-blue-500',
+        bg: 'bg-blue-500',
+        focus: 'focus:ring-blue-500/20',
+        hover: 'hover:border-blue-500/50',
+        cssColor: '#3b82f6',
+      },
+      blue: {
+        border: 'border-blue-500',
+        bg: 'bg-blue-500',
+        focus: 'focus:ring-blue-500/20',
+        hover: 'hover:border-blue-500/50',
+        cssColor: '#3b82f6',
+      },
+      green: {
+        border: 'border-green-500',
+        bg: 'bg-green-500',
+        focus: 'focus:ring-green-500/20',
+        hover: 'hover:border-green-500/50',
+        cssColor: '#10b981',
+      },
+      purple: {
+        border: 'border-purple-500',
+        bg: 'bg-purple-500',
+        focus: 'focus:ring-purple-500/20',
+        hover: 'hover:border-purple-500/50',
+        cssColor: '#8b5cf6',
+      },
+      orange: {
+        border: 'border-orange-500',
+        bg: 'bg-orange-500',
+        focus: 'focus:ring-orange-500/20',
+        hover: 'hover:border-orange-500/50',
+        cssColor: '#f97316',
+      },
+      pink: {
+        border: 'border-pink-500',
+        bg: 'bg-pink-500',
+        focus: 'focus:ring-pink-500/20',
+        hover: 'hover:border-pink-500/50',
+        cssColor: '#ec4899',
+      },
+      red: {
+        border: 'border-red-500',
+        bg: 'bg-red-500',
+        focus: 'focus:ring-red-500/20',
+        hover: 'hover:border-red-500/50',
+        cssColor: '#ef4444',
+      },
+      teal: {
+        border: 'border-teal-500',
+        bg: 'bg-teal-500',
+        focus: 'focus:ring-teal-500/20',
+        hover: 'hover:border-teal-500/50',
+        cssColor: '#14b8a6',
+      },
+      indigo: {
+        border: 'border-indigo-500',
+        bg: 'bg-indigo-500',
+        focus: 'focus:ring-indigo-500/20',
+        hover: 'hover:border-indigo-500/50',
+        cssColor: '#6366f1',
+      },
+      yellow: {
+        border: 'border-yellow-500',
+        bg: 'bg-yellow-500',
+        focus: 'focus:ring-yellow-500/20',
+        hover: 'hover:border-yellow-500/50',
+        cssColor: '#eab308',
+      },
+    };
+    return colors[colorPalette] || colors.default;
   };
 
   const renderFieldContent = () => {
@@ -102,7 +193,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       case 'select':
       case 'multi-select':
         return (
-          <Select disabled>
+          <Select>
             <SelectTrigger className="bg-muted">
               <SelectValue placeholder={field.placeholder} />
             </SelectTrigger>
@@ -118,7 +209,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
       case 'radio':
         return (
-          <RadioGroup disabled className="space-y-2">
+          <RadioGroup className="space-y-2">
             {field.options?.map((option, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <RadioGroupItem value={option} id={`${field.id}-${index}`} />
@@ -414,7 +505,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               <span className="text-sm text-muted-foreground">Code Editor</span>
             </div>
             <div className="rounded bg-background p-2 font-mono text-xs">
-              console.log("Hello World");
+              console.log(&quot;Hello World&quot;);
             </div>
           </div>
         );
@@ -434,11 +525,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     <Card
       className={`cursor-pointer transition-all ${
         isSelected ? 'shadow-lg ring-2 ring-primary' : 'hover:shadow-md'
+      } ${isDragOver ? 'ring-2 ring-blue-300 bg-blue-50' : ''} ${
+        isDragging ? 'opacity-50' : ''
       }`}
       onClick={onSelect}
+      draggable
+      onDragStart={() => onDragStart(field.id)}
+      onDragOver={(e) => onDragOver(e, field.id)}
+      onDragLeave={onDragLeave}
+      onDrop={(e) => onDrop(e, field.id)}
     >
-      <CardContent className="p-4">
-        <div className="mb-3 flex items-start justify-between">
+      <CardContent className="px-3 py-1.5">
+        <div className="mb-1.5 flex items-start justify-between">
           <div className="flex-1">
             <Input
               value={field.label}
@@ -455,26 +553,50 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 e.stopPropagation();
                 onDelete();
               }}
-              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive cursor-pointer"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
-            <div className="cursor-grab active:cursor-grabbing">
+            <div 
+              className="cursor-grab active:cursor-grabbing cursor-pointer"
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                onDragStart(field.id);
+              }}
+            >
               <GripVertical className="h-4 w-4 text-muted-foreground" />
             </div>
           </div>
         </div>
 
-        <div className="mb-3">{renderFieldContent()}</div>
+        <div className="mb-1.5">{renderFieldContent()}</div>
 
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">
-            <Checkbox
+            <input
+              type="checkbox"
+              id={`required-${field.id}`}
               checked={field.required}
-              onCheckedChange={handleRequiredChange}
-              onClick={e => e.stopPropagation()}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleRequiredChange(e.target.checked);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.required 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.required ? getCheckboxColors().cssColor : undefined
+              }}
             />
-            <Label className="text-xs text-muted-foreground">Required</Label>
+            <Label 
+              htmlFor={`required-${field.id}`}
+              className="text-xs text-muted-foreground cursor-pointer select-none"
+            >
+              Required
+            </Label>
           </div>
         </div>
       </CardContent>
@@ -483,35 +605,86 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 };
 
 export default function Canvas() {
-  const { fields, selectedFieldId, setSelectedField, removeField } =
+  const { fields, selectedFieldId, setSelectedField, removeField, reorderFields } =
     useFormStore();
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [draggedFieldId, setDraggedFieldId] = useState<string | null>(null);
+  const [dragOverFieldId, setDragOverFieldId] = useState<string | null>(null);
+
+  const handleDragStart = (fieldId: string) => {
+    setDraggedFieldId(fieldId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, fieldId: string) => {
+    e.preventDefault();
+    if (draggedFieldId && draggedFieldId !== fieldId) {
+      setDragOverFieldId(fieldId);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverFieldId(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetFieldId: string) => {
+    e.preventDefault();
+    if (draggedFieldId && draggedFieldId !== targetFieldId) {
+      const fromIndex = fields.findIndex(f => f.id === draggedFieldId);
+      const toIndex = fields.findIndex(f => f.id === targetFieldId);
+      
+      if (fromIndex !== -1 && toIndex !== -1) {
+        reorderFields(fromIndex, toIndex);
+      }
+    }
+    setDraggedFieldId(null);
+    setDragOverFieldId(null);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-background p-6">
       <div className="mx-auto max-w-2xl space-y-4">
+        <FormTitle />
+        
         {fields.length === 0 ? (
-          <div className="py-12 text-center">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 text-muted-foreground">
               <FileText className="mx-auto h-12 w-12" />
             </div>
             <h3 className="mb-2 text-lg font-medium">No fields added yet</h3>
-            <p className="text-muted-foreground">
-              Drag and drop components from the sidebar to start building your
-              form
+            <p className="mb-4 text-muted-foreground">
+              Drag and drop components from the sidebar to start building your form
             </p>
+            <p className="mb-6 text-muted-foreground font-medium">or</p>
+            <Button 
+              onClick={() => setShowTemplateSelector(true)}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Sparkles className="h-4 w-4" />
+              Choose a Template
+            </Button>
           </div>
         ) : (
-          fields.map((field, index) => (
+          fields.map((field) => (
             <FieldRenderer
               key={field.id}
               field={field}
               isSelected={selectedFieldId === field.id}
               onSelect={() => setSelectedField(field.id)}
               onDelete={() => removeField(field.id)}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              isDragOver={dragOverFieldId === field.id}
+              isDragging={draggedFieldId === field.id}
             />
           ))
         )}
       </div>
+      
+      {showTemplateSelector && (
+        <TemplateSelector onClose={() => setShowTemplateSelector(false)} />
+      )}
     </div>
   );
 }

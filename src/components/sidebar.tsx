@@ -252,13 +252,13 @@ export default function Sidebar() {
                 return (
                   <Card
                     key={field.type}
-                    className="cursor-grab transition-shadow hover:shadow-md active:cursor-grabbing"
+                    className="cursor-pointer transition-shadow hover:shadow-md active:cursor-grabbing"
                     draggable
                     onDragStart={e => handleDragStart(e, field.type)}
                     onClick={() => handleAddField(field.type)}
                   >
-                    <CardContent className="flex flex-col items-center space-y-2 p-3">
-                      <IconComponent className="h-5 w-5 text-muted-foreground" />
+                    <CardContent className="flex flex-col items-center space-y-1 p-2">
+                      <IconComponent className="h-4 w-4 text-muted-foreground" />
                       <span className="text-center text-xs font-medium">
                         {field.label}
                       </span>
