@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useFormStore, Field } from '@/lib/store';
+import { useFormStore, Field, FieldType } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -48,9 +48,9 @@ interface FieldRendererProps {
   onSelect: () => void;
   onDelete: () => void;
   onDragStart: (fieldId: string) => void;
-  onDragOver: (e: React.DragEvent, fieldId: string) => void;
-  onDragLeave: () => void;
-  onDrop: (e: React.DragEvent, fieldId: string) => void;
+  onDragOver: (e: React.DragEvent, fieldId?: string) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent, fieldId?: string) => void;
   isDragOver: boolean;
   isDragging: boolean;
 }
@@ -605,30 +605,132 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 };
 
 export default function Canvas() {
-  const { fields, selectedFieldId, setSelectedField, removeField, reorderFields } =
-    useFormStore();
+  const fields = useFormStore(state => state.fields);
+  const selectedFieldId = useFormStore(state => state.selectedFieldId);
+  const setSelectedField = useFormStore(state => state.setSelectedField);
+  const removeField = useFormStore(state => state.removeField);
+  const reorderFields = useFormStore(state => state.reorderFields);
+  const addField = useFormStore(state => state.addField);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [draggedFieldId, setDraggedFieldId] = useState<string | null>(null);
   const [dragOverFieldId, setDragOverFieldId] = useState<string | null>(null);
+  const [isDragOverCanvas, setIsDragOverCanvas] = useState(false);
+  const [ghostFieldType, setGhostFieldType] = useState<string | null>(null);
+  const [ghostInsertIndex, setGhostInsertIndex] = useState<number | null>(null);
+  const draggedFieldTypeRef = React.useRef<string | null>(null);
 
   const handleDragStart = (fieldId: string) => {
     setDraggedFieldId(fieldId);
   };
 
-  const handleDragOver = (e: React.DragEvent, fieldId: string) => {
+  const handleDragOver = (e: React.DragEvent, fieldId?: string) => {
     e.preventDefault();
-    if (draggedFieldId && draggedFieldId !== fieldId) {
-      setDragOverFieldId(fieldId);
+    e.stopPropagation();
+    
+    console.log('DragOver triggered:', { fieldId, draggedFieldType: draggedFieldTypeRef.current, draggedFieldId });
+    
+    // Check if we're dragging a new field from sidebar
+    if (draggedFieldTypeRef.current) {
+      setGhostFieldType(draggedFieldTypeRef.current);
+      
+      if (fieldId) {
+        // Insert before specific field
+        const targetIndex = fields.findIndex(f => f.id === fieldId);
+        setGhostInsertIndex(targetIndex);
+        setDragOverFieldId(fieldId);
+      } else {
+        // Insert at end
+        setGhostInsertIndex(fields.length);
+        setIsDragOverCanvas(true);
+      }
+    } else if (fieldId) {
+      // Reordering existing fields
+      if (draggedFieldId && draggedFieldId !== fieldId) {
+        setDragOverFieldId(fieldId);
+      }
+    } else {
+      // Dragging over canvas area (not over a specific field)
+      if (draggedFieldTypeRef.current) {
+        setGhostFieldType(draggedFieldTypeRef.current);
+        setGhostInsertIndex(fields.length);
+        setIsDragOverCanvas(true);
+      }
     }
   };
 
-  const handleDragLeave = () => {
-    setDragOverFieldId(null);
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('DragEnter triggered:', { draggedFieldType: draggedFieldTypeRef.current });
+    
+    // Show ghost component immediately when entering canvas area
+    if (draggedFieldTypeRef.current) {
+      setGhostFieldType(draggedFieldTypeRef.current);
+      setGhostInsertIndex(fields.length);
+      setIsDragOverCanvas(true);
+    }
   };
 
-  const handleDrop = (e: React.DragEvent, targetFieldId: string) => {
+  const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
-    if (draggedFieldId && draggedFieldId !== targetFieldId) {
+    // Only clear if we're leaving the canvas area entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOverCanvas(false);
+      setDragOverFieldId(null);
+      setGhostFieldType(null);
+      setGhostInsertIndex(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, targetFieldId?: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const fieldType = draggedFieldTypeRef.current || e.dataTransfer.getData('fieldType');
+    
+    if (fieldType) {
+      // Adding new field from sidebar
+      const field = {
+        id: `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        type: fieldType as FieldType,
+        label: getDefaultLabel(fieldType),
+        placeholder: getDefaultPlaceholder(fieldType),
+        required: false,
+        options:
+          fieldType === 'select' ||
+          fieldType === 'radio' ||
+          fieldType === 'multi-select'
+            ? ['Option 1', 'Option 2', 'Option 3']
+            : undefined,
+      };
+      
+      if (targetFieldId) {
+        // Insert at specific position
+        const targetIndex = fields.findIndex(f => f.id === targetFieldId);
+        if (targetIndex !== -1) {
+          // Insert before the target field
+          const newFields = [...fields];
+          newFields.splice(targetIndex, 0, field);
+          // Update the store with the new field order
+          // This is a bit hacky but works for now
+          fields.forEach((_, index) => {
+            if (index >= targetIndex) {
+              removeField(fields[index].id);
+            }
+          });
+          newFields.forEach((f, index) => {
+            if (index >= targetIndex) {
+              addField(f);
+            }
+          });
+        }
+      } else {
+        // Add to end
+        addField(field);
+      }
+    } else if (draggedFieldId && targetFieldId && draggedFieldId !== targetFieldId) {
+      // Reordering existing fields
       const fromIndex = fields.findIndex(f => f.id === draggedFieldId);
       const toIndex = fields.findIndex(f => f.id === targetFieldId);
       
@@ -636,17 +738,321 @@ export default function Canvas() {
         reorderFields(fromIndex, toIndex);
       }
     }
+    
     setDraggedFieldId(null);
     setDragOverFieldId(null);
+    setIsDragOverCanvas(false);
+    setGhostFieldType(null);
+    setGhostInsertIndex(null);
+    draggedFieldTypeRef.current = null;
+  };
+
+  // Handle ESC key to cancel drag and global drag events
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && (ghostFieldType || draggedFieldId)) {
+        setDraggedFieldId(null);
+        setDragOverFieldId(null);
+        setIsDragOverCanvas(false);
+        setGhostFieldType(null);
+        setGhostInsertIndex(null);
+        draggedFieldTypeRef.current = null;
+      }
+    };
+
+    const handleGlobalDragStart = (e: DragEvent) => {
+      const fieldType = e.dataTransfer?.getData('fieldType');
+      console.log('Global drag start:', { fieldType });
+      if (fieldType) {
+        draggedFieldTypeRef.current = fieldType;
+      }
+    };
+
+    const handleGlobalDragEnd = () => {
+      draggedFieldTypeRef.current = null;
+      setGhostFieldType(null);
+      setGhostInsertIndex(null);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('dragstart', handleGlobalDragStart);
+    document.addEventListener('dragend', handleGlobalDragEnd);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('dragstart', handleGlobalDragStart);
+      document.removeEventListener('dragend', handleGlobalDragEnd);
+    };
+  }, [ghostFieldType, draggedFieldId]);
+
+  const getDefaultLabel = (type: string): string => {
+    const labels: Record<string, string> = {
+      text: 'Text Input',
+      email: 'Email Address',
+      password: 'Password',
+      number: 'Number Input',
+      textarea: 'Text Area',
+      select: 'Dropdown Select',
+      radio: 'Radio Buttons',
+      checkbox: 'Checkbox',
+      file: 'File Upload',
+      'rich-text': 'Rich Text Editor',
+      date: 'Date Picker',
+      time: 'Time Picker',
+      datetime: 'Date & Time Picker',
+      signature: 'Signature Field',
+      rating: 'Rating',
+      slider: 'Slider',
+      phone: 'Phone Number',
+      url: 'Website URL',
+      color: 'Color Picker',
+      toggle: 'Toggle Switch',
+      divider: 'Divider',
+      html: 'Custom HTML',
+      'multi-select': 'Multi-Select',
+      tags: 'Tags Input',
+      autocomplete: 'Autocomplete',
+      accordion: 'Accordion',
+      grid: 'Grid Layout',
+      columns: 'Column Layout',
+      section: 'Section',
+      group: 'Field Group',
+      code: 'Code Editor',
+      image: 'Image Upload',
+      other: 'Other Field',
+    };
+    return labels[type] || 'Field';
+  };
+
+  const getDefaultPlaceholder = (type: string): string => {
+    const placeholders: Record<string, string> = {
+      text: 'Enter text...',
+      email: 'Enter email address...',
+      password: 'Enter password...',
+      number: 'Enter number...',
+      textarea: 'Enter your message...',
+      select: 'Select an option...',
+      radio: '',
+      checkbox: '',
+      file: 'Choose file...',
+      'rich-text': 'Start typing...',
+      date: 'Select date...',
+      time: 'Select time...',
+      datetime: 'Select date and time...',
+      signature: 'Sign here...',
+      rating: '',
+      slider: '',
+      phone: 'Enter phone number...',
+      url: 'Enter website URL...',
+      color: '',
+      toggle: '',
+      divider: '',
+      html: '',
+      'multi-select': 'Select options...',
+      tags: 'Add tags...',
+      autocomplete: 'Start typing...',
+      accordion: '',
+      grid: '',
+      columns: '',
+      section: '',
+      group: '',
+      code: 'Enter code...',
+      image: 'Choose image...',
+      other: 'Enter value...',
+    };
+    return placeholders[type] || '';
+  };
+
+  // Ghost field component
+  const GhostField = ({ fieldType }: { fieldType: string }) => {
+    const renderGhostContent = () => {
+      switch (fieldType) {
+        case 'text':
+        case 'email':
+        case 'password':
+        case 'phone':
+        case 'url':
+          return (
+            <Input
+              type="text"
+              placeholder={getDefaultPlaceholder(fieldType)}
+              disabled
+              className="bg-muted/50 border-dashed"
+            />
+          );
+
+        case 'number':
+          return (
+            <Input
+              type="number"
+              placeholder={getDefaultPlaceholder(fieldType)}
+              disabled
+              className="bg-muted/50 border-dashed"
+            />
+          );
+
+        case 'textarea':
+          return (
+            <Textarea
+              placeholder={getDefaultPlaceholder(fieldType)}
+              disabled
+              className="resize-none bg-muted/50 border-dashed"
+              rows={3}
+            />
+          );
+
+        case 'select':
+        case 'multi-select':
+          return (
+            <Select>
+              <SelectTrigger className="bg-muted/50 border-dashed">
+                <SelectValue placeholder={getDefaultPlaceholder(fieldType)} />
+              </SelectTrigger>
+            </Select>
+          );
+
+        case 'radio':
+          return (
+            <RadioGroup className="space-y-2">
+              {['Option 1', 'Option 2', 'Option 3'].map((option, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option} id={`ghost-${index}`} disabled />
+                  <Label htmlFor={`ghost-${index}`} className="text-muted-foreground">{option}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          );
+
+        case 'checkbox':
+          return (
+            <div className="flex items-center space-x-2">
+              <Checkbox disabled />
+              <Label className="text-muted-foreground">Checkbox option</Label>
+            </div>
+          );
+
+        case 'file':
+        case 'image':
+          return (
+            <div className="border-muted-foreground/25 rounded-lg border-2 border-dashed p-6 text-center bg-muted/50">
+              <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Click to upload {fieldType} files
+              </p>
+            </div>
+          );
+
+        case 'rating':
+          return (
+            <div className="flex items-center space-x-1">
+              {[1, 2, 3, 4, 5].map(star => (
+                <Star
+                  key={star}
+                  className="text-muted-foreground/30 h-5 w-5"
+                  fill="currentColor"
+                />
+              ))}
+            </div>
+          );
+
+        case 'slider':
+          return (
+            <div className="space-y-2">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                defaultValue={50}
+                disabled
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted/50 border-dashed"
+              />
+              <div className="text-center text-sm text-muted-foreground">50</div>
+            </div>
+          );
+
+        case 'divider':
+          return <Separator className="my-4 border-dashed" />;
+
+        case 'section':
+          return (
+            <div className="rounded-lg border border-muted bg-muted/50 p-4 border-dashed">
+              <div className="mb-2 flex items-center space-x-2">
+                <Section className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Section Title</span>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Section description or content area
+              </div>
+            </div>
+          );
+
+        default:
+          return (
+            <Input
+              placeholder="Field preview"
+              disabled
+              className="bg-muted/50 border-dashed"
+            />
+          );
+      }
+    };
+
+    return (
+      <Card className="opacity-60 border-dashed border-2 bg-muted/20">
+        <CardContent className="px-3 py-1.5">
+          <div className="mb-1.5 flex items-start justify-between">
+            <div className="flex-1">
+              <Input
+                value={getDefaultLabel(fieldType)}
+                disabled
+                className="h-auto border-none p-0 font-medium text-muted-foreground bg-transparent"
+              />
+            </div>
+          </div>
+          <div className="mb-1.5">{renderGhostContent()}</div>
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                disabled
+                className="h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors opacity-50"
+              />
+              <Label className="text-xs text-muted-foreground cursor-pointer select-none">
+                Required
+              </Label>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-background p-6">
-      <div className="mx-auto max-w-2xl space-y-4">
+    <div 
+      className="h-screen overflow-y-auto bg-background p-6"
+      onDragEnter={handleDragEnter}
+      onDragOver={(e) => handleDragOver(e)}
+      onDragLeave={handleDragLeave}
+      onDrop={(e) => handleDrop(e)}
+    >
+      <div 
+        className="mx-auto max-w-2xl space-y-4"
+        onDragEnter={handleDragEnter}
+        onDragOver={(e) => handleDragOver(e)}
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => handleDrop(e)}
+      >
         <FormTitle />
         
         {fields.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div 
+            className={`flex flex-col items-center justify-center py-12 text-center transition-all duration-200 ${
+              isDragOverCanvas ? 'bg-primary/5 border-2 border-dashed border-primary/30 rounded-lg' : ''
+            }`}
+            onDragOver={(e) => handleDragOver(e)}
+            onDrop={(e) => handleDrop(e)}
+          >
             <div className="mb-4 text-muted-foreground">
               <FileText className="mx-auto h-12 w-12" />
             </div>
@@ -664,22 +1070,54 @@ export default function Canvas() {
             </Button>
           </div>
         ) : (
-          fields.map((field) => (
-            <FieldRenderer
-              key={field.id}
-              field={field}
-              isSelected={selectedFieldId === field.id}
-              onSelect={() => setSelectedField(field.id)}
-              onDelete={() => removeField(field.id)}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              isDragOver={dragOverFieldId === field.id}
-              isDragging={draggedFieldId === field.id}
-            />
+          fields.map((field, index) => (
+            <div key={field.id}>
+              {/* Drop zone above each field */}
+              <div
+                className={`h-2 transition-all duration-200 ${
+                  dragOverFieldId === field.id ? 'bg-primary/20' : 'bg-transparent'
+                }`}
+                onDragOver={(e) => handleDragOver(e, field.id)}
+                onDrop={(e) => handleDrop(e, field.id)}
+              />
+              
+              {/* Ghost field above */}
+              {ghostFieldType && ghostInsertIndex === index && (
+                <GhostField fieldType={ghostFieldType} />
+              )}
+              
+              <FieldRenderer
+                field={field}
+                isSelected={selectedFieldId === field.id}
+                onSelect={() => setSelectedField(field.id)}
+                onDelete={() => removeField(field.id)}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                isDragOver={dragOverFieldId === field.id}
+                isDragging={draggedFieldId === field.id}
+              />
+            </div>
           ))
         )}
+        
+        {/* Ghost field at the end */}
+        {ghostFieldType && ghostInsertIndex === fields.length && (
+          <GhostField fieldType={ghostFieldType} />
+        )}
+        
+        {/* Drop zone at the end */}
+        <div
+          className={`h-2 transition-all duration-200 ${
+            isDragOverCanvas && !dragOverFieldId ? 'bg-primary/20' : 'bg-transparent'
+          }`}
+          onDragOver={(e) => handleDragOver(e)}
+          onDrop={(e) => handleDrop(e)}
+        />
+        
+        {/* Extra space at bottom for dragging */}
+        <div className="h-32" />
       </div>
       
       {showTemplateSelector && (

@@ -2,14 +2,12 @@ import { useEffect, useRef } from 'react';
 import { useFormStore } from '@/lib/store';
 
 export function useAutoSave() {
-  const {
-    isDirty,
-    autoSaveEnabled,
-    saveForm,
-    getAutoSaveData,
-    loadAutoSaveData,
-    fields,
-  } = useFormStore();
+  const isDirty = useFormStore(state => state.isDirty);
+  const autoSaveEnabled = useFormStore(state => state.autoSaveEnabled);
+  const saveForm = useFormStore(state => state.saveForm);
+  const getAutoSaveData = useFormStore(state => state.getAutoSaveData);
+  const loadAutoSaveData = useFormStore(state => state.loadAutoSaveData);
+  const fields = useFormStore(state => state.fields);
 
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const lastSaveRef = useRef<number>(0);

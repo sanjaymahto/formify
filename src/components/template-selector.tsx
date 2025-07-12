@@ -17,7 +17,8 @@ interface TemplateSelectorProps {
 }
 
 export function TemplateSelector({ onClose }: TemplateSelectorProps) {
-  const { loadTemplate, fields } = useFormStore();
+  const loadTemplate = useFormStore(state => state.loadTemplate);
+  const fields = useFormStore(state => state.fields);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 

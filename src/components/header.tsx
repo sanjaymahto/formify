@@ -13,15 +13,13 @@ import Link from 'next/link';
 
 const Header = () => {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
-  const {
-    isPreviewMode,
-    togglePreviewMode,
-    fields,
-    formTitle,
-    toggleAutoSave,
-    autoSaveEnabled,
-    lastSaved,
-  } = useFormStore();
+  const isPreviewMode = useFormStore(state => state.isPreviewMode);
+  const togglePreviewMode = useFormStore(state => state.togglePreviewMode);
+  const fields = useFormStore(state => state.fields);
+  const formTitle = useFormStore(state => state.formTitle);
+  const toggleAutoSave = useFormStore(state => state.toggleAutoSave);
+  const autoSaveEnabled = useFormStore(state => state.autoSaveEnabled);
+  const lastSaved = useFormStore(state => state.lastSaved);
   const { theme, updateSettings, colorPalette } = useSettingsStore();
   const { isDirty } = useAutoSave();
 

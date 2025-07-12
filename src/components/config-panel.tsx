@@ -11,8 +11,10 @@ import { Settings, X, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 export function ConfigPanel() {
-  const { fields, selectedFieldId, updateField, setSelectedField } =
-    useFormStore();
+  const fields = useFormStore(state => state.fields);
+  const selectedFieldId = useFormStore(state => state.selectedFieldId);
+  const updateField = useFormStore(state => state.updateField);
+  const setSelectedField = useFormStore(state => state.setSelectedField);
   const selectedField = fields.find(f => f.id === selectedFieldId);
 
   if (!selectedField) {

@@ -52,6 +52,119 @@ export interface Field {
   placeholder?: string;
   required: boolean;
   options?: string[]; // For select and radio fields
+  
+  // Advanced field properties
+  validation?: {
+    min?: number;
+    max?: number;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string; // Regex pattern
+    customValidation?: string; // Custom validation function
+  };
+  
+  // File upload specific properties
+  fileConfig?: {
+    maxSize?: number; // MB
+    multiple?: boolean;
+    accept?: string; // File types
+    maxFiles?: number;
+    minFiles?: number;
+  };
+  
+  // Date/time specific properties
+  dateConfig?: {
+    format?: string;
+    minDate?: string;
+    maxDate?: string;
+    defaultDate?: string;
+    timezone?: string;
+  };
+  
+  // Rating specific properties
+  ratingConfig?: {
+    maxRating?: number;
+    allowHalf?: boolean;
+    showLabels?: boolean;
+    labels?: string[];
+  };
+  
+  // Slider specific properties
+  sliderConfig?: {
+    min?: number;
+    max?: number;
+    step?: number;
+    defaultValue?: number;
+    showValue?: boolean;
+    showMarks?: boolean;
+    marks?: { value: number; label: string }[];
+  };
+  
+  // Signature specific properties
+  signatureConfig?: {
+    width?: number;
+    height?: number;
+    penColor?: string;
+    backgroundColor?: string;
+    lineWidth?: number;
+  };
+  
+  // Text input specific properties
+  textConfig?: {
+    inputMode?: 'text' | 'email' | 'tel' | 'url' | 'numeric' | 'decimal' | 'search';
+    autoComplete?: string;
+    autoFocus?: boolean;
+    spellCheck?: boolean;
+    maxLength?: number;
+    minLength?: number;
+    pattern?: string;
+  };
+  
+  // Layout and styling properties
+  layout?: {
+    width?: string; // CSS width (e.g., '100%', '200px')
+    height?: string; // CSS height
+    margin?: string; // CSS margin
+    padding?: string; // CSS padding
+    display?: 'block' | 'inline' | 'inline-block' | 'flex' | 'grid';
+    flexDirection?: 'row' | 'column';
+    justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around';
+    alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
+    gridTemplateColumns?: string;
+    gridGap?: string;
+  };
+  
+  // Conditional logic properties
+  conditional?: {
+    showIf?: {
+      fieldId?: string;
+      operator?: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than';
+      value?: string | number | boolean;
+    };
+    hideIf?: {
+      fieldId?: string;
+      operator?: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than';
+      value?: string | number | boolean;
+    };
+  };
+  
+  // Advanced properties
+  advanced?: {
+    helpText?: string;
+    errorMessage?: string;
+    hidden?: boolean;
+    readonly?: boolean;
+    disabled?: boolean;
+    defaultValue?: string | number | boolean;
+    description?: string;
+    tooltip?: string;
+    cssClass?: string;
+    dataAttributes?: Record<string, string>;
+    customValidation?: string;
+    onChange?: string; // Custom onChange handler
+    onBlur?: string; // Custom onBlur handler
+    onFocus?: string; // Custom onFocus handler
+  };
 }
 
 export interface FormData {

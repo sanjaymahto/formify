@@ -4,17 +4,15 @@ import { useEffect } from 'react';
 import { useFormStore } from '@/lib/store';
 
 export function KeyboardShortcuts() {
-  const {
-    exportForm,
-    removeField,
-    selectedFieldId,
-    togglePreviewMode,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    isPreviewMode,
-  } = useFormStore();
+  const exportForm = useFormStore(state => state.exportForm);
+  const removeField = useFormStore(state => state.removeField);
+  const selectedFieldId = useFormStore(state => state.selectedFieldId);
+  const togglePreviewMode = useFormStore(state => state.togglePreviewMode);
+  const undo = useFormStore(state => state.undo);
+  const redo = useFormStore(state => state.redo);
+  const canUndo = useFormStore(state => state.canUndo);
+  const canRedo = useFormStore(state => state.canRedo);
+  const isPreviewMode = useFormStore(state => state.isPreviewMode);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

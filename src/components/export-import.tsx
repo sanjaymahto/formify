@@ -6,7 +6,10 @@ import { Download, Upload, Trash2 } from 'lucide-react';
 import { useRef } from 'react';
 
 export function ExportImportButtons() {
-  const { exportForm, importForm, clearForm, fields } = useFormStore();
+  const exportForm = useFormStore(state => state.exportForm);
+  const importForm = useFormStore(state => state.importForm);
+  const clearForm = useFormStore(state => state.clearForm);
+  const fields = useFormStore(state => state.fields);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {

@@ -20,20 +20,9 @@ import {
   Star,
   Sliders,
   Code,
-  Eye,
-  Tags,
-  Search,
-  Layers,
   Grid3X3,
-  Columns,
-  Minus,
-  Section,
-  Folder,
-  Database,
-  FileJson,
-  FileCode,
-  BarChart3,
   PenTool,
+  FileText,
 } from 'lucide-react';
 
 interface PropertyPanelProps {
@@ -41,6 +30,7 @@ interface PropertyPanelProps {
 }
 
 const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
+  const fields = useFormStore(state => state.fields);
   const updateField = useFormStore(state => state.updateField);
   const { colorPalette } = useSettingsStore();
 
@@ -421,12 +411,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="number"
               min="1"
               max="10"
-              value={field.ratingConfig?.max || 5}
+              value={field.ratingConfig?.maxRating || 5}
               onChange={e =>
                 handleUpdate({
                   ratingConfig: {
                     ...field.ratingConfig,
-                    max: parseInt(e.target.value) || 5,
+                    maxRating: parseInt(e.target.value) || 5,
                   },
                 })
               }
@@ -435,52 +425,58 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
           <div className="space-y-2">
             <Label>Size</Label>
-            <Select
-              value={field.ratingConfig?.size || 'md'}
-              onValueChange={value =>
-                handleUpdate({
-                  ratingConfig: {
-                    ...field.ratingConfig,
-                    size: value as 'sm' | 'md' | 'lg',
-                  },
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sm">Small</SelectItem>
-                <SelectItem value="md">Medium</SelectItem>
-                <SelectItem value="lg">Large</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="allowHalf"
+                checked={field.ratingConfig?.allowHalf || false}
+                onChange={(e) =>
+                  handleUpdate({
+                    ratingConfig: {
+                      ...field.ratingConfig,
+                      allowHalf: e.target.checked,
+                    },
+                  })
+                }
+                className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                  field.ratingConfig?.allowHalf 
+                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                    : 'border-border'
+                } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+                style={{
+                  accentColor: field.ratingConfig?.allowHalf ? getCheckboxColors().cssColor : undefined
+                }}
+              />
+              <Label htmlFor="allowHalf" className="cursor-pointer select-none">
+                Allow half stars
+              </Label>
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
-              id="showText"
-              checked={field.ratingConfig?.showText || false}
+              id="showLabels"
+              checked={field.ratingConfig?.showLabels || false}
               onChange={(e) =>
                 handleUpdate({
                   ratingConfig: {
                     ...field.ratingConfig,
-                    showText: e.target.checked,
+                    showLabels: e.target.checked,
                   },
                 })
               }
               className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.ratingConfig?.showText 
+                field.ratingConfig?.showLabels 
                   ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.ratingConfig?.showText ? getCheckboxColors().cssColor : undefined
+                accentColor: field.ratingConfig?.showLabels ? getCheckboxColors().cssColor : undefined
               }}
             />
-            <Label htmlFor="showText" className="cursor-pointer select-none">
-              Show text labels
+            <Label htmlFor="showLabels" className="cursor-pointer select-none">
+              Show labels
             </Label>
           </div>
         </CardContent>
@@ -782,6 +778,372 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     );
   };
 
+  const renderTextProperties = () => {
+    if (!['text', 'email', 'password', 'phone', 'url', 'number', 'textarea'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
+            <FileText className="h-4 w-4" />
+            <span>Text Input Settings</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="inputMode">Input Mode</Label>
+            <Select
+              value={field.textConfig?.inputMode || 'text'}
+              onValueChange={value =>
+                handleUpdate({
+                  textConfig: {
+                    ...field.textConfig,
+                    inputMode: value as 'text' | 'email' | 'tel' | 'url' | 'numeric' | 'decimal' | 'search',
+                  },
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="tel">Telephone</SelectItem>
+                <SelectItem value="url">URL</SelectItem>
+                <SelectItem value="numeric">Numeric</SelectItem>
+                <SelectItem value="decimal">Decimal</SelectItem>
+                <SelectItem value="search">Search</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="autoComplete">Auto Complete</Label>
+            <Input
+              id="autoComplete"
+              value={field.textConfig?.autoComplete || ''}
+              onChange={e =>
+                handleUpdate({
+                  textConfig: {
+                    ...field.textConfig,
+                    autoComplete: e.target.value,
+                  },
+                })
+              }
+              placeholder="e.g., name, email, tel"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="pattern">Pattern (Regex)</Label>
+            <Input
+              id="pattern"
+              value={field.textConfig?.pattern || ''}
+              onChange={e =>
+                handleUpdate({
+                  textConfig: {
+                    ...field.textConfig,
+                    pattern: e.target.value,
+                  },
+                })
+              }
+              placeholder="e.g., [A-Za-z]{3,}"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="minLength">Min Length</Label>
+              <Input
+                id="minLength"
+                type="number"
+                value={field.textConfig?.minLength || ''}
+                onChange={e =>
+                  handleUpdate({
+                    textConfig: {
+                      ...field.textConfig,
+                      minLength: parseInt(e.target.value) || undefined,
+                    },
+                  })
+                }
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="maxLength">Max Length</Label>
+              <Input
+                id="maxLength"
+                type="number"
+                value={field.textConfig?.maxLength || ''}
+                onChange={e =>
+                  handleUpdate({
+                    textConfig: {
+                      ...field.textConfig,
+                      maxLength: parseInt(e.target.value) || undefined,
+                    },
+                  })
+                }
+                placeholder="No limit"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="autoFocus"
+              checked={field.textConfig?.autoFocus || false}
+              onChange={(e) =>
+                handleUpdate({
+                  textConfig: {
+                    ...field.textConfig,
+                    autoFocus: e.target.checked,
+                  },
+                })
+              }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.textConfig?.autoFocus 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.textConfig?.autoFocus ? getCheckboxColors().cssColor : undefined
+              }}
+            />
+            <Label htmlFor="autoFocus" className="cursor-pointer select-none">
+              Auto focus
+            </Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="spellCheck"
+              checked={field.textConfig?.spellCheck !== false}
+              onChange={(e) =>
+                handleUpdate({
+                  textConfig: {
+                    ...field.textConfig,
+                    spellCheck: e.target.checked,
+                  },
+                })
+              }
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.textConfig?.spellCheck !== false 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.textConfig?.spellCheck !== false ? getCheckboxColors().cssColor : undefined
+              }}
+            />
+            <Label htmlFor="spellCheck" className="cursor-pointer select-none">
+              Spell check
+            </Label>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderLayoutProperties = () => {
+    if (['divider', 'section'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
+            <Grid3X3 className="h-4 w-4" />
+            <span>Layout & Styling</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="width">Width</Label>
+              <Input
+                id="width"
+                value={field.layout?.width || ''}
+                onChange={e =>
+                  handleUpdate({
+                    layout: {
+                      ...field.layout,
+                      width: e.target.value,
+                    },
+                  })
+                }
+                placeholder="e.g., 100%, 200px"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="height">Height</Label>
+              <Input
+                id="height"
+                value={field.layout?.height || ''}
+                onChange={e =>
+                  handleUpdate({
+                    layout: {
+                      ...field.layout,
+                      height: e.target.value,
+                    },
+                  })
+                }
+                placeholder="e.g., 100px, auto"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="display">Display</Label>
+            <Select
+              value={field.layout?.display || 'block'}
+              onValueChange={value =>
+                handleUpdate({
+                  layout: {
+                    ...field.layout,
+                                         display: value as 'block' | 'inline' | 'inline-block' | 'flex' | 'grid',
+                  },
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="block">Block</SelectItem>
+                <SelectItem value="inline">Inline</SelectItem>
+                <SelectItem value="inline-block">Inline Block</SelectItem>
+                <SelectItem value="flex">Flex</SelectItem>
+                <SelectItem value="grid">Grid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="margin">Margin</Label>
+            <Input
+              id="margin"
+              value={field.layout?.margin || ''}
+              onChange={e =>
+                handleUpdate({
+                  layout: {
+                    ...field.layout,
+                    margin: e.target.value,
+                  },
+                })
+              }
+              placeholder="e.g., 10px, 1rem 2rem"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="padding">Padding</Label>
+            <Input
+              id="padding"
+              value={field.layout?.padding || ''}
+              onChange={e =>
+                handleUpdate({
+                  layout: {
+                    ...field.layout,
+                    padding: e.target.value,
+                  },
+                })
+              }
+              placeholder="e.g., 10px, 1rem 2rem"
+            />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderConditionalProperties = () => {
+    if (['divider', 'section'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
+            <Code className="h-4 w-4" />
+            <span>Conditional Logic</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Show if</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Select
+                value={field.conditional?.showIf?.fieldId || ''}
+                onValueChange={value =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      showIf: {
+                        ...field.conditional?.showIf,
+                        fieldId: value,
+                      },
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Field" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fields.filter(f => f.id !== field.id).map(f => (
+                    <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={field.conditional?.showIf?.operator || 'equals'}
+                onValueChange={value =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      showIf: {
+                        ...field.conditional?.showIf,
+                                                 operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
+                      },
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="equals">Equals</SelectItem>
+                  <SelectItem value="not_equals">Not Equals</SelectItem>
+                  <SelectItem value="contains">Contains</SelectItem>
+                  <SelectItem value="not_contains">Not Contains</SelectItem>
+                  <SelectItem value="greater_than">Greater Than</SelectItem>
+                  <SelectItem value="less_than">Less Than</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                value={field.conditional?.showIf?.value?.toString() || ''}
+                onChange={e =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      showIf: {
+                        ...field.conditional?.showIf,
+                        value: e.target.value,
+                      },
+                    },
+                  })
+                }
+                placeholder="Value"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   const renderAdvancedProperties = () => {
     if (['divider', 'section'].includes(field.type)) return null;
 
@@ -826,7 +1188,56 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="defaultValue">Default Value</Label>
+            <Input
+              id="defaultValue"
+              value={field.advanced?.defaultValue?.toString() || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    defaultValue: e.target.value,
+                  },
+                })
+              }
+              placeholder="Default value"
+            />
+          </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="tooltip">Tooltip</Label>
+            <Input
+              id="tooltip"
+              value={field.advanced?.tooltip || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    tooltip: e.target.value,
+                  },
+                })
+              }
+              placeholder="Tooltip text"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cssClass">CSS Class</Label>
+            <Input
+              id="cssClass"
+              value={field.advanced?.cssClass || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    cssClass: e.target.value,
+                  },
+                })
+              }
+              placeholder="Custom CSS classes"
+            />
+          </div>
 
           <div className="flex items-center space-x-2">
             <input
@@ -924,6 +1335,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         </div>
 
         {renderBasicProperties()}
+        {renderTextProperties()}
         {renderOptionsProperties()}
         {renderFileProperties()}
         {renderDateProperties()}
@@ -931,6 +1343,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         {renderSliderProperties()}
         {renderSignatureProperties()}
         {renderValidationProperties()}
+        {renderLayoutProperties()}
+        {renderConditionalProperties()}
         {renderAdvancedProperties()}
       </div>
     </div>

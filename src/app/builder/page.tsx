@@ -9,7 +9,10 @@ import { useFormStore } from '@/lib/store';
 import { useAutoSave } from '@/hooks/use-auto-save';
 
 export default function BuilderPage() {
-  const { isPreviewMode, fields, selectedFieldId, formTitle } = useFormStore();
+  const isPreviewMode = useFormStore(state => state.isPreviewMode);
+  const fields = useFormStore(state => state.fields);
+  const selectedFieldId = useFormStore(state => state.selectedFieldId);
+  const formTitle = useFormStore(state => state.formTitle);
 
   // Initialize auto-save
   useAutoSave();

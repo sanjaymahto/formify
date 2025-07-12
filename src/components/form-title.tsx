@@ -7,7 +7,8 @@ import { Edit3, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function FormTitle() {
-  const { formTitle, setFormTitle } = useFormStore();
+  const formTitle = useFormStore(state => state.formTitle);
+  const setFormTitle = useFormStore(state => state.setFormTitle);
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(formTitle);
   const inputRef = useRef<HTMLInputElement>(null);

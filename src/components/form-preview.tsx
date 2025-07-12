@@ -18,8 +18,8 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 export function FormPreview() {
-  const { fields } = useFormStore();
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const fields = useFormStore(state => state.fields);
+  const [formData, setFormData] = useState<Record<string, string | number | boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (fieldId: string, value: any) => {
