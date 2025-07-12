@@ -1222,23 +1222,6 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="cssClass">CSS Class</Label>
-            <Input
-              id="cssClass"
-              value={field.advanced?.cssClass || ''}
-              onChange={e =>
-                handleUpdate({
-                  advanced: {
-                    ...field.advanced,
-                    cssClass: e.target.value,
-                  },
-                })
-              }
-              placeholder="Custom CSS classes"
-            />
-          </div>
-
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"

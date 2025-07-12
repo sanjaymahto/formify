@@ -27,7 +27,6 @@ import {
   Minus,
   Code,
   Tags,
-  Search,
   Layers,
   Columns,
   Grid3X3,
@@ -82,11 +81,6 @@ const fieldCategories = [
     fields: [
       { type: 'rich-text' as FieldType, label: 'Rich Text', icon: Edit3 },
       { type: 'signature' as FieldType, label: 'Signature', icon: PenTool },
-      {
-        type: 'autocomplete' as FieldType,
-        label: 'Autocomplete',
-        icon: Search,
-      },
     ],
   },
   {
@@ -179,7 +173,6 @@ export default function Sidebar() {
       html: 'Custom HTML',
       'multi-select': 'Multi-Select',
       tags: 'Tags Input',
-      autocomplete: 'Autocomplete',
       accordion: 'Accordion',
       grid: 'Grid Layout',
       columns: 'Column Layout',
@@ -218,7 +211,6 @@ export default function Sidebar() {
       html: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
-      autocomplete: 'Start typing...',
       accordion: '',
       grid: '',
       columns: '',

@@ -35,7 +35,6 @@ export type FieldType =
   | 'html' // Custom HTML
   | 'multi-select' // Multi-select dropdown
   | 'tags' // Tags input
-  | 'autocomplete' // Autocomplete field
   | 'accordion' // Accordion field
   | 'grid' // Grid layout
   | 'columns' // Column layout
@@ -158,7 +157,6 @@ export interface Field {
     defaultValue?: string | number | boolean;
     description?: string;
     tooltip?: string;
-    cssClass?: string;
     dataAttributes?: Record<string, string>;
     customValidation?: string;
     onChange?: string; // Custom onChange handler

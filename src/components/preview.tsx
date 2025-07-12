@@ -25,7 +25,6 @@ import {
   FileText,
   Code,
   Tags,
-  Search,
   Layers,
   Grid3X3,
   Columns,
@@ -476,16 +475,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-        case 'autocomplete':
-          return (
-            <div className="flex items-center space-x-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <Input
-                {...baseFieldProps}
-                placeholder="Start typing to search..."
-              />
-            </div>
-          );
+
 
         case 'section':
           return (

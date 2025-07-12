@@ -32,7 +32,6 @@ import {
   FileText,
   Code,
   Tags,
-  Search,
   Layers,
   Grid3X3,
   Columns,
@@ -406,17 +405,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'autocomplete':
-        return (
-          <div className="flex items-center space-x-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={field.placeholder}
-              disabled
-              className="bg-muted"
-            />
-          </div>
-        );
+
 
       case 'accordion':
         return (
@@ -811,7 +800,6 @@ export default function Canvas() {
       html: 'Custom HTML',
       'multi-select': 'Multi-Select',
       tags: 'Tags Input',
-      autocomplete: 'Autocomplete',
       accordion: 'Accordion',
       grid: 'Grid Layout',
       columns: 'Column Layout',
@@ -850,7 +838,6 @@ export default function Canvas() {
       html: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
-      autocomplete: 'Start typing...',
       accordion: '',
       grid: '',
       columns: '',
