@@ -1,0 +1,291 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --border: #e5e7eb;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f9fafb;
+  --accent-foreground: #111827;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #000000;
+  --input: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Dark theme */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --border: #374151;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #374151;
+  --accent-foreground: #f9fafb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #ffffff;
+  --input: #1f2937;
+  --card: #1f2937;
+  --card-foreground: #f9fafb;
+  --popover: #1f2937;
+  --popover-foreground: #f9fafb;
+  --secondary: #374151;
+  --secondary-foreground: #f9fafb;
+}
+
+/* Color Palettes */
+.palette-blue {
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --ring: #3b82f6;
+}
+
+.palette-green {
+  --primary: #10b981;
+  --primary-foreground: #ffffff;
+  --ring: #10b981;
+}
+
+.palette-purple {
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --ring: #8b5cf6;
+}
+
+.palette-orange {
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --ring: #f97316;
+}
+
+.palette-pink {
+  --primary: #ec4899;
+  --primary-foreground: #ffffff;
+  --ring: #ec4899;
+}
+
+.palette-red {
+  --primary: #ef4444;
+  --primary-foreground: #ffffff;
+  --ring: #ef4444;
+}
+
+.palette-teal {
+  --primary: #14b8a6;
+  --primary-foreground: #ffffff;
+  --ring: #14b8a6;
+}
+
+.palette-indigo {
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --ring: #6366f1;
+}
+
+.palette-yellow {
+  --primary: #eab308;
+  --primary-foreground: #000000;
+  --ring: #eab308;
+}
+
+/* Font Sizes */
+.text-small {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-medium {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.text-large {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+/* Border Radius */
+.radius-none {
+  --radius: 0px;
+}
+
+.radius-small {
+  --radius: 0.25rem;
+}
+
+.radius-medium {
+  --radius: 0.5rem;
+}
+
+.radius-large {
+  --radius: 1rem;
+}
+
+/* Animation Speeds */
+.animation-slow {
+  --transition-duration: 0.5s;
+}
+
+.animation-normal {
+  --transition-duration: 0.2s;
+}
+
+.animation-fast {
+  --transition-duration: 0.1s;
+}
+
+/* Accessibility */
+.high-contrast {
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --border: #000000;
+  --muted-foreground: #000000;
+}
+
+.dark.high-contrast {
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --border: #ffffff;
+  --muted-foreground: #ffffff;
+}
+
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition:
+    background-color var(--transition-duration, 0.2s) ease,
+    color var(--transition-duration, 0.2s) ease;
+}
+
+/* Enhanced Button Styles */
+button {
+  transition: all var(--transition-duration, 0.2s) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button focus styles */
+button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--ring), 0.3);
+}
+
+/* Glass morphism effect for glass variant */
+.glass {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Gradient animation for gradient variant */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Enhanced shadows for different themes */
+.light button {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dark button {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Button ripple effect */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Custom button variants for different color palettes */
+.palette-blue button[data-variant='default'] {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.palette-green button[data-variant='default'] {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.palette-purple button[data-variant='default'] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.palette-orange button[data-variant='default'] {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.palette-pink button[data-variant='default'] {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+}
+
+.palette-red button[data-variant='default'] {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.palette-teal button[data-variant='default'] {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+}
+
+.palette-indigo button[data-variant='default'] {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.palette-yellow button[data-variant='default'] {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+}

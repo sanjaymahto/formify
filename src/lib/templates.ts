@@ -1,0 +1,327 @@
+import { FormData } from './store';
+
+export interface FormTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  formData: FormData;
+}
+
+export const formTemplates: FormTemplate[] = [
+  {
+    id: 'contact-form',
+    name: 'Contact Form',
+    description: 'Simple contact form with name, email, and message',
+    category: 'Business',
+    icon: '📧',
+    formData: {
+      fields: [
+        {
+          id: 'name',
+          type: 'text',
+          label: 'Full Name',
+          placeholder: 'Enter your full name',
+          required: true,
+        },
+        {
+          id: 'email',
+          type: 'email',
+          label: 'Email Address',
+          placeholder: 'Enter your email address',
+          required: true,
+        },
+        {
+          id: 'subject',
+          type: 'text',
+          label: 'Subject',
+          placeholder: 'What is this about?',
+          required: true,
+        },
+        {
+          id: 'message',
+          type: 'textarea',
+          label: 'Message',
+          placeholder: 'Enter your message here...',
+          required: true,
+        },
+      ],
+      version: '1.0.0',
+      name: 'Contact Form',
+      description: 'Simple contact form template',
+      createdAt: new Date().toISOString(),
+    },
+  },
+  {
+    id: 'registration-form',
+    name: 'Registration Form',
+    description: 'User registration with password and terms',
+    category: 'Business',
+    icon: '👤',
+    formData: {
+      fields: [
+        {
+          id: 'firstName',
+          type: 'text',
+          label: 'First Name',
+          placeholder: 'Enter your first name',
+          required: true,
+        },
+        {
+          id: 'lastName',
+          type: 'text',
+          label: 'Last Name',
+          placeholder: 'Enter your last name',
+          required: true,
+        },
+        {
+          id: 'email',
+          type: 'email',
+          label: 'Email Address',
+          placeholder: 'Enter your email address',
+          required: true,
+        },
+        {
+          id: 'password',
+          type: 'text',
+          label: 'Password',
+          placeholder: 'Create a password',
+          required: true,
+        },
+        {
+          id: 'confirmPassword',
+          type: 'text',
+          label: 'Confirm Password',
+          placeholder: 'Confirm your password',
+          required: true,
+        },
+        {
+          id: 'terms',
+          type: 'checkbox',
+          label: 'I agree to the terms and conditions',
+          required: true,
+        },
+      ],
+      version: '1.0.0',
+      name: 'Registration Form',
+      description: 'User registration form template',
+      createdAt: new Date().toISOString(),
+    },
+  },
+  {
+    id: 'survey-form',
+    name: 'Survey Form',
+    description: 'Customer feedback survey with multiple choice questions',
+    category: 'Research',
+    icon: '📊',
+    formData: {
+      fields: [
+        {
+          id: 'name',
+          type: 'text',
+          label: 'Your Name',
+          placeholder: 'Enter your name (optional)',
+          required: false,
+        },
+        {
+          id: 'age',
+          type: 'select',
+          label: 'Age Group',
+          placeholder: 'Select your age group',
+          required: true,
+          options: ['18-24', '25-34', '35-44', '45-54', '55+'],
+        },
+        {
+          id: 'satisfaction',
+          type: 'radio',
+          label: 'How satisfied are you with our service?',
+          required: true,
+          options: [
+            'Very Satisfied',
+            'Satisfied',
+            'Neutral',
+            'Dissatisfied',
+            'Very Dissatisfied',
+          ],
+        },
+        {
+          id: 'features',
+          type: 'checkbox',
+          label: 'Which features do you use most?',
+          required: false,
+        },
+        {
+          id: 'feedback',
+          type: 'textarea',
+          label: 'Additional Feedback',
+          placeholder: 'Share your thoughts and suggestions...',
+          required: false,
+        },
+      ],
+      version: '1.0.0',
+      name: 'Survey Form',
+      description: 'Customer feedback survey template',
+      createdAt: new Date().toISOString(),
+    },
+  },
+  {
+    id: 'job-application',
+    name: 'Job Application',
+    description: 'Professional job application form',
+    category: 'Business',
+    icon: '💼',
+    formData: {
+      fields: [
+        {
+          id: 'fullName',
+          type: 'text',
+          label: 'Full Name',
+          placeholder: 'Enter your full name',
+          required: true,
+        },
+        {
+          id: 'email',
+          type: 'email',
+          label: 'Email Address',
+          placeholder: 'Enter your email address',
+          required: true,
+        },
+        {
+          id: 'phone',
+          type: 'text',
+          label: 'Phone Number',
+          placeholder: 'Enter your phone number',
+          required: true,
+        },
+        {
+          id: 'position',
+          type: 'select',
+          label: 'Position Applied For',
+          placeholder: 'Select the position',
+          required: true,
+          options: [
+            'Software Engineer',
+            'Designer',
+            'Product Manager',
+            'Marketing',
+            'Sales',
+            'Other',
+          ],
+        },
+        {
+          id: 'experience',
+          type: 'select',
+          label: 'Years of Experience',
+          placeholder: 'Select your experience level',
+          required: true,
+          options: [
+            '0-1 years',
+            '2-3 years',
+            '4-5 years',
+            '6-10 years',
+            '10+ years',
+          ],
+        },
+        {
+          id: 'coverLetter',
+          type: 'textarea',
+          label: 'Cover Letter',
+          placeholder: "Tell us why you're interested in this position...",
+          required: true,
+        },
+        {
+          id: 'available',
+          type: 'radio',
+          label: 'When are you available to start?',
+          required: true,
+          options: ['Immediately', '2 weeks notice', '1 month notice', 'Other'],
+        },
+      ],
+      version: '1.0.0',
+      name: 'Job Application',
+      description: 'Professional job application form template',
+      createdAt: new Date().toISOString(),
+    },
+  },
+  {
+    id: 'event-registration',
+    name: 'Event Registration',
+    description: 'Event registration with dietary preferences',
+    category: 'Events',
+    icon: '🎉',
+    formData: {
+      fields: [
+        {
+          id: 'fullName',
+          type: 'text',
+          label: 'Full Name',
+          placeholder: 'Enter your full name',
+          required: true,
+        },
+        {
+          id: 'email',
+          type: 'email',
+          label: 'Email Address',
+          placeholder: 'Enter your email address',
+          required: true,
+        },
+        {
+          id: 'company',
+          type: 'text',
+          label: 'Company/Organization',
+          placeholder: 'Enter your company name',
+          required: false,
+        },
+        {
+          id: 'ticketType',
+          type: 'radio',
+          label: 'Ticket Type',
+          required: true,
+          options: ['General Admission', 'VIP', 'Student', 'Early Bird'],
+        },
+        {
+          id: 'dietary',
+          type: 'select',
+          label: 'Dietary Requirements',
+          placeholder: 'Select your dietary needs',
+          required: false,
+          options: [
+            'None',
+            'Vegetarian',
+            'Vegan',
+            'Gluten-Free',
+            'Dairy-Free',
+            'Other',
+          ],
+        },
+        {
+          id: 'specialNeeds',
+          type: 'textarea',
+          label: 'Special Requirements',
+          placeholder: 'Any special accommodations needed?',
+          required: false,
+        },
+      ],
+      version: '1.0.0',
+      name: 'Event Registration',
+      description: 'Event registration form template',
+      createdAt: new Date().toISOString(),
+    },
+  },
+];
+
+export const templateCategories = [
+  'Business',
+  'Research',
+  'Events',
+  'Personal',
+];
+
+export const getTemplatesByCategory = (category: string) => {
+  return formTemplates.filter(template => template.category === category);
+};
+
+export const getTemplateById = (id: string) => {
+  return formTemplates.find(template => template.id === id);
+};

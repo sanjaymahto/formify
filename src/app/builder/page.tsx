@@ -1,0 +1,33 @@
+'use client';
+
+import Canvas from '@/components/canvas';
+import Sidebar from '@/components/sidebar';
+import PropertyPanel from '@/components/property-panel';
+import Preview from '@/components/preview';
+import { Header } from '@/components/header';
+import { useFormStore } from '@/lib/store';
+import { useAutoSave } from '@/hooks/use-auto-save';
+
+export default function BuilderPage() {
+  const { isPreviewMode, fields, selectedFieldId } = useFormStore();
+
+  // Initialize auto-save
+  useAutoSave();
+
+  return (
+    <div className="flex h-screen flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        {!isPreviewMode && <Sidebar />}
+        <main className="flex-1 overflow-auto">
+          {isPreviewMode ? <Preview fields={fields} /> : <Canvas />}
+        </main>
+        {!isPreviewMode && (
+          <PropertyPanel
+            field={fields.find(f => f.id === selectedFieldId) || null}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
