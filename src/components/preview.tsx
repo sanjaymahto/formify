@@ -728,6 +728,27 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
+        case 'submit':
+          return (
+            <Button 
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  {field.label || 'Submit'}
+                </>
+              )}
+            </Button>
+          );
+
         default:
           return (
             <Input
@@ -848,7 +869,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               </AnimatePresence>
 
               <AnimatePresence>
-                {fields.length > 0 && (
+                {fields.length > 0 && !fields.some(field => field.type === 'submit') && (
                   <motion.div 
                     className="border-t pt-4"
                     initial={{ opacity: 0, y: 20 }}

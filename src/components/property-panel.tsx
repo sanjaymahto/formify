@@ -169,7 +169,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </div>
         )}
 
-        {!['code', 'progress', 'divider'].includes(field.type) && (
+        {!['code', 'progress', 'divider', 'submit'].includes(field.type) && (
           <div className="space-y-2">
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -182,7 +182,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         )}
 
         {/* Only show required checkbox for input fields */}
-        {!['code', 'progress', 'divider'].includes(field.type) && (
+        {!['code', 'progress', 'divider', 'submit'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -1622,16 +1622,16 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           >
             {field.type !== 'divider' && renderBasicProperties()}
             {['text', 'phone', 'url'].includes(field.type) && renderTextProperties()}
-            {renderOptionsProperties()}
-            {renderFileProperties()}
-            {renderRatingProperties()}
-            {renderSliderProperties()}
-            {renderGridProperties()}
-            {renderStructuralProperties()}
-            {renderHtmlCodeProperties()}
-            {renderLayoutProperties()}
-            {renderConditionalProperties()}
-            {renderAdvancedProperties()}
+            {field.type !== 'submit' && renderOptionsProperties()}
+            {field.type !== 'submit' && renderFileProperties()}
+            {field.type !== 'submit' && renderRatingProperties()}
+            {field.type !== 'submit' && renderSliderProperties()}
+            {field.type !== 'submit' && renderGridProperties()}
+            {field.type !== 'submit' && renderStructuralProperties()}
+            {field.type !== 'submit' && renderHtmlCodeProperties()}
+            {field.type !== 'submit' && renderLayoutProperties()}
+            {field.type !== 'submit' && renderConditionalProperties()}
+            {field.type !== 'submit' && renderAdvancedProperties()}
           </motion.div>
         </AnimatePresence>
         </motion.div>

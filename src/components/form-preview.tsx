@@ -15,7 +15,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Upload } from 'lucide-react';
+import { Calendar, Clock, Upload, Send } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { CodeEditor } from '@/components/ui/code-editor';
 
@@ -686,6 +686,17 @@ export function FormPreview() {
           />
         );
 
+      case 'submit':
+        return (
+          <Button 
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Send className="mr-2 h-4 w-4" />
+            {field.label || 'Submit'}
+          </Button>
+        );
+
       default:
         return (
           <Input
@@ -743,11 +754,13 @@ export function FormPreview() {
             </div>
           ))}
 
-          <div className="border-t pt-6">
-            <Button type="submit" className="w-full">
-              Submit Form
-            </Button>
-          </div>
+          {!fields.some(field => field.type === 'submit') && (
+            <div className="border-t pt-6">
+              <Button type="submit" className="w-full">
+                Submit Form
+              </Button>
+            </div>
+          )}
         </form>
       </Card>
     </div>

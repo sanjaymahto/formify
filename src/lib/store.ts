@@ -35,6 +35,7 @@ export type FieldType =
   | 'grid' // Grid table with editable columns
   | 'code' // Code editor
   | 'image' // Image upload
+  | 'submit' // Submit button
   | 'other'; // Other file types
 
 export type GridColumnType = 'text' | 'number' | 'date' | 'time' | 'datetime' | 'email' | 'phone' | 'url' | 'select' | 'checkbox';
@@ -347,19 +348,36 @@ export const useFormStore = create<FormState>()(
       addField: field => {
         const state = get();
         const newHistory = state.history.slice(0, state.historyIndex + 1);
+        
+        // Ensure submit buttons are always at the end
+        let insertIndex = state.fields.length;
+        if (field.type === 'submit') {
+          // Submit buttons always go at the end
+          insertIndex = state.fields.length;
+        } else {
+          // Other fields go before any existing submit buttons
+          const submitButtonIndex = state.fields.findIndex(f => f.type === 'submit');
+          insertIndex = submitButtonIndex !== -1 ? submitButtonIndex : state.fields.length;
+        }
+        
         newHistory.push({
           type: 'add',
-          data: { field, index: state.fields.length },
+          data: { field, index: insertIndex },
           timestamp: getClientTimestamp(),
         });
 
-        set(state => ({
-          fields: [...state.fields, field],
-          selectedFieldId: field.id,
-          history: newHistory,
-          historyIndex: newHistory.length - 1,
-          isDirty: true,
-        }));
+        set(state => {
+          const newFields = [...state.fields];
+          newFields.splice(insertIndex, 0, field);
+          
+          return {
+            fields: newFields,
+            selectedFieldId: null, // Don't automatically select the newly added field
+            history: newHistory,
+            historyIndex: newHistory.length - 1,
+            isDirty: true,
+          };
+        });
       },
 
       updateField: (id, updates) => {
@@ -419,8 +437,26 @@ export const useFormStore = create<FormState>()(
 
         set(state => {
           const newFields = [...state.fields];
-          const [movedField] = newFields.splice(fromIndex, 1);
-          newFields.splice(toIndex, 0, movedField);
+          const movedField = newFields[fromIndex];
+          
+          // Don't allow reordering submit buttons
+          if (movedField.type === 'submit') {
+            return state;
+          }
+          
+          // Find the last non-submit field index
+          const submitButtonIndex = newFields.findIndex(f => f.type === 'submit');
+          const lastNonSubmitIndex = submitButtonIndex !== -1 ? submitButtonIndex - 1 : newFields.length - 1;
+          
+          // Adjust toIndex to not go beyond submit buttons
+          const adjustedToIndex = Math.min(toIndex, lastNonSubmitIndex);
+          
+          // Remove the field from its original position
+          newFields.splice(fromIndex, 1);
+          
+          // Insert it at the adjusted position
+          newFields.splice(adjustedToIndex, 0, movedField);
+          
           return {
             fields: newFields,
             history: newHistory,

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { useFormStore, FieldType } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -28,6 +28,7 @@ import {
   Tags,
   Grid3X3,
   Image,
+  Send,
 } from 'lucide-react';
 
 const fieldCategories = [
@@ -77,6 +78,7 @@ const fieldCategories = [
     fields: [
       { type: 'divider' as FieldType, label: 'Divider', icon: Minus },
       { type: 'grid' as FieldType, label: 'Grid Table', icon: Grid3X3 },
+      { type: 'submit' as FieldType, label: 'Submit Button', icon: Send },
     ],
   },
   {
@@ -90,6 +92,8 @@ const fieldCategories = [
 export default function Sidebar() {
   const [mounted, setMounted] = useState(false);
   const addField = useFormStore(state => state.addField);
+  const setSelectedField = useFormStore(state => state.setSelectedField);
+  const fields = useFormStore(state => state.fields);
 
   useEffect(() => {
     setMounted(true);
@@ -111,10 +115,20 @@ export default function Sidebar() {
   }
 
   const handleDragStart = (e: React.DragEvent, fieldType: FieldType) => {
+    // Don't allow dragging submit button if one already exists
+    if (fieldType === 'submit' && fields.some(field => field.type === 'submit')) {
+      e.preventDefault();
+      return;
+    }
     e.dataTransfer.setData('fieldType', fieldType);
   };
 
   const handleAddField = (fieldType: FieldType) => {
+    // Don't allow adding submit button if one already exists
+    if (fieldType === 'submit' && fields.some(field => field.type === 'submit')) {
+      return;
+    }
+    
     const field = {
       id: `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type: fieldType,
@@ -129,6 +143,7 @@ export default function Sidebar() {
           : undefined,
     };
     addField(field);
+    setSelectedField(field.id); // Auto-select the newly added field
   };
 
   const getDefaultLabel = (type: FieldType): string => {
@@ -157,6 +172,7 @@ export default function Sidebar() {
       grid: 'Grid Table',
       code: 'Code Editor',
       image: 'Image Upload',
+      submit: 'Submit',
       other: 'Other Field',
     };
     return labels[type] || 'Field';
@@ -173,11 +189,9 @@ export default function Sidebar() {
       radio: '',
       checkbox: '',
       file: 'Choose file...',
-      'rich-text': 'Start typing...',
       date: 'Select date...',
       time: 'Select time...',
       datetime: 'Select date and time...',
-      signature: 'Sign here...',
       rating: '',
       slider: '',
       phone: 'Enter phone number...',
@@ -185,14 +199,12 @@ export default function Sidebar() {
       color: '',
       toggle: '',
       divider: '',
-      html: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
       grid: '',
-      columns: '',
-      group: '',
       code: 'Enter code...',
       image: 'Choose image...',
+      submit: '',
       other: 'Enter value...',
     };
     return placeholders[type] || '';
@@ -246,6 +258,10 @@ export default function Sidebar() {
             <div className="grid grid-cols-2 gap-2">
               {category.fields.map((field, fieldIndex) => {
                 const IconComponent = field.icon;
+                const isSubmitButton = field.type === 'submit';
+                const submitButtonExists = fields.some(f => f.type === 'submit');
+                const isDisabled = isSubmitButton && submitButtonExists;
+                
                 return (
                   <motion.div
                     key={field.type}
@@ -257,23 +273,31 @@ export default function Sidebar() {
                       ease: "easeOut"
                     }}
                     whileHover={{ 
-                      scale: 1.02,
+                      scale: isDisabled ? 1 : 1.02,
                       transition: { duration: 0.2 }
                     }}
                     whileTap={{ 
-                      scale: 0.98,
+                      scale: isDisabled ? 1 : 0.98,
                       transition: { duration: 0.1 }
                     }}
                   >
                     <Card
-                      className="cursor-pointer transition-shadow hover:shadow-md active:cursor-grabbing"
-                      draggable
+                      className={`transition-shadow ${
+                        isDisabled 
+                          ? 'cursor-not-allowed opacity-50' 
+                          : 'cursor-pointer hover:shadow-md active:cursor-grabbing'
+                      }`}
+                      draggable={!isDisabled}
                       onDragStart={e => handleDragStart(e, field.type)}
-                      onClick={() => handleAddField(field.type)}
+                      onClick={() => !isDisabled && handleAddField(field.type)}
                     >
                       <CardContent className="flex flex-col items-center space-y-1 p-2">
-                        <IconComponent className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-center text-xs font-medium">
+                        <IconComponent className={`h-4 w-4 ${
+                          isDisabled ? 'text-muted-foreground/50' : 'text-muted-foreground'
+                        }`} />
+                        <span className={`text-center text-xs font-medium ${
+                          isDisabled ? 'text-muted-foreground/50' : ''
+                        }`}>
                           {field.label}
                         </span>
                       </CardContent>

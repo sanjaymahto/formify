@@ -35,10 +35,8 @@ import {
   Code,
   Tags,
   Grid3X3,
-  Columns,
-  Folder,
-  PenTool,
   Sparkles,
+  Send,
 } from 'lucide-react';
 
 interface FieldRendererProps {
@@ -314,18 +312,13 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           <div className="flex items-center space-x-1">
             {Array.from(
               { length: field.ratingConfig?.maxRating || 5 }, 
-              (_, i) => {
-                const starValue = i + 1;
-                const allowHalf = field.ratingConfig?.allowHalf || false;
-                
-                return (
-                  <Star
-                    key={i}
-                    className="text-muted-foreground/50 h-5 w-5 cursor-pointer hover:text-yellow-400"
-                    fill="currentColor"
-                  />
-                );
-              }
+              (_, i) => (
+                <Star
+                  key={i}
+                  className="text-muted-foreground/50 h-5 w-5 cursor-pointer hover:text-yellow-400"
+                  fill="currentColor"
+                />
+              )
             )}
           </div>
         );
@@ -526,6 +519,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
+      case 'submit':
+        return (
+          <Button 
+            type="submit"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            disabled
+          >
+            <Send className="mr-2 h-4 w-4" />
+            {field.label || 'Submit'}
+          </Button>
+        );
+
       default:
         return (
           <Input
@@ -545,8 +550,8 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         isDragging ? 'opacity-50' : ''
       }`}
       onClick={onSelect}
-      draggable
-      onDragStart={() => onDragStart(field.id)}
+      draggable={field.type !== 'submit'}
+      onDragStart={() => field.type !== 'submit' && onDragStart(field.id)}
       onDragOver={(e) => onDragOver(e, field.id)}
       onDragLeave={onDragLeave}
       onDrop={(e) => onDrop(e, field.id)}
@@ -579,22 +584,24 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             >
               <Trash2 className="h-3 w-3" />
             </Button>
-            <div 
-              className="cursor-grab active:cursor-grabbing cursor-pointer"
-              onMouseDown={(e) => {
-                e.stopPropagation();
-                onDragStart(field.id);
-              }}
-            >
-              <GripVertical className="h-4 w-4 text-muted-foreground" />
-            </div>
+            {field.type !== 'submit' && (
+              <div 
+                className="cursor-grab active:cursor-grabbing cursor-pointer"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  onDragStart(field.id);
+                }}
+              >
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
           </div>
         </div>
 
         <div className="mb-1.5">{renderFieldContent()}</div>
 
         {/* Only show required checkbox for input fields */}
-        {!['divider', 'code', 'progress'].includes(field.type) && (
+        {!['divider', 'code', 'progress', 'submit'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
               <input
@@ -644,6 +651,7 @@ export default function Canvas() {
   const [ghostFieldType, setGhostFieldType] = useState<string | null>(null);
   const [ghostInsertIndex, setGhostInsertIndex] = useState<number | null>(null);
   const draggedFieldTypeRef = React.useRef<string | null>(null);
+  const dragOverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const handleDragStart = (fieldId: string) => {
     setDraggedFieldId(fieldId);
@@ -653,35 +661,58 @@ export default function Canvas() {
     e.preventDefault();
     e.stopPropagation();
     
-    console.log('DragOver triggered:', { fieldId, draggedFieldType: draggedFieldTypeRef.current, draggedFieldId });
+    // Clear any existing timeout
+    if (dragOverTimeoutRef.current) {
+      clearTimeout(dragOverTimeoutRef.current);
+    }
     
-    // Check if we're dragging a new field from sidebar
-    if (draggedFieldTypeRef.current) {
-      setGhostFieldType(draggedFieldTypeRef.current);
-      
-      if (fieldId) {
-        // Insert before specific field
-        const targetIndex = fields.findIndex(f => f.id === fieldId);
-        setGhostInsertIndex(targetIndex);
-        setDragOverFieldId(fieldId);
-      } else {
-        // Insert at end
-        setGhostInsertIndex(fields.length);
-        setIsDragOverCanvas(true);
-      }
-    } else if (fieldId) {
-      // Reordering existing fields
-      if (draggedFieldId && draggedFieldId !== fieldId) {
-        setDragOverFieldId(fieldId);
-      }
-    } else {
-      // Dragging over canvas area (not over a specific field)
+    // Debounce the drag over updates to prevent shaky effect
+    dragOverTimeoutRef.current = setTimeout(() => {
+      // Check if we're dragging a new field from sidebar
       if (draggedFieldTypeRef.current) {
         setGhostFieldType(draggedFieldTypeRef.current);
-        setGhostInsertIndex(fields.length);
+        
+        if (fieldId) {
+          // Insert before specific field
+          const targetField = fields.find(f => f.id === fieldId);
+          
+          // Don't allow dropping after submit buttons
+          if (targetField && targetField.type === 'submit') {
+            return;
+          }
+          
+          // Calculate index in otherFields array
+          const targetIndexInOtherFields = otherFields.findIndex(f => f.id === fieldId);
+          if (targetIndexInOtherFields !== -1) {
+            setGhostInsertIndex(targetIndexInOtherFields);
+            setDragOverFieldId(fieldId);
+          }
+        } else {
+          // Insert at end of otherFields
+          setGhostInsertIndex(otherFields.length);
+          setIsDragOverCanvas(true);
+        }
+      } else if (fieldId && draggedFieldId && draggedFieldId !== fieldId) {
+        // Reordering existing fields - only set drag over state, don't interfere with ghost
+        const draggedField = fields.find(f => f.id === draggedFieldId);
+        const targetField = fields.find(f => f.id === fieldId);
+        
+        // Don't allow reordering submit buttons or dropping after them
+        if (draggedField && draggedField.type === 'submit') {
+          return;
+        }
+        if (targetField && targetField.type === 'submit') {
+          return;
+        }
+        
+        setDragOverFieldId(fieldId);
+      } else if (!fieldId && draggedFieldTypeRef.current) {
+        // Dragging over canvas area (not over a specific field)
+        setGhostFieldType(draggedFieldTypeRef.current);
+        setGhostInsertIndex(otherFields.length);
         setIsDragOverCanvas(true);
       }
-    }
+    }, 50); // 50ms debounce
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -693,19 +724,21 @@ export default function Canvas() {
     // Show ghost component immediately when entering canvas area
     if (draggedFieldTypeRef.current) {
       setGhostFieldType(draggedFieldTypeRef.current);
-      setGhostInsertIndex(fields.length);
+      setGhostInsertIndex(otherFields.length);
       setIsDragOverCanvas(true);
     }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     // Only clear if we're leaving the canvas area entirely
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsDragOverCanvas(false);
       setDragOverFieldId(null);
-      setGhostFieldType(null);
-      setGhostInsertIndex(null);
+      // Don't clear ghost immediately to prevent flickering
+      // Ghost will be cleared on drop or when drag ends
     }
   };
 
@@ -731,38 +764,105 @@ export default function Canvas() {
             : undefined,
       };
       
-      if (targetFieldId) {
-        // Insert at specific position
+      // For submit buttons, always add at the end
+      if (fieldType === 'submit') {
+        addField(field);
+        setSelectedField(field.id); // Auto-select the newly added field
+      } else if (targetFieldId) {
+        // Insert at specific position (but not after submit buttons)
         const targetIndex = fields.findIndex(f => f.id === targetFieldId);
+        const submitButtonIndex = fields.findIndex(f => f.type === 'submit');
+        
         if (targetIndex !== -1) {
-          // Insert before the target field
+          // If there's a submit button, insert before it
+          const insertIndex = submitButtonIndex !== -1 && targetIndex > submitButtonIndex 
+            ? submitButtonIndex 
+            : targetIndex;
+          
           const newFields = [...fields];
-          newFields.splice(targetIndex, 0, field);
+          newFields.splice(insertIndex, 0, field);
           // Update the store with the new field order
           // This is a bit hacky but works for now
           fields.forEach((_, index) => {
-            if (index >= targetIndex) {
+            if (index >= insertIndex) {
               removeField(fields[index].id);
             }
           });
           newFields.forEach((f, index) => {
-            if (index >= targetIndex) {
+            if (index >= insertIndex) {
               addField(f);
             }
           });
+          setSelectedField(field.id); // Auto-select the newly added field
         }
       } else {
-        // Add to end
-        addField(field);
+        // Add to end (but before submit buttons)
+        const submitButtonIndex = fields.findIndex(f => f.type === 'submit');
+        if (submitButtonIndex !== -1) {
+          // Insert before submit button
+          const newFields = [...fields];
+          newFields.splice(submitButtonIndex, 0, field);
+          fields.forEach((_, index) => {
+            if (index >= submitButtonIndex) {
+              removeField(fields[index].id);
+            }
+          });
+          newFields.forEach((f, index) => {
+            if (index >= submitButtonIndex) {
+              addField(f);
+            }
+          });
+          setSelectedField(field.id); // Auto-select the newly added field
+        } else {
+          addField(field);
+          setSelectedField(field.id); // Auto-select the newly added field
+        }
       }
     } else if (draggedFieldId && targetFieldId && draggedFieldId !== targetFieldId) {
-      // Reordering existing fields
+      // Reordering existing fields (but not submit buttons)
+      const draggedField = fields.find(f => f.id === draggedFieldId);
+      if (draggedField && draggedField.type === 'submit') {
+        // Don't allow reordering submit buttons
+        return;
+      }
+      
       const fromIndex = fields.findIndex(f => f.id === draggedFieldId);
       const toIndex = fields.findIndex(f => f.id === targetFieldId);
+      const submitButtonIndex = fields.findIndex(f => f.type === 'submit');
       
       if (fromIndex !== -1 && toIndex !== -1) {
-        reorderFields(fromIndex, toIndex);
+        // Don't allow moving fields after submit button
+        const adjustedToIndex = submitButtonIndex !== -1 && toIndex > submitButtonIndex 
+          ? submitButtonIndex 
+          : toIndex;
+        
+        if (adjustedToIndex !== toIndex) {
+          // If we adjusted the position, we need to handle it differently
+          const newFields = [...fields];
+          const [movedField] = newFields.splice(fromIndex, 1);
+          newFields.splice(adjustedToIndex, 0, movedField);
+          
+          // Update the store
+          fields.forEach((_, index) => {
+            if (index >= Math.min(fromIndex, adjustedToIndex)) {
+              removeField(fields[index].id);
+            }
+          });
+          newFields.forEach((f, index) => {
+            if (index >= Math.min(fromIndex, adjustedToIndex)) {
+              addField(f);
+            }
+          });
+        } else {
+          reorderFields(fromIndex, adjustedToIndex);
+        }
       }
+    }
+    
+    // Clear any pending timeout
+    if (dragOverTimeoutRef.current) {
+      clearTimeout(dragOverTimeoutRef.current);
+      dragOverTimeoutRef.current = null;
     }
     
     setDraggedFieldId(null);
@@ -795,6 +895,12 @@ export default function Canvas() {
     };
 
     const handleGlobalDragEnd = () => {
+      // Clear any pending timeout
+      if (dragOverTimeoutRef.current) {
+        clearTimeout(dragOverTimeoutRef.current);
+        dragOverTimeoutRef.current = null;
+      }
+      
       draggedFieldTypeRef.current = null;
       setGhostFieldType(null);
       setGhostInsertIndex(null);
@@ -986,8 +1092,20 @@ export default function Canvas() {
             </div>
           );
 
-        case 'divider':
+                      case 'divider':
           return <Separator className="my-4 border-dashed" />;
+
+        case 'submit':
+          return (
+            <Button 
+              type="submit"
+              className="w-full bg-primary/50 hover:bg-primary/60 text-primary-foreground border-dashed"
+              disabled
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Submit
+            </Button>
+          );
 
 
 
@@ -1032,27 +1150,35 @@ export default function Canvas() {
     );
   };
 
+  // Separate submit buttons from other fields
+  const submitFields = fields.filter(field => field.type === 'submit');
+  const otherFields = fields.filter(field => field.type !== 'submit');
+
   return (
     <motion.div 
-      className="h-full overflow-y-auto bg-background p-6"
+      className="h-full flex flex-col bg-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      onDragEnter={handleDragEnter}
-      onDragOver={(e) => handleDragOver(e)}
-      onDragLeave={handleDragLeave}
-      onDrop={(e) => handleDrop(e)}
     >
-      <motion.div 
-        className="mx-auto max-w-4xl space-y-4"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+      {/* Main content area with scroll */}
+      <div 
+        className="flex-1 overflow-y-auto p-6"
         onDragEnter={handleDragEnter}
         onDragOver={(e) => handleDragOver(e)}
         onDragLeave={handleDragLeave}
         onDrop={(e) => handleDrop(e)}
       >
+        <motion.div 
+          className="mx-auto max-w-4xl space-y-4"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          onDragEnter={handleDragEnter}
+          onDragOver={(e) => handleDragOver(e)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e)}
+        >
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1125,7 +1251,7 @@ export default function Canvas() {
             </motion.div>
           ) : (
             <AnimatePresence>
-              {fields
+              {otherFields
                 .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
                 .map((field, index) => (
                 <motion.div 
@@ -1185,7 +1311,7 @@ export default function Canvas() {
         </AnimatePresence>
         
         {/* Ghost field at the end */}
-        {ghostFieldType && ghostInsertIndex === fields.length && (
+        {ghostFieldType && ghostInsertIndex === otherFields.length && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -1221,6 +1347,41 @@ export default function Canvas() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
+    
+    {/* Fixed submit buttons at bottom */}
+    {submitFields.length > 0 && (
+      <motion.div 
+        className="border-t bg-background p-6"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div className="mx-auto max-w-4xl space-y-4">
+          {submitFields.map((field, index) => (
+            <motion.div 
+              key={field.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              <FieldRenderer
+                field={field}
+                isSelected={selectedFieldId === field.id}
+                onSelect={() => setSelectedField(field.id)}
+                onDelete={() => removeField(field.id)}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                isDragOver={dragOverFieldId === field.id}
+                isDragging={draggedFieldId === field.id}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    )}
+  </motion.div>
   );
 }
