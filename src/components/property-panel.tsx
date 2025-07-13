@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useFormStore, Field } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +24,7 @@ import {
   Grid3X3,
   PenTool,
   FileText,
+  Section,
 } from 'lucide-react';
 
 interface PropertyPanelProps {
@@ -112,14 +114,37 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   if (!field) {
     return (
-      <div className="w-80 border-l border-border bg-background p-4">
-        <div className="py-8 text-center">
-          <Settings className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            Select a field to edit its properties
-          </p>
+      <motion.div 
+        className="w-[80%] h-full flex flex-col border-l border-border bg-background"
+        initial={{ x: '85%', opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <div className="overflow-y-auto flex-1 p-4">
+          <motion.div 
+            className="py-8 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Settings className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+            </motion.div>
+            <motion.p 
+              className="text-sm text-muted-foreground"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Select a field to edit its properties
+            </motion.p>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -143,7 +168,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           />
         </div>
 
-        {field.type !== 'divider' && field.type !== 'section' && (
+        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
           <div className="space-y-2">
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -155,25 +180,28 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </div>
         )}
 
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="required"
-            checked={field.required}
-            onChange={(e) => handleUpdate({ required: e.target.checked })}
-            className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-              field.required 
-                ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
-                : 'border-border'
-            } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-            style={{
-              accentColor: field.required ? getCheckboxColors().cssColor : undefined
-            }}
-          />
-          <Label htmlFor="required" className="cursor-pointer select-none">
-            Required field
-          </Label>
-        </div>
+        {/* Only show required checkbox for input fields */}
+        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="required"
+              checked={field.required}
+              onChange={(e) => handleUpdate({ required: e.target.checked })}
+              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                field.required 
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                  : 'border-border'
+              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              style={{
+                accentColor: field.required ? getCheckboxColors().cssColor : undefined
+              }}
+            />
+            <Label htmlFor="required" className="cursor-pointer select-none">
+              Required field
+            </Label>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -314,84 +342,6 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     );
   };
 
-  const renderDateProperties = () => {
-    if (!['date', 'time', 'datetime'].includes(field.type)) return null;
-
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-sm">
-            <Calendar className="h-4 w-4" />
-            <span>Date/Time Settings</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="format">Date Format</Label>
-            <Select
-              value={field.dateConfig?.format || 'YYYY-MM-DD'}
-              onValueChange={value =>
-                handleUpdate({
-                  dateConfig: {
-                    ...field.dateConfig,
-                    format: value,
-                  },
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                <SelectItem value="YYYY-MM-DD HH:mm">
-                  YYYY-MM-DD HH:mm
-                </SelectItem>
-                <SelectItem value="HH:mm">HH:mm</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="minDate">Minimum Date</Label>
-            <Input
-              id="minDate"
-              type="date"
-              value={field.dateConfig?.minDate || ''}
-              onChange={e =>
-                handleUpdate({
-                  dateConfig: {
-                    ...field.dateConfig,
-                    minDate: e.target.value,
-                  },
-                })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="maxDate">Maximum Date</Label>
-            <Input
-              id="maxDate"
-              type="date"
-              value={field.dateConfig?.maxDate || ''}
-              onChange={e =>
-                handleUpdate({
-                  dateConfig: {
-                    ...field.dateConfig,
-                    maxDate: e.target.value,
-                  },
-                })
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
   const renderRatingProperties = () => {
     if (field.type !== 'rating') return null;
 
@@ -404,27 +354,47 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="maxRating">Maximum Rating</Label>
-            <Input
-              id="maxRating"
-              type="number"
-              min="1"
-              max="10"
-              value={field.ratingConfig?.maxRating || 5}
-              onChange={e =>
-                handleUpdate({
-                  ratingConfig: {
-                    ...field.ratingConfig,
-                    maxRating: parseInt(e.target.value) || 5,
-                  },
-                })
-              }
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="minRating">Minimum Rating</Label>
+              <Input
+                id="minRating"
+                type="number"
+                min="1"
+                max="10"
+                value={field.ratingConfig?.minRating || 1}
+                onChange={e =>
+                  handleUpdate({
+                    ratingConfig: {
+                      ...field.ratingConfig,
+                      minRating: parseInt(e.target.value) || 1,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="maxRating">Maximum Rating</Label>
+              <Input
+                id="maxRating"
+                type="number"
+                min="1"
+                max="10"
+                value={field.ratingConfig?.maxRating || 5}
+                onChange={e =>
+                  handleUpdate({
+                    ratingConfig: {
+                      ...field.ratingConfig,
+                      maxRating: parseInt(e.target.value) || 5,
+                    },
+                  })
+                }
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label>Size</Label>
+            <Label>Options</Label>
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -667,7 +637,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderValidationProperties = () => {
-    if (['divider', 'section', 'progress'].includes(field.type)) return null;
+    if (['divider', 'section', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -675,7 +645,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <CardTitle className="text-sm">Validation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {['text', 'email', 'password', 'textarea', 'phone', 'url'].includes(
+          {['text', 'email'].includes(
             field.type
           ) && (
             <>
@@ -779,7 +749,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderTextProperties = () => {
-    if (!['text', 'email', 'password', 'phone', 'url', 'number', 'textarea'].includes(field.type)) return null;
+    if (!['text', 'phone', 'url'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -790,51 +760,6 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="inputMode">Input Mode</Label>
-            <Select
-              value={field.textConfig?.inputMode || 'text'}
-              onValueChange={value =>
-                handleUpdate({
-                  textConfig: {
-                    ...field.textConfig,
-                    inputMode: value as 'text' | 'email' | 'tel' | 'url' | 'numeric' | 'decimal' | 'search',
-                  },
-                })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="text">Text</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="tel">Telephone</SelectItem>
-                <SelectItem value="url">URL</SelectItem>
-                <SelectItem value="numeric">Numeric</SelectItem>
-                <SelectItem value="decimal">Decimal</SelectItem>
-                <SelectItem value="search">Search</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="autoComplete">Auto Complete</Label>
-            <Input
-              id="autoComplete"
-              value={field.textConfig?.autoComplete || ''}
-              onChange={e =>
-                handleUpdate({
-                  textConfig: {
-                    ...field.textConfig,
-                    autoComplete: e.target.value,
-                  },
-                })
-              }
-              placeholder="e.g., name, email, tel"
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="pattern">Pattern (Regex)</Label>
             <Input
@@ -948,7 +873,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderLayoutProperties = () => {
-    if (['divider', 'section'].includes(field.type)) return null;
+    // Only show layout properties for fields that can have layout, not structural elements
+    if (['divider', 'section', 'html', 'code'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1002,7 +928,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 handleUpdate({
                   layout: {
                     ...field.layout,
-                                         display: value as 'block' | 'inline' | 'inline-block' | 'flex' | 'grid',
+                    display: value as 'block' | 'inline' | 'inline-block' | 'flex' | 'grid',
                   },
                 })
               }
@@ -1059,7 +985,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderConditionalProperties = () => {
-    if (['divider', 'section'].includes(field.type)) return null;
+    // Only show conditional properties for interactive fields
+    if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type)) return null;
+
+    // Debug: Log available fields
+    const availableFields = fields.filter(f => f.id !== field.id);
+    console.log('Available fields for conditional logic:', availableFields);
+    console.log('Current field:', field.id, field.label);
+    console.log('Total fields:', fields.length);
 
     return (
       <Card>
@@ -1072,7 +1005,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Show if</Label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 relative">
               <Select
                 value={field.conditional?.showIf?.fieldId || ''}
                 onValueChange={value =>
@@ -1090,10 +1023,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 <SelectTrigger>
                   <SelectValue placeholder="Field" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="absolute z-50">
                   {fields.filter(f => f.id !== field.id).map(f => (
                     <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
                   ))}
+                  {fields.filter(f => f.id !== field.id).length === 0 && (
+                    <SelectItem value="" disabled>No other fields available</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
               <Select
@@ -1104,7 +1040,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       ...field.conditional,
                       showIf: {
                         ...field.conditional?.showIf,
-                                                 operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
+                        operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
                       },
                     },
                   })
@@ -1139,13 +1075,232 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label>Hide if</Label>
+            <div className="grid grid-cols-3 gap-2 relative">
+              <Select
+                value={field.conditional?.hideIf?.fieldId || ''}
+                onValueChange={value =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      hideIf: {
+                        ...field.conditional?.hideIf,
+                        fieldId: value,
+                      },
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Field" />
+                </SelectTrigger>
+                <SelectContent className="absolute z-50">
+                  {fields.filter(f => f.id !== field.id).map(f => (
+                    <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
+                  ))}
+                  {fields.filter(f => f.id !== field.id).length === 0 && (
+                    <SelectItem value="" disabled>No other fields available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <Select
+                value={field.conditional?.hideIf?.operator || 'equals'}
+                onValueChange={value =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      hideIf: {
+                        ...field.conditional?.hideIf,
+                        operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
+                      },
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="equals">Equals</SelectItem>
+                  <SelectItem value="not_equals">Not Equals</SelectItem>
+                  <SelectItem value="contains">Contains</SelectItem>
+                  <SelectItem value="not_contains">Not Contains</SelectItem>
+                  <SelectItem value="greater_than">Greater Than</SelectItem>
+                  <SelectItem value="less_than">Less Than</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                value={field.conditional?.hideIf?.value?.toString() || ''}
+                onChange={e =>
+                  handleUpdate({
+                    conditional: {
+                      ...field.conditional,
+                      hideIf: {
+                        ...field.conditional?.hideIf,
+                        value: e.target.value,
+                      },
+                    },
+                  })
+                }
+                placeholder="Value"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderStructuralProperties = () => {
+    if (!['section', 'divider', 'group', 'grid', 'columns', 'accordion'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
+            <Section className="h-4 w-4" />
+            <span>Structural Settings</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {field.type === 'section' && (
+            <div className="space-y-2">
+              <Label htmlFor="sectionDescription">Section Description</Label>
+              <Textarea
+                id="sectionDescription"
+                value={field.advanced?.description || ''}
+                onChange={e =>
+                  handleUpdate({
+                    advanced: {
+                      ...field.advanced,
+                      description: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Section description or instructions"
+                rows={3}
+              />
+            </div>
+          )}
+
+          {field.type === 'divider' && (
+            <div className="space-y-2">
+              <Label htmlFor="dividerText">Divider Text (Optional)</Label>
+              <Input
+                id="dividerText"
+                value={field.advanced?.defaultValue?.toString() || ''}
+                onChange={e =>
+                  handleUpdate({
+                    advanced: {
+                      ...field.advanced,
+                      defaultValue: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Text to display on divider"
+              />
+            </div>
+          )}
+
+          {(field.type === 'grid' || field.type === 'columns') && (
+            <div className="space-y-2">
+              <Label htmlFor="gridColumns">Number of Columns</Label>
+              <Input
+                id="gridColumns"
+                type="number"
+                min="1"
+                max="12"
+                value={field.layout?.gridTemplateColumns || '2'}
+                onChange={e =>
+                  handleUpdate({
+                    layout: {
+                      ...field.layout,
+                      gridTemplateColumns: `repeat(${e.target.value}, 1fr)`,
+                    },
+                  })
+                }
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              value={field.advanced?.description || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    description: e.target.value,
+                  },
+                })
+              }
+              placeholder="Description of this element"
+            />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderHtmlCodeProperties = () => {
+    if (!['html', 'code'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
+            <Code className="h-4 w-4" />
+            <span>{field.type === 'html' ? 'HTML' : 'Code'} Content</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="content">Content</Label>
+            <Textarea
+              id="content"
+              value={field.advanced?.defaultValue?.toString() || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    defaultValue: e.target.value,
+                  },
+                })
+              }
+              placeholder={field.type === 'html' ? '<p>Enter HTML content...</p>' : '// Enter code here...'}
+              rows={8}
+              className="font-mono"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              value={field.advanced?.description || ''}
+              onChange={e =>
+                handleUpdate({
+                  advanced: {
+                    ...field.advanced,
+                    description: e.target.value,
+                  },
+                })
+              }
+              placeholder="Description of this content"
+            />
+          </div>
         </CardContent>
       </Card>
     );
   };
 
   const renderAdvancedProperties = () => {
-    if (['divider', 'section'].includes(field.type)) return null;
+    // Only show advanced properties for interactive fields
+    if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1308,29 +1463,57 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   return (
-    <div className="w-80 overflow-y-auto border-l border-border bg-background p-4">
-      <div className="space-y-4">
-        <div>
+    <motion.div 
+      className="w-92 h-full flex flex-col border-l border-border bg-background"
+      initial={{ x: 320, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <div className="overflow-y-auto flex-1 p-4">
+        <motion.div 
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <h2 className="mb-2 text-lg font-semibold">Field Properties</h2>
           <p className="text-sm text-muted-foreground">
             Configure the selected field
           </p>
-        </div>
+        </motion.div>
 
-        {renderBasicProperties()}
-        {renderTextProperties()}
-        {renderOptionsProperties()}
-        {renderFileProperties()}
-        {renderDateProperties()}
-        {renderRatingProperties()}
-        {renderSliderProperties()}
-        {renderSignatureProperties()}
-        {renderValidationProperties()}
-        {renderLayoutProperties()}
-        {renderConditionalProperties()}
-        {renderAdvancedProperties()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={field.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-4"
+          >
+            {renderBasicProperties()}
+            {['text', 'phone', 'url'].includes(field.type) && renderTextProperties()}
+            {renderValidationProperties()}
+            {renderOptionsProperties()}
+            {renderFileProperties()}
+            {renderRatingProperties()}
+            {renderSliderProperties()}
+            {renderSignatureProperties()}
+            {renderStructuralProperties()}
+            {renderHtmlCodeProperties()}
+            {renderLayoutProperties()}
+            {renderConditionalProperties()}
+            {renderAdvancedProperties()}
+          </motion.div>
+        </AnimatePresence>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

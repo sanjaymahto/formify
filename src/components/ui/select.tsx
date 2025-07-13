@@ -2,6 +2,7 @@
 
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 
 import { cn } from '@/lib/utils';
 
@@ -152,21 +153,68 @@ function SelectContent({
   ...props
 }: SelectContentProps) {
   const context = React.useContext(SelectContext);
-  if (!context) throw new Error('SelectContent must be used within Select');
+  const [mounted, setMounted] = React.useState(false);
+  const triggerRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = React.useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
 
-  if (!context.open) return null;
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
+  React.useEffect(() => {
+    if (!context.open) return;
+    const trigger = triggerRef.current?.parentElement?.querySelector('[data-slot="select-trigger"]');
+    if (trigger) {
+      const rect = (trigger as HTMLElement).getBoundingClientRect();
+      setCoords({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+    }
+  }, [context.open]);
+
+  // Close on outside click
+  React.useEffect(() => {
+    if (!context.open) return;
+    function handleClick(event: MouseEvent) {
+      const trigger = triggerRef.current?.parentElement?.querySelector('[data-slot="select-trigger"]');
+      const content = contentRef.current;
+      if (
+        content &&
+        !content.contains(event.target as Node) &&
+        trigger &&
+        !(trigger as HTMLElement).contains(event.target as Node)
+      ) {
+        context.onOpenChange(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [context.open, context]);
+
+  if (!context.open || !mounted) return null;
+
+  const content = (
     <div
+      ref={contentRef}
       data-slot="select-content"
       className={cn(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md',
+        'fixed z-50 max-h-96 min-w-[20ch] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md',
         position === 'popper' && 'mt-1',
         className
       )}
+      style={{
+        top: coords.top,
+        left: coords.left,
+        width: coords.width,
+      }}
       {...props}
     >
       <div className="p-1">{children}</div>
+    </div>
+  );
+
+  return (
+    <div ref={triggerRef} style={{ display: 'contents' }}>
+      {createPortal(content, document.body)}
     </div>
   );
 }
@@ -198,7 +246,7 @@ function SelectItem({ className, children, value, ...props }: SelectItemProps) {
     <div
       data-slot="select-item"
       className={cn(
-        "outline-hidden relative flex w-full cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-2 pr-8 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "outline-hidden relative flex w-full cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-2 pr-8 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 whitespace-nowrap overflow-hidden text-ellipsis",
         className
       )}
       onClick={() => context.onValueChange?.(value)}
@@ -207,7 +255,7 @@ function SelectItem({ className, children, value, ...props }: SelectItemProps) {
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         {isSelected && <CheckIcon className="size-4" />}
       </span>
-      <span>{children}</span>
+      <span className="block max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{children}</span>
     </div>
   );
 }

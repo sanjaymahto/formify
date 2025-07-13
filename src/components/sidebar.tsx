@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useFormStore, FieldType } from '@/lib/store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -113,7 +114,7 @@ export default function Sidebar() {
 
   if (!mounted) {
     return (
-      <div className="w-80 overflow-y-auto border-r border-border bg-background p-4">
+      <div className="w-96 overflow-y-auto border-r border-border bg-background p-4">
         <div className="space-y-4">
           <div>
             <h2 className="mb-4 text-lg font-semibold">Form Components</h2>
@@ -224,47 +225,102 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="w-80 overflow-y-auto border-r border-border bg-background p-4">
-      <div className="space-y-4">
-        <div>
+    <motion.div 
+      className="w-80 h-full flex flex-col border-r border-border bg-background"
+      initial={{ x: -320, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <div className="overflow-y-auto flex-1 p-4">
+        <motion.div 
+          className="space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <h2 className="mb-4 text-lg font-semibold">Form Components</h2>
           <p className="mb-4 text-sm text-muted-foreground">
             Drag and drop components to build your form
           </p>
-        </div>
+        </motion.div>
 
         {fieldCategories.map((category, categoryIndex) => (
-          <div key={category.name} className="space-y-2">
-            <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+          <motion.div 
+            key={category.name} 
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              delay: 0.4 + (categoryIndex * 0.1),
+              ease: "easeOut"
+            }}
+          >
+            <motion.h3 
+              className="text-sm font-medium uppercase tracking-wide text-muted-foreground"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.5 + (categoryIndex * 0.1) }}
+            >
               {category.name}
-            </h3>
+            </motion.h3>
             <div className="grid grid-cols-2 gap-2">
-              {category.fields.map(field => {
+              {category.fields.map((field, fieldIndex) => {
                 const IconComponent = field.icon;
                 return (
-                  <Card
+                  <motion.div
                     key={field.type}
-                    className="cursor-pointer transition-shadow hover:shadow-md active:cursor-grabbing"
-                    draggable
-                    onDragStart={e => handleDragStart(e, field.type)}
-                    onClick={() => handleAddField(field.type)}
+                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ 
+                      duration: 0.4, 
+                      delay: 0.6 + (categoryIndex * 0.1) + (fieldIndex * 0.05),
+                      ease: "easeOut"
+                    }}
+                    whileHover={{ 
+                      scale: 1.02,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileTap={{ 
+                      scale: 0.98,
+                      transition: { duration: 0.1 }
+                    }}
                   >
-                    <CardContent className="flex flex-col items-center space-y-1 p-2">
-                      <IconComponent className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-center text-xs font-medium">
-                        {field.label}
-                      </span>
-                    </CardContent>
-                  </Card>
+                    <Card
+                      className="cursor-pointer transition-shadow hover:shadow-md active:cursor-grabbing"
+                      draggable
+                      onDragStart={e => handleDragStart(e, field.type)}
+                      onClick={() => handleAddField(field.type)}
+                    >
+                      <CardContent className="flex flex-col items-center space-y-1 p-2">
+                        <IconComponent className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-center text-xs font-medium">
+                          {field.label}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </div>
             {categoryIndex < fieldCategories.length - 1 && (
-              <Separator className="my-4" />
+              <motion.div
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 + (categoryIndex * 0.1) }}
+              >
+                <Separator className="my-4" />
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         ))}
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

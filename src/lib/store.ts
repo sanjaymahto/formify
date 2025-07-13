@@ -82,6 +82,7 @@ export interface Field {
   
   // Rating specific properties
   ratingConfig?: {
+    minRating?: number;
     maxRating?: number;
     allowHalf?: boolean;
     showLabels?: boolean;
@@ -110,8 +111,6 @@ export interface Field {
   
   // Text input specific properties
   textConfig?: {
-    inputMode?: 'text' | 'email' | 'tel' | 'url' | 'numeric' | 'decimal' | 'search';
-    autoComplete?: string;
     autoFocus?: boolean;
     spellCheck?: boolean;
     maxLength?: number;
@@ -225,6 +224,43 @@ interface Command {
   timestamp: number;
 }
 
+// Conditional logic evaluation function
+const evaluateCondition = (condition: any, formData: Record<string, any>): boolean => {
+  if (!condition?.fieldId || !condition?.operator || condition?.value === undefined) {
+    return true; // No condition = always show
+  }
+  
+  const fieldValue = formData[condition.fieldId];
+  
+  switch (condition.operator) {
+    case 'equals':
+      return fieldValue === condition.value;
+    case 'not_equals':
+      return fieldValue !== condition.value;
+    case 'contains':
+      return String(fieldValue).includes(String(condition.value));
+    case 'not_contains':
+      return !String(fieldValue).includes(String(condition.value));
+    case 'greater_than':
+      return Number(fieldValue) > Number(condition.value);
+    case 'less_than':
+      return Number(fieldValue) < Number(condition.value);
+    default:
+      return true;
+  }
+};
+
+// Check if a field should be visible based on conditional logic
+const shouldShowField = (field: Field, formData: Record<string, any>): boolean => {
+  if (field.conditional?.showIf) {
+    return evaluateCondition(field.conditional.showIf, formData);
+  }
+  if (field.conditional?.hideIf) {
+    return !evaluateCondition(field.conditional.hideIf, formData);
+  }
+  return true;
+};
+
 export interface FormState {
   fields: Field[];
   formTitle: string;
@@ -235,6 +271,7 @@ export interface FormState {
   lastSaved: number | null;
   isDirty: boolean;
   autoSaveEnabled: boolean;
+  formData: Record<string, any>; // Track current form values for conditional logic
   addField: (field: Field) => void;
   updateField: (id: string, updates: Partial<Field>) => void;
   removeField: (id: string) => void;
@@ -242,6 +279,8 @@ export interface FormState {
   setSelectedField: (id: string | null) => void;
   setFormTitle: (title: string) => void;
   togglePreviewMode: () => void;
+  updateFormData: (fieldId: string, value: any) => void; // Update form data for conditional logic
+  shouldShowField: (field: Field) => boolean; // Check if field should be visible
   exportForm: () => FormData;
   importForm: (formData: FormData) => void;
   loadTemplate: (template: FormTemplate) => void;
@@ -268,6 +307,7 @@ export const useFormStore = create<FormState>()(
       lastSaved: null,
       isDirty: false,
       autoSaveEnabled: true,
+      formData: {}, // Initialize empty form data
 
       addField: field => {
         const state = get();
@@ -384,6 +424,20 @@ export const useFormStore = create<FormState>()(
           isPreviewMode: !state.isPreviewMode,
           selectedFieldId: null,
         })),
+
+      updateFormData: (fieldId: string, value: any) => {
+        set(state => ({
+          formData: {
+            ...state.formData,
+            [fieldId]: value,
+          },
+        }));
+      },
+
+      shouldShowField: (field: Field) => {
+        const state = get();
+        return shouldShowField(field, state.formData);
+      },
 
       exportForm: () => {
         const state = get();

@@ -29,7 +29,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           data-slot="checkbox"
           className={cn(
-            'dark:bg-input/30 focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs peer size-4 shrink-0 appearance-none rounded-[4px] border border-input outline-none transition-shadow checked:border-primary checked:bg-primary checked:text-primary-foreground focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 dark:checked:bg-primary',
+            'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs peer size-4 shrink-0 appearance-none rounded-[4px] border-2 border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800 outline-none transition-shadow checked:border-primary checked:bg-primary checked:text-primary-foreground focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
             className
           )}
           onChange={handleChange}

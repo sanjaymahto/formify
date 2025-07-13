@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Field } from '@/lib/store';
+import { motion, AnimatePresence } from 'motion/react';
+import { Field, useFormStore } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,12 +41,14 @@ interface PreviewProps {
 }
 
 const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const storeFormData = useFormStore(state => state.formData);
+  const updateFormData = useFormStore(state => state.updateFormData);
+  const shouldShowField = useFormStore(state => state.shouldShowField);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (fieldId: string, value: any) => {
-    setFormData(prev => ({ ...prev, [fieldId]: value }));
+    updateFormData(fieldId, value);
     // Clear error when user starts typing
     if (errors[fieldId]) {
       setErrors(prev => ({ ...prev, [fieldId]: '' }));
@@ -94,7 +97,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
     fields.forEach(field => {
       if (field.advanced?.hidden) return;
 
-      const error = validateField(field, formData[field.id]);
+      const error = validateField(field, storeFormData[field.id]);
       if (error) {
         newErrors[field.id] = error;
         isValid = false;
@@ -117,7 +120,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    console.log('Form submitted:', formData);
+    console.log('Form submitted:', storeFormData);
     alert('Form submitted successfully!');
 
     setIsSubmitting(false);
@@ -127,7 +130,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
     if (field.advanced?.hidden) return null;
 
     const fieldError = errors[field.id];
-    const fieldValue = formData[field.id];
+    const fieldValue = storeFormData[field.id];
 
     const baseFieldProps = {
       id: field.id,
@@ -195,22 +198,27 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
         case 'multi-select':
           return (
-            <Select
-              value={fieldValue || ''}
-              onValueChange={value => handleInputChange(field.id, value)}
-              disabled={field.advanced?.disabled}
-            >
-              <SelectTrigger className={fieldError ? 'border-destructive' : ''}>
-                <SelectValue placeholder={field.placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {field.options?.map((option, index) => (
-                  <SelectItem key={index} value={option}>
+            <div className="space-y-2">
+              {field.options?.map((option, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`${field.id}-${index}`}
+                    checked={Array.isArray(fieldValue) ? fieldValue.includes(option) : false}
+                    onCheckedChange={(checked) => {
+                      const currentValues = Array.isArray(fieldValue) ? fieldValue : [];
+                      const newValues = checked
+                        ? [...currentValues, option]
+                        : currentValues.filter(val => val !== option);
+                      handleInputChange(field.id, newValues);
+                    }}
+                    disabled={field.advanced?.disabled}
+                  />
+                  <Label htmlFor={`${field.id}-${index}`} className="text-sm">
                     {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </Label>
+                </div>
+              ))}
+            </div>
           );
 
         case 'radio':
@@ -296,34 +304,54 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
         case 'date':
           return (
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+            <div className="relative">
               <Input
                 {...baseFieldProps}
                 type="date"
-                min={field.dateConfig?.minDate}
-                max={field.dateConfig?.maxDate}
+                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              />
+              <Calendar 
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+                onClick={() => {
+                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  if (input) input.showPicker();
+                }}
               />
             </div>
           );
 
         case 'time':
           return (
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Input {...baseFieldProps} type="time" />
+            <div className="relative">
+              <Input 
+                {...baseFieldProps} 
+                type="time" 
+                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              />
+              <Clock 
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+                onClick={() => {
+                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  if (input) input.showPicker();
+                }}
+              />
             </div>
           );
 
         case 'datetime':
           return (
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+            <div className="relative">
               <Input
                 {...baseFieldProps}
                 type="datetime-local"
-                min={field.dateConfig?.minDate}
-                max={field.dateConfig?.maxDate}
+                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              />
+              <Calendar 
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+                onClick={() => {
+                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  if (input) input.showPicker();
+                }}
               />
             </div>
           );
@@ -356,20 +384,59 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
         case 'rating':
           return (
             <div className="flex items-center space-x-1">
-              {Array.from({ length: field.ratingConfig?.max || 5 }, (_, i) => (
-                <Star
-                  key={i}
-                  className={`h-5 w-5 cursor-pointer transition-colors ${
-                    i < (fieldValue || 0)
-                      ? 'fill-current text-yellow-400'
-                      : 'text-muted-foreground/50'
-                  }`}
-                  onClick={() => handleInputChange(field.id, i + 1)}
-                />
-              ))}
-              {field.ratingConfig?.showText && fieldValue && (
+              {Array.from(
+                { length: field.ratingConfig?.maxRating || 5 }, 
+                (_, i) => {
+                  const starValue = i + 1;
+                  const minRating = field.ratingConfig?.minRating || 1;
+                  const maxRating = field.ratingConfig?.maxRating || 5;
+                  const allowHalf = field.ratingConfig?.allowHalf || false;
+                  const currentRating = fieldValue || 0;
+                  
+                  if (allowHalf) {
+                    return (
+                      <div key={i} className="relative">
+                        <Star
+                          className={`h-5 w-5 cursor-pointer transition-colors ${
+                            starValue <= currentRating
+                              ? 'fill-current text-yellow-400'
+                              : 'text-muted-foreground/50'
+                          }`}
+                          onClick={() => handleInputChange(field.id, starValue)}
+                        />
+                        {starValue - 0.5 <= currentRating && currentRating < starValue && (
+                          <div className="absolute inset-0 overflow-hidden">
+                            <Star
+                              className="h-5 w-5 fill-current text-yellow-400"
+                              style={{ clipPath: 'inset(0 50% 0 0)' }}
+                            />
+                          </div>
+                        )}
+                        <div 
+                          className="absolute inset-0 cursor-pointer"
+                          onClick={() => handleInputChange(field.id, starValue - 0.5)}
+                          style={{ width: '50%' }}
+                        />
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <Star
+                        key={i}
+                        className={`h-5 w-5 cursor-pointer transition-colors ${
+                          starValue <= currentRating
+                            ? 'fill-current text-yellow-400'
+                            : 'text-muted-foreground/50'
+                        }`}
+                        onClick={() => handleInputChange(field.id, starValue)}
+                      />
+                    );
+                  }
+                }
+              )}
+              {field.ratingConfig?.showLabels && fieldValue && (
                 <span className="ml-2 text-sm text-muted-foreground">
-                  {field.ratingConfig.labels?.[fieldValue - 1] ||
+                  {field.ratingConfig.labels?.[Math.floor((fieldValue as number) - 1)] ||
                     `${fieldValue} stars`}
                 </span>
               )}
@@ -381,19 +448,26 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             <div className="space-y-2">
               <input
                 type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={fieldValue || 50}
+                min={field.sliderConfig?.min || 0}
+                max={field.sliderConfig?.max || 100}
+                step={field.sliderConfig?.step || 1}
+                value={fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}
                 onChange={e =>
                   handleInputChange(field.id, parseInt(e.target.value))
                 }
                 disabled={field.advanced?.disabled}
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
               />
-              <div className="text-center text-sm text-muted-foreground">
-                {fieldValue || 50}
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+                <span>{field.sliderConfig?.min || 0}</span>
+                <span>{fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}</span>
+                <span>{field.sliderConfig?.max || 100}</span>
               </div>
+              {field.sliderConfig?.showValue && (
+                <div className="text-center text-sm text-muted-foreground">
+                  {fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}
+                </div>
+              )}
             </div>
           );
 
@@ -561,7 +635,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
           return (
             <div className="rounded-lg border border-muted p-3">
               <div className="mb-2 flex items-center space-x-2">
-                <FileJson className="h-4 w-4 text-muted-foreground" />
+                <FileText className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
                   JSON Editor
                 </span>
@@ -579,7 +653,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
           return (
             <div className="rounded-lg border border-muted p-3">
               <div className="mb-2 flex items-center space-x-2">
-                <FileCode className="h-4 w-4 text-muted-foreground" />
+                <Code className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
                   Markdown Editor
                 </span>
@@ -644,55 +718,130 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
   };
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">{formTitle}</CardTitle>
-          <p className="text-muted-foreground">
-            This is how your form will appear to users
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {fields.length === 0 ? (
-              <div className="py-8 text-center">
-                <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="mb-2 text-lg font-medium">
-                  No fields to display
-                </h3>
-                <p className="text-muted-foreground">
-                  Add some fields to your form to see the preview
-                </p>
-              </div>
-            ) : (
-              fields.map(renderField)
-            )}
+    <motion.div 
+      className="mx-auto max-w-2xl p-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Card>
+          <CardHeader>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <CardTitle className="text-2xl font-bold">{formTitle}</CardTitle>
+              <p className="text-muted-foreground">
+                This is how your form will appear to users
+              </p>
+            </motion.div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <AnimatePresence mode="wait">
+                {fields.length === 0 ? (
+                  <motion.div 
+                    key="empty-preview"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4 }}
+                    className="py-8 text-center"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    </motion.div>
+                    <motion.h3 
+                      className="mb-2 text-lg font-medium"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                      No fields to display
+                    </motion.h3>
+                    <motion.p 
+                      className="text-muted-foreground"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                    >
+                      Add some fields to your form to see the preview
+                    </motion.p>
+                  </motion.div>
+                ) : (
+                  <AnimatePresence>
+                    {fields
+                      .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
+                      .map((field, index) => (
+                      <motion.div
+                        key={field.id}
+                        initial={{ opacity: 0, x: -20, y: 10 }}
+                        animate={{ opacity: 1, x: 0, y: 0 }}
+                        exit={{ opacity: 0, x: 20, y: -10 }}
+                        transition={{ 
+                          duration: 0.4, 
+                          delay: index * 0.1,
+                          ease: "easeOut"
+                        }}
+                        layout
+                      >
+                        {renderField(field)}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                )}
+              </AnimatePresence>
 
-            {fields.length > 0 && (
-              <div className="border-t pt-4">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Submit Form
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <AnimatePresence>
+                {fields.length > 0 && (
+                  <motion.div 
+                    className="border-t pt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <Send className="mr-2 h-4 w-4" />
+                            Submit Form
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
   );
 };
 

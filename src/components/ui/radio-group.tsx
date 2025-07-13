@@ -1,6 +1,5 @@
 'use client';
 
-import { CircleIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -75,15 +74,15 @@ const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
           name={context.name}
           data-slot="radio-group-item"
           className={cn(
-            'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 shadow-xs aspect-square size-4 shrink-0 appearance-none rounded-full border border-input text-primary outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
+            'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs aspect-square size-4 shrink-0 appearance-none rounded-full border-2 border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800 text-primary outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
             className
           )}
           {...props}
         />
         {isChecked && (
-          <CircleIcon
+          <div
             data-slot="radio-group-indicator"
-            className="pointer-events-none absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 fill-primary"
+            className="pointer-events-none absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500"
           />
         )}
       </div>

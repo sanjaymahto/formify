@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useFormStore, Field, FieldType } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent } from '@/components/ui/card';
@@ -190,7 +191,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         );
 
       case 'select':
-      case 'multi-select':
         return (
           <Select>
             <SelectTrigger className="bg-muted">
@@ -204,6 +204,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               ))}
             </SelectContent>
           </Select>
+        );
+
+      case 'multi-select':
+        return (
+          <div className="space-y-2">
+            {field.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Checkbox disabled />
+                <Label className="text-sm text-muted-foreground">{option}</Label>
+              </div>
+            ))}
+          </div>
         );
 
       case 'radio':
@@ -265,39 +277,57 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
       case 'date':
         return (
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <div className="relative">
             <Input
               type="date"
               placeholder={field.placeholder}
               disabled
-              className="bg-muted"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+            />
+            <Calendar 
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              onClick={() => {
+                const input = document.getElementById(field.id) as HTMLInputElement;
+                if (input) input.showPicker();
+              }}
             />
           </div>
         );
 
       case 'time':
         return (
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
+          <div className="relative">
             <Input
               type="time"
               placeholder={field.placeholder}
               disabled
-              className="bg-muted"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+            />
+            <Clock 
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              onClick={() => {
+                const input = document.getElementById(field.id) as HTMLInputElement;
+                if (input) input.showPicker();
+              }}
             />
           </div>
         );
 
       case 'datetime':
         return (
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+          <div className="relative">
             <Input
               type="datetime-local"
               placeholder={field.placeholder}
               disabled
-              className="bg-muted"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+            />
+            <Calendar 
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              onClick={() => {
+                const input = document.getElementById(field.id) as HTMLInputElement;
+                if (input) input.showPicker();
+              }}
             />
           </div>
         );
@@ -322,13 +352,21 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       case 'rating':
         return (
           <div className="flex items-center space-x-1">
-            {[1, 2, 3, 4, 5].map(star => (
-              <Star
-                key={star}
-                className="text-muted-foreground/50 h-5 w-5 cursor-pointer hover:text-yellow-400"
-                fill="currentColor"
-              />
-            ))}
+            {Array.from(
+              { length: field.ratingConfig?.maxRating || 5 }, 
+              (_, i) => {
+                const starValue = i + 1;
+                const allowHalf = field.ratingConfig?.allowHalf || false;
+                
+                return (
+                  <Star
+                    key={i}
+                    className="text-muted-foreground/50 h-5 w-5 cursor-pointer hover:text-yellow-400"
+                    fill="currentColor"
+                  />
+                );
+              }
+            )}
           </div>
         );
 
@@ -337,14 +375,23 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           <div className="space-y-2">
             <input
               type="range"
-              min={0}
-              max={100}
-              step={1}
-              defaultValue={50}
+              min={field.sliderConfig?.min || 0}
+              max={field.sliderConfig?.max || 100}
+              step={field.sliderConfig?.step || 1}
+              defaultValue={field.sliderConfig?.defaultValue ?? 0}
               disabled
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted"
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
             />
-            <div className="text-center text-sm text-muted-foreground">50</div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+              <span>{field.sliderConfig?.min || 0}</span>
+              <span>{field.sliderConfig?.defaultValue ?? 0}</span>
+              <span>{field.sliderConfig?.max || 100}</span>
+            </div>
+            {field.sliderConfig?.showValue && (
+              <div className="text-center text-sm text-muted-foreground">
+                {field.sliderConfig?.defaultValue ?? 0}
+              </div>
+            )}
           </div>
         );
 
@@ -369,22 +416,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'divider':
-        return <Separator className="my-4" />;
-
-      case 'html':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Code className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Custom HTML</span>
-            </div>
-            <div className="rounded bg-background p-2 text-sm">
-              &lt;p&gt;Custom HTML content&lt;/p&gt;
-            </div>
-          </div>
-        );
-
       case 'tags':
         return (
           <div className="flex items-center space-x-2">
@@ -402,6 +433,34 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               disabled
               className="flex-1 bg-muted"
             />
+          </div>
+        );
+
+      case 'other':
+        return (
+          <div className="flex items-center space-x-2">
+            <Sparkles className="h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={field.placeholder}
+              disabled
+              className="bg-muted"
+            />
+          </div>
+        );
+
+      case 'divider':
+        return <Separator className="my-4" />;
+
+      case 'html':
+        return (
+          <div className="rounded-lg border border-muted bg-muted p-3">
+            <div className="mb-2 flex items-center space-x-2">
+              <Code className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Custom HTML</span>
+            </div>
+            <div className="rounded bg-background p-2 text-sm">
+              &lt;p&gt;Custom HTML content&lt;/p&gt;
+            </div>
           </div>
         );
 
@@ -560,34 +619,37 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
         <div className="mb-1.5">{renderFieldContent()}</div>
 
-        <div className="flex items-center space-x-2">
+        {/* Only show required checkbox for input fields */}
+        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id={`required-${field.id}`}
-              checked={field.required}
-              onChange={(e) => {
-                e.stopPropagation();
-                handleRequiredChange(e.target.checked);
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.required 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
-                  : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-              style={{
-                accentColor: field.required ? getCheckboxColors().cssColor : undefined
-              }}
-            />
-            <Label 
-              htmlFor={`required-${field.id}`}
-              className="text-xs text-muted-foreground cursor-pointer select-none"
-            >
-              Required
-            </Label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id={`required-${field.id}`}
+                checked={field.required}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  handleRequiredChange(e.target.checked);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
+                  field.required 
+                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                    : 'border-border'
+                } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+                style={{
+                  accentColor: field.required ? getCheckboxColors().cssColor : undefined
+                }}
+              />
+              <Label 
+                htmlFor={`required-${field.id}`}
+                className="text-xs text-muted-foreground cursor-pointer select-none"
+              >
+                Required
+              </Label>
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -598,6 +660,7 @@ export default function Canvas() {
   const selectedFieldId = useFormStore(state => state.selectedFieldId);
   const setSelectedField = useFormStore(state => state.setSelectedField);
   const removeField = useFormStore(state => state.removeField);
+  const shouldShowField = useFormStore(state => state.shouldShowField);
   const reorderFields = useFormStore(state => state.reorderFields);
   const addField = useFormStore(state => state.addField);
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
@@ -950,11 +1013,16 @@ export default function Canvas() {
                 min={0}
                 max={100}
                 step={1}
-                defaultValue={50}
+                defaultValue={0}
                 disabled
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-muted/50 border-dashed"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200/50 dark:bg-gray-700/50 border-dashed [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary/50 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary/50 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
               />
-              <div className="text-center text-sm text-muted-foreground">50</div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+                <span>0</span>
+                <span>0</span>
+                <span>100</span>
+              </div>
+              <div className="text-center text-sm text-muted-foreground">0</div>
             </div>
           );
 
@@ -1016,82 +1084,167 @@ export default function Canvas() {
   };
 
   return (
-    <div 
-      className="h-screen overflow-y-auto bg-background p-6"
+    <motion.div 
+      className="h-full overflow-y-auto bg-background p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
       onDragEnter={handleDragEnter}
       onDragOver={(e) => handleDragOver(e)}
       onDragLeave={handleDragLeave}
       onDrop={(e) => handleDrop(e)}
     >
-      <div 
-        className="mx-auto max-w-2xl space-y-4"
+      <motion.div 
+        className="mx-auto max-w-4xl space-y-4"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
         onDragEnter={handleDragEnter}
         onDragOver={(e) => handleDragOver(e)}
         onDragLeave={handleDragLeave}
         onDrop={(e) => handleDrop(e)}
       >
-        <FormTitle />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <FormTitle />
+        </motion.div>
         
-        {fields.length === 0 ? (
-          <div 
-            className={`flex flex-col items-center justify-center py-12 text-center transition-all duration-200 ${
-              isDragOverCanvas ? 'bg-primary/5 border-2 border-dashed border-primary/30 rounded-lg' : ''
-            }`}
-            onDragOver={(e) => handleDragOver(e)}
-            onDrop={(e) => handleDrop(e)}
-          >
-            <div className="mb-4 text-muted-foreground">
-              <FileText className="mx-auto h-12 w-12" />
-            </div>
-            <h3 className="mb-2 text-lg font-medium">No fields added yet</h3>
-            <p className="mb-4 text-muted-foreground">
-              Drag and drop components from the sidebar to start building your form
-            </p>
-            <p className="mb-6 text-muted-foreground font-medium">or</p>
-            <Button 
-              onClick={() => setShowTemplateSelector(true)}
-              className="flex items-center gap-2 cursor-pointer"
+        <AnimatePresence mode="wait">
+          {fields.length === 0 ? (
+            <motion.div 
+              key="empty-state"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+              className={`flex flex-col items-center justify-center py-12 text-center transition-all duration-200 ${
+                isDragOverCanvas ? 'bg-primary/5 border-2 border-dashed border-primary/30 rounded-lg' : ''
+              }`}
+              onDragOver={(e) => handleDragOver(e)}
+              onDrop={(e) => handleDrop(e)}
             >
-              <Sparkles className="h-4 w-4" />
-              Choose a Template
-            </Button>
-          </div>
-        ) : (
-          fields.map((field, index) => (
-            <div key={field.id}>
-              {/* Drop zone above each field */}
-              <div
-                className={`h-2 transition-all duration-200 ${
-                  dragOverFieldId === field.id ? 'bg-primary/20' : 'bg-transparent'
-                }`}
-                onDragOver={(e) => handleDragOver(e, field.id)}
-                onDrop={(e) => handleDrop(e, field.id)}
-              />
-              
-              {/* Ghost field above */}
-              {ghostFieldType && ghostInsertIndex === index && (
-                <GhostField fieldType={ghostFieldType} />
-              )}
-              
-              <FieldRenderer
-                field={field}
-                isSelected={selectedFieldId === field.id}
-                onSelect={() => setSelectedField(field.id)}
-                onDelete={() => removeField(field.id)}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                isDragOver={dragOverFieldId === field.id}
-                isDragging={draggedFieldId === field.id}
-              />
-            </div>
-          ))
-        )}
+              <motion.div 
+                className="mb-4 text-muted-foreground"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <FileText className="mx-auto h-12 w-12" />
+              </motion.div>
+              <motion.h3 
+                className="mb-2 text-lg font-medium"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                No fields added yet
+              </motion.h3>
+              <motion.p 
+                className="mb-4 text-muted-foreground"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                Drag and drop components from the sidebar to start building your form
+              </motion.p>
+              <motion.p 
+                className="mb-6 text-muted-foreground font-medium"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                or
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button 
+                  onClick={() => setShowTemplateSelector(true)}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Choose a Template
+                </Button>
+              </motion.div>
+            </motion.div>
+          ) : (
+            <AnimatePresence>
+              {fields
+                .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
+                .map((field, index) => (
+                <motion.div 
+                  key={field.id}
+                  initial={{ opacity: 0, x: -20, y: 10 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  exit={{ opacity: 0, x: 20, y: -10, height: 0 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    delay: index * 0.1,
+                    ease: "easeOut"
+                  }}
+                  layout
+                >
+                  {/* Drop zone above each field */}
+                  <div
+                    className={`h-2 transition-all duration-200 ${
+                      dragOverFieldId === field.id ? 'bg-primary/20' : 'bg-transparent'
+                    }`}
+                    onDragOver={(e) => handleDragOver(e, field.id)}
+                    onDrop={(e) => handleDrop(e, field.id)}
+                  />
+                  
+                  {/* Ghost field above */}
+                  {ghostFieldType && ghostInsertIndex === index && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <GhostField fieldType={ghostFieldType} />
+                    </motion.div>
+                  )}
+                  
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <FieldRenderer
+                      field={field}
+                      isSelected={selectedFieldId === field.id}
+                      onSelect={() => setSelectedField(field.id)}
+                      onDelete={() => removeField(field.id)}
+                      onDragStart={handleDragStart}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      isDragOver={dragOverFieldId === field.id}
+                      isDragging={draggedFieldId === field.id}
+                    />
+                  </motion.div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </AnimatePresence>
         
         {/* Ghost field at the end */}
         {ghostFieldType && ghostInsertIndex === fields.length && (
-          <GhostField fieldType={ghostFieldType} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <GhostField fieldType={ghostFieldType} />
+          </motion.div>
         )}
         
         {/* Drop zone at the end */}
@@ -1105,11 +1258,20 @@ export default function Canvas() {
         
         {/* Extra space at bottom for dragging */}
         <div className="h-32" />
-      </div>
+      </motion.div>
       
-      {showTemplateSelector && (
-        <TemplateSelector onClose={() => setShowTemplateSelector(false)} />
-      )}
-    </div>
+      <AnimatePresence>
+        {showTemplateSelector && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <TemplateSelector onClose={() => setShowTemplateSelector(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
