@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Field, useFormStore } from '@/lib/store';
+import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,9 +28,6 @@ import {
   Code,
   Tags,
   Grid3X3,
-  Columns,
-  Folder,
-  PenTool,
   Send,
 } from 'lucide-react';
 import { CodeEditor } from '@/components/ui/code-editor';
@@ -43,11 +41,68 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
   const storeFormData = useFormStore(state => state.formData);
   const updateFormData = useFormStore(state => state.updateFormData);
   const shouldShowField = useFormStore(state => state.shouldShowField);
+  const { colorPalette } = useSettingsStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
   const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const getButtonColors = () => {
+    const colors = {
+      default: {
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
+        text: 'text-white',
+      },
+      blue: {
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
+        text: 'text-white',
+      },
+      green: {
+        bg: 'bg-green-500',
+        hover: 'hover:bg-green-600',
+        text: 'text-white',
+      },
+      purple: {
+        bg: 'bg-purple-500',
+        hover: 'hover:bg-purple-600',
+        text: 'text-white',
+      },
+      orange: {
+        bg: 'bg-orange-500',
+        hover: 'hover:bg-orange-600',
+        text: 'text-white',
+      },
+      pink: {
+        bg: 'bg-pink-500',
+        hover: 'hover:bg-pink-600',
+        text: 'text-white',
+      },
+      red: {
+        bg: 'bg-red-500',
+        hover: 'hover:bg-red-600',
+        text: 'text-white',
+      },
+      teal: {
+        bg: 'bg-teal-500',
+        hover: 'hover:bg-teal-600',
+        text: 'text-white',
+      },
+      indigo: {
+        bg: 'bg-indigo-500',
+        hover: 'hover:bg-indigo-600',
+        text: 'text-white',
+      },
+      yellow: {
+        bg: 'bg-yellow-500',
+        hover: 'hover:bg-yellow-600',
+        text: 'text-black',
+      },
+    };
+    return colors[colorPalette] || colors.default;
+  };
 
   const handleInputChange = (fieldId: string, value: any) => {
     updateFormData(fieldId, value);
@@ -729,11 +784,17 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
           );
 
         case 'submit':
+          const buttonColors = getButtonColors();
+          const hasOtherFields = fields.some(f => f.type !== 'submit');
+          const isDisabled = isSubmitting || !hasOtherFields;
+          
           return (
             <Button 
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-              disabled={isSubmitting}
+              className={`w-full ${buttonColors.bg} ${buttonColors.hover} ${buttonColors.text} ${
+                isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isDisabled}
             >
               {isSubmitting ? (
                 <>
@@ -763,7 +824,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
     return (
       <div key={field.id} className="space-y-2">
-        {field.type !== 'divider' && (
+        {field.type !== 'divider' && field.type !== 'submit' && (
           <Label htmlFor={field.id} className="flex items-center space-x-2">
             <span>{field.label}</span>
             {field.required && <span className="text-destructive">*</span>}

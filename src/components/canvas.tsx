@@ -559,16 +559,20 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       <CardContent className="px-3 py-1.5">
         <div className="mb-1.5 flex items-start justify-between">
           <div className="flex-1">
-            {field.type !== 'divider' ? (
+            {field.type !== 'divider' && field.type !== 'submit' ? (
               <Input
                 value={field.label}
                 onChange={e => handleLabelChange(e.target.value)}
                 className="h-auto border-none p-0 font-medium focus-visible:ring-0 dark:bg-transparent"
                 onClick={e => e.stopPropagation()}
               />
-            ) : (
+            ) : field.type === 'divider' ? (
               <div className="h-auto p-0 font-medium text-muted-foreground">
                 Divider
+              </div>
+            ) : (
+              <div className="h-auto p-0 font-medium text-muted-foreground">
+                Submit Button
               </div>
             )}
           </div>
@@ -652,6 +656,24 @@ export default function Canvas() {
   const [ghostInsertIndex, setGhostInsertIndex] = useState<number | null>(null);
   const draggedFieldTypeRef = React.useRef<string | null>(null);
   const dragOverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const fieldRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+
+  const scrollToField = (fieldId: string) => {
+    console.log('Scrolling to field:', fieldId);
+    const fieldElement = fieldRefs.current[fieldId];
+    
+    console.log('Field element:', fieldElement);
+    
+    if (fieldElement) {
+      // Use scrollIntoView for simpler and more reliable scrolling
+      fieldElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+    }
+  };
 
   const handleDragStart = (fieldId: string) => {
     setDraggedFieldId(fieldId);
@@ -872,6 +894,19 @@ export default function Canvas() {
     setGhostInsertIndex(null);
     draggedFieldTypeRef.current = null;
   };
+
+  // Scroll to selected field when it changes
+  React.useEffect(() => {
+    if (selectedFieldId) {
+      console.log('Selected field changed to:', selectedFieldId);
+      // Use a longer delay to ensure the field is fully rendered
+      const timeoutId = setTimeout(() => {
+        scrollToField(selectedFieldId);
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedFieldId]);
 
   // Handle ESC key to cancel drag and global drag events
   React.useEffect(() => {
@@ -1163,6 +1198,7 @@ export default function Canvas() {
     >
       {/* Main content area with scroll */}
       <div 
+        ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-6"
         onDragEnter={handleDragEnter}
         onDragOver={(e) => handleDragOver(e)}
@@ -1256,6 +1292,9 @@ export default function Canvas() {
                 .map((field, index) => (
                 <motion.div 
                   key={field.id}
+                  ref={(el) => {
+                    fieldRefs.current[field.id] = el;
+                  }}
                   initial={{ opacity: 0, x: -20, y: 10 }}
                   animate={{ opacity: 1, x: 0, y: 0 }}
                   exit={{ opacity: 0, x: 20, y: -10, height: 0 }}
@@ -1361,6 +1400,9 @@ export default function Canvas() {
           {submitFields.map((field, index) => (
             <motion.div 
               key={field.id}
+              ref={(el) => {
+                fieldRefs.current[field.id] = el;
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}

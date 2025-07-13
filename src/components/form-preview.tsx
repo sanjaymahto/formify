@@ -1,6 +1,7 @@
 'use client';
 
 import { useFormStore, Field } from '@/lib/store';
+import { useSettingsStore } from '@/lib/settings-store';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,11 +22,68 @@ import { CodeEditor } from '@/components/ui/code-editor';
 
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
+  const { colorPalette } = useSettingsStore();
   const [formData, setFormData] = useState<Record<string, string | number | boolean | string[]>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
   const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const getButtonColors = () => {
+    const colors = {
+      default: {
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
+        text: 'text-white',
+      },
+      blue: {
+        bg: 'bg-blue-500',
+        hover: 'hover:bg-blue-600',
+        text: 'text-white',
+      },
+      green: {
+        bg: 'bg-green-500',
+        hover: 'hover:bg-green-600',
+        text: 'text-white',
+      },
+      purple: {
+        bg: 'bg-purple-500',
+        hover: 'hover:bg-purple-600',
+        text: 'text-white',
+      },
+      orange: {
+        bg: 'bg-orange-500',
+        hover: 'hover:bg-orange-600',
+        text: 'text-white',
+      },
+      pink: {
+        bg: 'bg-pink-500',
+        hover: 'hover:bg-pink-600',
+        text: 'text-white',
+      },
+      red: {
+        bg: 'bg-red-500',
+        hover: 'hover:bg-red-600',
+        text: 'text-white',
+      },
+      teal: {
+        bg: 'bg-teal-500',
+        hover: 'hover:bg-teal-600',
+        text: 'text-white',
+      },
+      indigo: {
+        bg: 'bg-indigo-500',
+        hover: 'hover:bg-indigo-600',
+        text: 'text-white',
+      },
+      yellow: {
+        bg: 'bg-yellow-500',
+        hover: 'hover:bg-yellow-600',
+        text: 'text-black',
+      },
+    };
+    return colors[colorPalette] || colors.default;
+  };
 
   const handleInputChange = (fieldId: string, value: string | number | boolean | string[]) => {
     setFormData(prev => ({
@@ -687,10 +745,17 @@ export function FormPreview() {
         );
 
       case 'submit':
+        const buttonColors = getButtonColors();
+        const hasOtherFields = fields.some(f => f.type !== 'submit');
+        const isDisabled = !hasOtherFields;
+        
         return (
           <Button 
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            className={`w-full ${buttonColors.bg} ${buttonColors.hover} ${buttonColors.text} ${
+              isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={isDisabled}
           >
             <Send className="mr-2 h-4 w-4" />
             {field.label || 'Submit'}
@@ -741,7 +806,7 @@ export function FormPreview() {
 
           {fields.map(field => (
             <div key={field.id} className="space-y-2">
-              {field.type !== 'divider' && (
+              {field.type !== 'divider' && field.type !== 'submit' && (
                 <Label className="text-sm font-medium text-gray-900">
                   {field.label}
                   {field.required && <span className="ml-1 text-red-500">*</span>}

@@ -115,8 +115,8 @@ export default function Sidebar() {
   }
 
   const handleDragStart = (e: React.DragEvent, fieldType: FieldType) => {
-    // Don't allow dragging submit button if one already exists
-    if (fieldType === 'submit' && fields.some(field => field.type === 'submit')) {
+    // Don't allow dragging submit button if one already exists or if no other fields exist
+    if (fieldType === 'submit' && (fields.some(field => field.type === 'submit') || !fields.some(field => field.type !== 'submit'))) {
       e.preventDefault();
       return;
     }
@@ -124,8 +124,8 @@ export default function Sidebar() {
   };
 
   const handleAddField = (fieldType: FieldType) => {
-    // Don't allow adding submit button if one already exists
-    if (fieldType === 'submit' && fields.some(field => field.type === 'submit')) {
+    // Don't allow adding submit button if one already exists or if no other fields exist
+    if (fieldType === 'submit' && (fields.some(field => field.type === 'submit') || !fields.some(field => field.type !== 'submit'))) {
       return;
     }
     
@@ -260,7 +260,8 @@ export default function Sidebar() {
                 const IconComponent = field.icon;
                 const isSubmitButton = field.type === 'submit';
                 const submitButtonExists = fields.some(f => f.type === 'submit');
-                const isDisabled = isSubmitButton && submitButtonExists;
+                const hasOtherFields = fields.some(f => f.type !== 'submit');
+                const isDisabled = isSubmitButton && (submitButtonExists || !hasOtherFields);
                 
                 return (
                   <motion.div
