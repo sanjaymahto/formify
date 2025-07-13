@@ -249,31 +249,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'rich-text':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Button variant="ghost" size="sm" disabled>
-                B
-              </Button>
-              <Button variant="ghost" size="sm" disabled>
-                I
-              </Button>
-              <Button variant="ghost" size="sm" disabled>
-                U
-              </Button>
-              <Button variant="ghost" size="sm" disabled>
-                Link
-              </Button>
-            </div>
-            <Textarea
-              placeholder={field.placeholder}
-              disabled
-              className="resize-none bg-background"
-              rows={4}
-            />
-          </div>
-        );
+
 
       case 'date':
         return (
@@ -332,22 +308,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'signature':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-4">
-            <div className="mb-2 flex items-center space-x-2">
-              <PenTool className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Signature Pad
-              </span>
-            </div>
-            <div className="border-muted-foreground/25 flex h-24 items-center justify-center rounded border-2 border-dashed bg-background">
-              <span className="text-sm text-muted-foreground">
-                Click to sign
-              </span>
-            </div>
-          </div>
-        );
+
 
       case 'rating':
         return (
@@ -451,18 +412,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       case 'divider':
         return <Separator className="my-4" />;
 
-      case 'html':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Code className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Custom HTML</span>
-            </div>
-            <div className="rounded bg-background p-2 text-sm">
-              &lt;p&gt;Custom HTML content&lt;/p&gt;
-            </div>
-          </div>
-        );
+
 
 
 
@@ -502,21 +452,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'columns':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Columns className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Column Layout
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="border-muted-foreground/25 h-12 rounded border-2 border-dashed bg-background"></div>
-              <div className="border-muted-foreground/25 h-12 rounded border-2 border-dashed bg-background"></div>
-            </div>
-          </div>
-        );
+
 
       case 'section':
         return (
@@ -531,19 +467,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-      case 'group':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Folder className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Field Group</span>
-            </div>
-            <div className="space-y-2">
-              <div className="border-muted-foreground/25 h-6 rounded border-2 border-dashed bg-background"></div>
-              <div className="border-muted-foreground/25 h-6 rounded border-2 border-dashed bg-background"></div>
-            </div>
-          </div>
-        );
+
 
       case 'code':
         return (
@@ -620,7 +544,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         <div className="mb-1.5">{renderFieldContent()}</div>
 
         {/* Only show required checkbox for input fields */}
-        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
+        {!['divider', 'section', 'code', 'progress'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
               <input
@@ -848,11 +772,9 @@ export default function Canvas() {
       radio: 'Radio Buttons',
       checkbox: 'Checkbox',
       file: 'File Upload',
-      'rich-text': 'Rich Text Editor',
       date: 'Date Picker',
       time: 'Time Picker',
       datetime: 'Date & Time Picker',
-      signature: 'Signature Field',
       rating: 'Rating',
       slider: 'Slider',
       phone: 'Phone Number',
@@ -860,14 +782,11 @@ export default function Canvas() {
       color: 'Color Picker',
       toggle: 'Toggle Switch',
       divider: 'Divider',
-      html: 'Custom HTML',
       'multi-select': 'Multi-Select',
       tags: 'Tags Input',
       accordion: 'Accordion',
       grid: 'Grid Layout',
-      columns: 'Column Layout',
       section: 'Section',
-      group: 'Field Group',
       code: 'Code Editor',
       image: 'Image Upload',
       other: 'Other Field',
@@ -886,11 +805,9 @@ export default function Canvas() {
       radio: '',
       checkbox: '',
       file: 'Choose file...',
-      'rich-text': 'Start typing...',
       date: 'Select date...',
       time: 'Select time...',
       datetime: 'Select date and time...',
-      signature: 'Sign here...',
       rating: '',
       slider: '',
       phone: 'Enter phone number...',
@@ -898,14 +815,11 @@ export default function Canvas() {
       color: '',
       toggle: '',
       divider: '',
-      html: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
       accordion: '',
       grid: '',
-      columns: '',
       section: '',
-      group: '',
       code: 'Enter code...',
       image: 'Choose image...',
       other: 'Enter value...',

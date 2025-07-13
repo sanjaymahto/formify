@@ -277,30 +277,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-        case 'rich-text':
-          return (
-            <div className="rounded-lg border border-muted p-3">
-              <div className="mb-2 flex items-center space-x-2">
-                <Button variant="ghost" size="sm" type="button">
-                  B
-                </Button>
-                <Button variant="ghost" size="sm" type="button">
-                  I
-                </Button>
-                <Button variant="ghost" size="sm" type="button">
-                  U
-                </Button>
-                <Button variant="ghost" size="sm" type="button">
-                  Link
-                </Button>
-              </div>
-              <Textarea
-                {...baseFieldProps}
-                rows={4}
-                className="resize-none border-0 focus-visible:ring-0"
-              />
-            </div>
-          );
+
 
         case 'date':
           return (
@@ -356,30 +333,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-        case 'signature':
-          return (
-            <div className="rounded-lg border border-muted p-4">
-              <div className="mb-2 flex items-center space-x-2">
-                <PenTool className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  Signature Pad
-                </span>
-              </div>
-              <div
-                className="border-muted-foreground/25 hover:border-primary/50 flex h-24 cursor-pointer items-center justify-center rounded border-2 border-dashed bg-muted transition-colors"
-                style={{
-                  width: field.signatureConfig?.width || 300,
-                  height: field.signatureConfig?.height || 150,
-                  backgroundColor:
-                    field.signatureConfig?.backgroundColor || '#f8f9fa',
-                }}
-              >
-                <span className="text-sm text-muted-foreground">
-                  Click to sign
-                </span>
-              </div>
-            </div>
-          );
+
 
         case 'rating':
           return (
@@ -496,16 +450,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
         case 'divider':
           return <Separator className="my-4" />;
 
-        case 'html':
-          return (
-            <div
-              className="rounded-lg border border-muted p-3"
-              dangerouslySetInnerHTML={{
-                __html:
-                  field.htmlConfig?.content || '<p>Custom HTML content</p>',
-              }}
-            />
-          );
+
 
         case 'tags':
           return (
@@ -564,19 +509,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-        case 'group':
-          return (
-            <div className="bg-muted/50 rounded-lg border border-muted p-3">
-              <div className="mb-2 flex items-center space-x-2">
-                <Folder className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{field.label}</span>
-              </div>
-              <div className="space-y-2">
-                <div className="border-muted-foreground/25 h-6 rounded border-2 border-dashed bg-background"></div>
-                <div className="border-muted-foreground/25 h-6 rounded border-2 border-dashed bg-background"></div>
-              </div>
-            </div>
-          );
+
 
         case 'accordion':
           return (
@@ -617,19 +550,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-        case 'columns':
-          return (
-            <div className="rounded-lg border border-muted p-3">
-              <div className="mb-3 flex items-center space-x-2">
-                <Columns className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{field.label}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Input placeholder="Column 1" />
-                <Input placeholder="Column 2" />
-              </div>
-            </div>
-          );
+
 
         case 'json':
           return (

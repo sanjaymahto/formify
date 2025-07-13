@@ -168,7 +168,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           />
         </div>
 
-        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
+        {!['section', 'code', 'progress', 'divider'].includes(field.type) && (
           <div className="space-y-2">
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -181,7 +181,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         )}
 
         {/* Only show required checkbox for input fields */}
-        {!['divider', 'section', 'html', 'code', 'progress'].includes(field.type) && (
+        {!['section', 'code', 'progress', 'divider'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -551,93 +551,10 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     );
   };
 
-  const renderSignatureProperties = () => {
-    if (field.type !== 'signature') return null;
 
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2 text-sm">
-            <PenTool className="h-4 w-4" />
-            <span>Signature Settings</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="width">Width</Label>
-              <Input
-                id="width"
-                type="number"
-                value={field.signatureConfig?.width || 300}
-                onChange={e =>
-                  handleUpdate({
-                    signatureConfig: {
-                      ...field.signatureConfig,
-                      width: parseInt(e.target.value) || 300,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="height">Height</Label>
-              <Input
-                id="height"
-                type="number"
-                value={field.signatureConfig?.height || 150}
-                onChange={e =>
-                  handleUpdate({
-                    signatureConfig: {
-                      ...field.signatureConfig,
-                      height: parseInt(e.target.value) || 150,
-                    },
-                  })
-                }
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="penColor">Pen Color</Label>
-            <Input
-              id="penColor"
-              type="color"
-              value={field.signatureConfig?.penColor || '#000000'}
-              onChange={e =>
-                handleUpdate({
-                  signatureConfig: {
-                    ...field.signatureConfig,
-                    penColor: e.target.value,
-                  },
-                })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bgColor">Background Color</Label>
-            <Input
-              id="bgColor"
-              type="color"
-              value={field.signatureConfig?.backgroundColor || '#ffffff'}
-              onChange={e =>
-                handleUpdate({
-                  signatureConfig: {
-                    ...field.signatureConfig,
-                    backgroundColor: e.target.value,
-                  },
-                })
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
 
   const renderValidationProperties = () => {
-    if (['divider', 'section', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime'].includes(field.type)) return null;
+    if (['divider', 'section', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime', 'file', 'image'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1154,7 +1071,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderStructuralProperties = () => {
-    if (!['section', 'divider', 'group', 'grid', 'columns', 'accordion'].includes(field.type)) return null;
+    if (!['section', 'group', 'grid', 'columns', 'accordion'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1185,24 +1102,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             </div>
           )}
 
-          {field.type === 'divider' && (
-            <div className="space-y-2">
-              <Label htmlFor="dividerText">Divider Text (Optional)</Label>
-              <Input
-                id="dividerText"
-                value={field.advanced?.defaultValue?.toString() || ''}
-                onChange={e =>
-                  handleUpdate({
-                    advanced: {
-                      ...field.advanced,
-                      defaultValue: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Text to display on divider"
-              />
-            </div>
-          )}
+
 
           {(field.type === 'grid' || field.type === 'columns') && (
             <div className="space-y-2">
@@ -1247,14 +1147,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   const renderHtmlCodeProperties = () => {
-    if (!['html', 'code'].includes(field.type)) return null;
+    if (!['code'].includes(field.type)) return null;
 
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-sm">
             <Code className="h-4 w-4" />
-            <span>{field.type === 'html' ? 'HTML' : 'Code'} Content</span>
+            <span>Code Content</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1271,7 +1171,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              placeholder={field.type === 'html' ? '<p>Enter HTML content...</p>' : '// Enter code here...'}
+              placeholder="// Enter code here..."
               rows={8}
               className="font-mono"
             />
@@ -1300,7 +1200,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderAdvancedProperties = () => {
     // Only show advanced properties for interactive fields
-    if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type)) return null;
+    if (['section', 'code', 'progress', 'divider'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1503,7 +1403,6 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             {renderFileProperties()}
             {renderRatingProperties()}
             {renderSliderProperties()}
-            {renderSignatureProperties()}
             {renderStructuralProperties()}
             {renderHtmlCodeProperties()}
             {renderLayoutProperties()}

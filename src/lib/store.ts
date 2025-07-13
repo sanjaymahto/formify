@@ -20,11 +20,9 @@ export type FieldType =
   | 'radio'
   | 'checkbox'
   | 'file' // File upload
-  | 'rich-text' // Rich text editor
   | 'date' // Date picker
   | 'time' // Time picker
   | 'datetime' // Date and time picker
-  | 'signature' // Signature field
   | 'rating' // Star rating
   | 'slider' // Range slider
   | 'phone' // Phone number
@@ -32,14 +30,11 @@ export type FieldType =
   | 'color' // Color picker
   | 'toggle' // Toggle switch
   | 'divider' // Visual divider
-  | 'html' // Custom HTML
   | 'multi-select' // Multi-select dropdown
   | 'tags' // Tags input
   | 'accordion' // Accordion field
   | 'grid' // Grid layout
-  | 'columns' // Column layout
   | 'section' // Section divider
-  | 'group' // Field group
   | 'code' // Code editor
   | 'image' // Image upload
   | 'other'; // Other file types

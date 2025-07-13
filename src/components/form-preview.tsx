@@ -422,23 +422,7 @@ export function FormPreview() {
           />
         );
 
-      case 'rich-text':
-        return (
-          <Textarea
-            value={fieldValue as string}
-            onChange={e => handleInputChange(field.id, e.target.value)}
-            placeholder={field.placeholder || 'Enter rich text'}
-            className={baseClasses}
-            rows={4}
-          />
-        );
 
-      case 'signature':
-        return (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-            <p className="text-sm text-gray-600">Signature pad - Click to sign</p>
-          </div>
-        );
 
       case 'divider':
         return <hr className="my-4 border-gray-300" />;
@@ -453,13 +437,7 @@ export function FormPreview() {
           </div>
         );
 
-      case 'html':
-        return (
-          <div 
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: field.advanced?.defaultValue?.toString() || '' }}
-          />
-        );
+
 
       case 'code':
         return (
@@ -470,8 +448,6 @@ export function FormPreview() {
 
       case 'accordion':
       case 'grid':
-      case 'columns':
-      case 'group':
         return (
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
             <p className="text-sm text-gray-600">{field.label} - Layout container</p>
