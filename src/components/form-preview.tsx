@@ -15,14 +15,17 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock } from 'lucide-react';
-import { useState } from 'react';
+import { Calendar, Clock, Upload } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { CodeEditor } from '@/components/ui/code-editor';
 
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
   const [formData, setFormData] = useState<Record<string, string | number | boolean | string[]>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const handleInputChange = (fieldId: string, value: string | number | boolean | string[]) => {
     setFormData(prev => ({
@@ -285,13 +288,88 @@ export function FormPreview() {
 
       case 'file':
       case 'image':
+        const handleDrag = (e: React.DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+        };
+
+        const handleDragIn = (e: React.DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+            setDragActive(prev => ({ ...prev, [field.id]: true }));
+          }
+        };
+
+        const handleDragOut = (e: React.DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setDragActive(prev => ({ ...prev, [field.id]: false }));
+        };
+
+        const handleDrop = (e: React.DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setDragActive(prev => ({ ...prev, [field.id]: false }));
+          
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setSelectedFiles(prev => ({ ...prev, [field.id]: e.dataTransfer.files }));
+            handleInputChange(field.id, e.dataTransfer.files);
+          }
+        };
+
+        const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+          if (e.target.files && e.target.files.length > 0) {
+            setSelectedFiles(prev => ({ ...prev, [field.id]: e.target.files }));
+            handleInputChange(field.id, e.target.files);
+          }
+        };
+
+        const handleClick = () => {
+          fileInputRefs.current[field.id]?.click();
+        };
+
         return (
-          <Input
-            type="file"
-            onChange={e => handleInputChange(field.id, e.target.files?.[0]?.name || '')}
-            className={baseClasses}
-            accept={field.type === 'image' ? 'image/*' : undefined}
-          />
+          <div
+            className={`border-2 border-dashed p-6 text-center transition-colors cursor-pointer rounded-lg ${
+              dragActive[field.id] 
+                ? 'border-primary bg-primary/5' 
+                : 'border-muted-foreground/25 hover:border-primary/50'
+            } ${fieldError ? 'border-red-500' : ''}`}
+            onDragEnter={handleDragIn}
+            onDragLeave={handleDragOut}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={handleClick}
+          >
+            <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+            <p className="mb-2 text-sm text-muted-foreground">
+              {dragActive[field.id] ? 'Drop files here' : `Click or drag to upload ${field.type} files`}
+            </p>
+            {field.fileConfig?.maxSize && (
+              <p className="text-xs text-muted-foreground">
+                Max size: {field.fileConfig.maxSize}MB
+              </p>
+            )}
+            {selectedFiles[field.id] && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                {Array.from(selectedFiles[field.id]!).map((file, index) => (
+                  <div key={index} className="text-green-600">
+                    ✓ {file.name} ({(file.size / 1024 / 1024).toFixed(2)}MB)
+                  </div>
+                ))}
+              </div>
+            )}
+            <Input
+              ref={(el) => { fileInputRefs.current[field.id] = el; }}
+              type="file"
+              accept={field.fileConfig?.accept || (field.type === 'image' ? 'image/*' : undefined)}
+              multiple={field.fileConfig?.multiple}
+              onChange={handleFileSelect}
+              className="hidden"
+              id={`file-${field.id}`}
+            />
+          </div>
         );
 
       case 'color':

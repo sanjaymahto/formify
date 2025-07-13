@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Field, useFormStore } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,6 +45,9 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
   const shouldShowField = useFormStore(state => state.shouldShowField);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const handleInputChange = (fieldId: string, value: any) => {
     updateFormData(fieldId, value);
@@ -254,22 +257,84 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
         case 'file':
         case 'image':
+          const handleDrag = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+
+          const handleDragIn = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+              setDragActive(prev => ({ ...prev, [field.id]: true }));
+            }
+          };
+
+          const handleDragOut = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDragActive(prev => ({ ...prev, [field.id]: false }));
+          };
+
+          const handleDrop = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDragActive(prev => ({ ...prev, [field.id]: false }));
+            
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+              setSelectedFiles(prev => ({ ...prev, [field.id]: e.dataTransfer.files }));
+              handleInputChange(field.id, e.dataTransfer.files);
+            }
+          };
+
+          const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.files && e.target.files.length > 0) {
+              setSelectedFiles(prev => ({ ...prev, [field.id]: e.target.files }));
+              handleInputChange(field.id, e.target.files);
+            }
+          };
+
+          const handleClick = () => {
+            fileInputRefs.current[field.id]?.click();
+          };
+
           return (
-            <div className="border-muted-foreground/25 hover:border-primary/50 cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors">
+            <div
+              className={`border-2 border-dashed p-6 text-center transition-colors cursor-pointer ${
+                dragActive[field.id] 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-muted-foreground/25 hover:border-primary/50'
+              }`}
+              onDragEnter={handleDragIn}
+              onDragLeave={handleDragOut}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={handleClick}
+            >
               <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
               <p className="mb-2 text-sm text-muted-foreground">
-                Click to upload {field.type} files
+                {dragActive[field.id] ? 'Drop files here' : `Click or drag to upload ${field.type} files`}
               </p>
               {field.fileConfig?.maxSize && (
                 <p className="text-xs text-muted-foreground">
                   Max size: {field.fileConfig.maxSize}MB
                 </p>
               )}
+              {selectedFiles[field.id] && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  {Array.from(selectedFiles[field.id]!).map((file, index) => (
+                    <div key={index} className="text-green-600">
+                      ✓ {file.name} ({(file.size / 1024 / 1024).toFixed(2)}MB)
+                    </div>
+                  ))}
+                </div>
+              )}
               <Input
+                ref={(el) => { fileInputRefs.current[field.id] = el; }}
                 type="file"
-                accept={field.fileConfig?.accept}
+                accept={field.fileConfig?.accept || (field.type === 'image' ? 'image/*' : undefined)}
                 multiple={field.fileConfig?.multiple}
-                onChange={e => handleInputChange(field.id, e.target.files)}
+                onChange={handleFileSelect}
                 className="hidden"
                 id={`file-${field.id}`}
               />
