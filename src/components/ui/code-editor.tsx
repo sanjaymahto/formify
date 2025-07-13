@@ -130,7 +130,7 @@ export function CodeEditor({
   }, [disabled]);
 
   return (
-    <div className={`border border-gray-300 rounded-md overflow-hidden ${className}`} style={{ height: '140px' }}>
+    <div className={`border-2 border-gray-300 dark:border-gray-600 rounded-md overflow-hidden transition-[border-color] hover:border-blue-400 dark:hover:border-blue-500 focus-within:border-blue-500 dark:focus-within:border-blue-400 focus-within:ring-[3px] focus-within:ring-blue-500/50 ${className}`} style={{ height: '140px' }}>
       <div ref={editorRef} className="w-full h-full" />
     </div>
   );

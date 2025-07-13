@@ -614,7 +614,10 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                   </Select>
                 );
               case 'checkbox':
-                return <input type="checkbox" className="h-4 w-4" />;
+                return <input 
+                  type="checkbox" 
+                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50" 
+                />;
               default:
                 return <Input placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
             }

@@ -460,7 +460,7 @@ export function FormPreview() {
               step={field.sliderConfig?.step || 1}
               value={fieldValue !== undefined ? fieldValue as number : (field.sliderConfig?.defaultValue ?? 0)}
               onChange={e => handleInputChange(field.id, parseInt(e.target.value))}
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
             />
             <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
               <span>{field.sliderConfig?.min || 0}</span>
@@ -482,7 +482,7 @@ export function FormPreview() {
               type="checkbox"
               checked={fieldValue as boolean}
               onChange={e => handleInputChange(field.id, e.target.checked)}
-              className="h-4 w-4"
+              className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
             />
             <Label className="text-sm text-gray-600">
               {field.label}
@@ -551,7 +551,7 @@ export function FormPreview() {
                 <input
                   type="text"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'number':
@@ -559,28 +559,28 @@ export function FormPreview() {
                 <input
                   type="number"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'date':
               return (
                 <input
                   type="date"
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'time':
               return (
                 <input
                   type="time"
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'datetime':
               return (
                 <input
                   type="datetime-local"
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'email':
@@ -588,7 +588,7 @@ export function FormPreview() {
                 <input
                   type="email"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'phone':
@@ -596,7 +596,7 @@ export function FormPreview() {
                 <input
                   type="tel"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'url':
@@ -604,12 +604,12 @@ export function FormPreview() {
                 <input
                   type="url"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
             case 'select':
               return (
-                <select className="w-full px-2 py-1 border border-gray-300 rounded text-sm">
+                <select className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]">
                   <option value="">Select {column.name.toLowerCase()}</option>
                   {column.options?.map((option: string, index: number) => (
                     <option key={index} value={option}>{option}</option>
@@ -626,7 +626,7 @@ export function FormPreview() {
               return (
                 <input
                   type="checkbox"
-                  className="h-4 w-4"
+                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
                 />
               );
             default:
@@ -634,7 +634,7 @@ export function FormPreview() {
                 <input
                   type="text"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
                 />
               );
           }

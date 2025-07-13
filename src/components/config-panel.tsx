@@ -248,7 +248,11 @@ export function ConfigPanel() {
               )}
               {selectedField.type === 'checkbox' && (
                 <div className="flex items-center space-x-2">
-                  <input type="checkbox" disabled className="h-4 w-4" />
+                  <input 
+                    type="checkbox" 
+                    disabled 
+                    className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50" 
+                  />
                   <span className="text-sm text-gray-600">Checkbox option</span>
                 </div>
               )}
@@ -256,7 +260,11 @@ export function ConfigPanel() {
                 <div className="space-y-2">
                   {selectedField.options?.map((option, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <input type="radio" disabled className="h-4 w-4" />
+                      <input 
+                        type="radio" 
+                        disabled 
+                        className="h-4 w-4 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50" 
+                      />
                       <span className="text-sm text-gray-600">{option}</span>
                     </div>
                   ))}

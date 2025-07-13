@@ -558,7 +558,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               <Input
                 value={field.label}
                 onChange={e => handleLabelChange(e.target.value)}
-                className="h-auto border-none p-0 font-medium focus-visible:ring-0"
+                className="h-auto border-none p-0 font-medium focus-visible:ring-0 dark:bg-transparent"
                 onClick={e => e.stopPropagation()}
               />
             ) : (

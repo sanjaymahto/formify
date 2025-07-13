@@ -13,7 +13,7 @@
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --ring: #000000;
-  --input: #ffffff;
+  --input: #d1d5db;
   --card: #ffffff;
   --card-foreground: #111827;
   --popover: #ffffff;
@@ -60,13 +60,49 @@
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --ring: #ffffff;
-  --input: #1f2937;
+  --input: #4b5563;
   --card: #1f2937;
   --card-foreground: #f9fafb;
   --popover: #1f2937;
   --popover-foreground: #f9fafb;
   --secondary: #374151;
   --secondary-foreground: #f9fafb;
+}
+
+/* Enhanced Input Field Outlines */
+input, textarea, select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
+  outline: none !important;
+}
+
+input:hover, textarea:hover, select:hover {
+  border-color: var(--ring) !important;
+}
+
+/* Dark mode input focus */
+.dark input:focus, .dark textarea:focus, .dark select:focus {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Remove outlines from labels */
+label {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  height: 35px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+label:focus, label:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Color Palettes */
