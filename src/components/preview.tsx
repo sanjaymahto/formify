@@ -26,14 +26,13 @@ import {
   FileText,
   Code,
   Tags,
-  Layers,
   Grid3X3,
   Columns,
-  Section,
   Folder,
   PenTool,
   Send,
 } from 'lucide-react';
+import { CodeEditor } from '@/components/ui/code-editor';
 
 interface PreviewProps {
   fields: Field[];
@@ -496,56 +495,101 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
 
 
-        case 'section':
-          return (
-            <div className="bg-muted/50 rounded-lg border border-muted p-4">
-              <div className="mb-2 flex items-center space-x-2">
-                <Section className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{field.label}</span>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {field.advanced?.helpText || 'Section content area'}
-              </div>
-            </div>
-          );
 
-
-
-        case 'accordion':
-          return (
-            <div className="rounded-lg border border-muted p-3">
-              <div className="mb-3 flex items-center space-x-2">
-                <Layers className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{field.label}</span>
-              </div>
-              <div className="space-y-1">
-                <div className="flex cursor-pointer items-center justify-between rounded bg-muted p-2">
-                  <span className="text-sm">Section 1</span>
-                  <span className="text-xs">▼</span>
-                </div>
-                <div className="rounded bg-background p-2">
-                  <Input placeholder="Section 1 content" />
-                </div>
-                <div className="flex cursor-pointer items-center justify-between rounded bg-muted p-2">
-                  <span className="text-sm">Section 2</span>
-                  <span className="text-xs">▶</span>
-                </div>
-              </div>
-            </div>
-          );
 
         case 'grid':
+          const gridConfig = field.gridConfig || {
+            columns: [
+              { id: '1', name: 'Name', type: 'text' as const, required: true },
+              { id: '2', name: 'Email', type: 'email' as const, required: true },
+              { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+            ],
+            rows: [],
+            allowAddRows: true,
+            allowDeleteRows: true,
+            maxRows: 10,
+            minRows: 1
+          };
+
+          const renderGridInput = (column: any) => {
+            switch (column.type) {
+              case 'text':
+                return <Input placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+              case 'number':
+                return <Input type="number" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+              case 'date':
+                return <Input type="date" className="h-8 text-xs" />;
+              case 'time':
+                return <Input type="time" className="h-8 text-xs" />;
+              case 'datetime':
+                return <Input type="datetime-local" className="h-8 text-xs" />;
+              case 'email':
+                return <Input type="email" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+              case 'phone':
+                return <Input type="tel" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+              case 'url':
+                return <Input type="url" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+              case 'select':
+                return (
+                  <Select>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder={`Select ${column.name.toLowerCase()}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {column.options?.map((option: string, index: number) => (
+                        <SelectItem key={index} value={option}>{option}</SelectItem>
+                      )) || (
+                        <>
+                          <SelectItem value="option1">Option 1</SelectItem>
+                          <SelectItem value="option2">Option 2</SelectItem>
+                          <SelectItem value="option3">Option 3</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                );
+              case 'checkbox':
+                return <input type="checkbox" className="h-4 w-4" />;
+              default:
+                return <Input placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+            }
+          };
+
           return (
             <div className="rounded-lg border border-muted p-3">
               <div className="mb-3 flex items-center space-x-2">
                 <Grid3X3 className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">{field.label}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="Grid item 1" />
-                <Input placeholder="Grid item 2" />
-                <Input placeholder="Grid item 3" />
-                <Input placeholder="Grid item 4" />
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-muted-foreground/20">
+                      {gridConfig.columns.map((column) => (
+                        <th key={column.id} className="p-2 text-left font-medium">
+                          {column.name}
+                          {column.required && <span className="text-red-500 ml-1">*</span>}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-muted-foreground/10">
+                      {gridConfig.columns.map((column) => (
+                        <td key={column.id} className="p-2">
+                          {renderGridInput(column)}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      {gridConfig.columns.map((column) => (
+                        <td key={column.id} className="p-2">
+                          {renderGridInput(column)}
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           );
@@ -589,19 +633,29 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
           );
 
         case 'code':
+          const codeConfig = field.codeConfig || {
+            language: 'javascript',
+            theme: 'one-dark',
+            lineNumbers: true,
+            autoComplete: true,
+            syntaxHighlighting: true,
+          };
+          
           return (
             <div className="rounded-lg border border-muted p-3">
               <div className="mb-2 flex items-center space-x-2">
                 <Code className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  Code Editor
+                  Code Editor ({codeConfig.language})
                 </span>
               </div>
-              <Textarea
-                {...baseFieldProps}
-                rows={4}
-                className="resize-none bg-muted font-mono text-xs"
-                placeholder="// Enter your code here"
+              <CodeEditor
+                value={fieldValue as string || ''}
+                onChange={(value) => handleInputChange(field.id, value)}
+                language={codeConfig.language || 'javascript'}
+                placeholder="// Enter your code here..."
+                disabled={field.advanced?.disabled || field.advanced?.readonly}
+                className="w-full"
               />
             </div>
           );
@@ -620,10 +674,12 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
     return (
       <div key={field.id} className="space-y-2">
-        <Label htmlFor={field.id} className="flex items-center space-x-2">
-          <span>{field.label}</span>
-          {field.required && <span className="text-destructive">*</span>}
-        </Label>
+        {field.type !== 'divider' && (
+          <Label htmlFor={field.id} className="flex items-center space-x-2">
+            <span>{field.label}</span>
+            {field.required && <span className="text-destructive">*</span>}
+          </Label>
+        )}
 
         {renderFieldContent()}
 

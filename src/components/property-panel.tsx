@@ -24,7 +24,6 @@ import {
   Grid3X3,
   PenTool,
   FileText,
-  Section,
 } from 'lucide-react';
 
 interface PropertyPanelProps {
@@ -158,17 +157,19 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         <CardTitle className="text-sm">Basic Properties</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="label">Label</Label>
-          <Input
-            id="label"
-            value={field.label}
-            onChange={e => handleUpdate({ label: e.target.value })}
-            placeholder="Field label"
-          />
-        </div>
+        {field.type !== 'divider' && (
+          <div className="space-y-2">
+            <Label htmlFor="label">Label</Label>
+            <Input
+              id="label"
+              value={field.label}
+              onChange={e => handleUpdate({ label: e.target.value })}
+              placeholder="Field label"
+            />
+          </div>
+        )}
 
-        {!['section', 'code', 'progress', 'divider'].includes(field.type) && (
+        {!['code', 'progress', 'divider'].includes(field.type) && (
           <div className="space-y-2">
             <Label htmlFor="placeholder">Placeholder</Label>
             <Input
@@ -181,7 +182,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         )}
 
         {/* Only show required checkbox for input fields */}
-        {!['section', 'code', 'progress', 'divider'].includes(field.type) && (
+        {!['code', 'progress', 'divider'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -554,7 +555,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
 
   const renderValidationProperties = () => {
-    if (['divider', 'section', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime', 'file', 'image'].includes(field.type)) return null;
+    if (['divider', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime', 'file', 'image', 'grid'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1070,61 +1071,202 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     );
   };
 
-  const renderStructuralProperties = () => {
-    if (!['section', 'group', 'grid', 'columns', 'accordion'].includes(field.type)) return null;
+  const renderGridProperties = () => {
+    if (field.type !== 'grid') return null;
+
+    const gridConfig = field.gridConfig || {
+      columns: [
+        { id: '1', name: 'Name', type: 'text' as const, required: true },
+        { id: '2', name: 'Email', type: 'email' as const, required: true },
+        { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+      ],
+      rows: [],
+      allowAddRows: true,
+      allowDeleteRows: true,
+      maxRows: 10,
+      minRows: 1
+    };
+
+    const addColumn = () => {
+      const newColumn = {
+        id: `col-${Date.now()}`,
+        name: `Column ${gridConfig.columns.length + 1}`,
+        type: 'text' as const,
+        required: false
+      };
+      handleUpdate({
+        gridConfig: {
+          ...gridConfig,
+          columns: [...gridConfig.columns, newColumn]
+        }
+      });
+    };
+
+    const removeColumn = (columnId: string) => {
+      handleUpdate({
+        gridConfig: {
+          ...gridConfig,
+          columns: gridConfig.columns.filter(col => col.id !== columnId)
+        }
+      });
+    };
+
+    const updateColumn = (columnId: string, updates: Partial<typeof gridConfig.columns[0]>) => {
+      handleUpdate({
+        gridConfig: {
+          ...gridConfig,
+          columns: gridConfig.columns.map(col => 
+            col.id === columnId ? { ...col, ...updates } : col
+          )
+        }
+      });
+    };
 
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-sm">
-            <Section className="h-4 w-4" />
+            <Grid3X3 className="h-4 w-4" />
+            <span>Grid Configuration</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-medium">Columns</Label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addColumn}
+                className="h-8 px-3"
+              >
+                Add Column
+              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              {gridConfig.columns.map((column, index) => (
+                <div key={column.id} className="flex items-center space-x-2 p-2 border rounded">
+                  <div className="flex-1 space-y-2">
+                    <Input
+                      value={column.name}
+                      onChange={(e) => updateColumn(column.id, { name: e.target.value })}
+                      placeholder="Column name"
+                      className="h-8 text-sm"
+                    />
+                    <Select
+                      value={column.type}
+                      onValueChange={(value) => updateColumn(column.id, { type: value as any })}
+                    >
+                      <SelectTrigger className="h-8 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="text">Text</SelectItem>
+                        <SelectItem value="number">Number</SelectItem>
+                        <SelectItem value="date">Date</SelectItem>
+                        <SelectItem value="time">Time</SelectItem>
+                        <SelectItem value="datetime">Date & Time</SelectItem>
+                        <SelectItem value="email">Email</SelectItem>
+                        <SelectItem value="phone">Phone</SelectItem>
+                        <SelectItem value="url">URL</SelectItem>
+                        <SelectItem value="select">Select</SelectItem>
+                        <SelectItem value="checkbox">Checkbox</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <input
+                      type="checkbox"
+                      checked={column.required}
+                      onChange={(e) => updateColumn(column.id, { required: e.target.checked })}
+                      className="h-4 w-4"
+                    />
+                    <Label className="text-xs">Required</Label>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeColumn(column.id)}
+                    className="h-6 w-6 p-0 text-destructive"
+                  >
+                    ×
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Table Settings</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={gridConfig.allowAddRows}
+                  onChange={(e) => handleUpdate({
+                    gridConfig: { ...gridConfig, allowAddRows: e.target.checked }
+                  })}
+                  className="h-4 w-4"
+                />
+                <Label className="text-xs">Allow Add Rows</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={gridConfig.allowDeleteRows}
+                  onChange={(e) => handleUpdate({
+                    gridConfig: { ...gridConfig, allowDeleteRows: e.target.checked }
+                  })}
+                  className="h-4 w-4"
+                />
+                <Label className="text-xs">Allow Delete Rows</Label>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label className="text-xs">Min Rows</Label>
+              <Input
+                type="number"
+                min="1"
+                value={gridConfig.minRows || 1}
+                onChange={(e) => handleUpdate({
+                  gridConfig: { ...gridConfig, minRows: parseInt(e.target.value) || 1 }
+                })}
+                className="h-8 text-sm"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Max Rows</Label>
+              <Input
+                type="number"
+                min="1"
+                value={gridConfig.maxRows || 10}
+                onChange={(e) => handleUpdate({
+                  gridConfig: { ...gridConfig, maxRows: parseInt(e.target.value) || 10 }
+                })}
+                className="h-8 text-sm"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderStructuralProperties = () => {
+    if (!['group', 'columns'].includes(field.type)) return null;
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-sm">
             <span>Structural Settings</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {field.type === 'section' && (
-            <div className="space-y-2">
-              <Label htmlFor="sectionDescription">Section Description</Label>
-              <Textarea
-                id="sectionDescription"
-                value={field.advanced?.description || ''}
-                onChange={e =>
-                  handleUpdate({
-                    advanced: {
-                      ...field.advanced,
-                      description: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Section description or instructions"
-                rows={3}
-              />
-            </div>
-          )}
-
-
-
-          {(field.type === 'grid' || field.type === 'columns') && (
-            <div className="space-y-2">
-              <Label htmlFor="gridColumns">Number of Columns</Label>
-              <Input
-                id="gridColumns"
-                type="number"
-                min="1"
-                max="12"
-                value={field.layout?.gridTemplateColumns || '2'}
-                onChange={e =>
-                  handleUpdate({
-                    layout: {
-                      ...field.layout,
-                      gridTemplateColumns: `repeat(${e.target.value}, 1fr)`,
-                    },
-                  })
-                }
-              />
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input
@@ -1149,6 +1291,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   const renderHtmlCodeProperties = () => {
     if (!['code'].includes(field.type)) return null;
 
+    const codeConfig = field.codeConfig || {
+      language: 'javascript',
+      theme: 'one-dark',
+      lineNumbers: true,
+      autoComplete: true,
+      syntaxHighlighting: true,
+    };
+
     return (
       <Card>
         <CardHeader>
@@ -1158,6 +1308,42 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="language">Programming Language</Label>
+            <Select
+              value={codeConfig.language || 'javascript'}
+              onValueChange={(value) =>
+                handleUpdate({
+                  codeConfig: {
+                    ...codeConfig,
+                    language: value,
+                  },
+                })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="javascript">JavaScript</SelectItem>
+                <SelectItem value="typescript">TypeScript</SelectItem>
+                <SelectItem value="python">Python</SelectItem>
+                <SelectItem value="java">Java</SelectItem>
+                <SelectItem value="cpp">C++</SelectItem>
+                <SelectItem value="c">C</SelectItem>
+                <SelectItem value="php">PHP</SelectItem>
+                <SelectItem value="sql">SQL</SelectItem>
+                <SelectItem value="html">HTML</SelectItem>
+                <SelectItem value="css">CSS</SelectItem>
+                <SelectItem value="json">JSON</SelectItem>
+                <SelectItem value="xml">XML</SelectItem>
+                <SelectItem value="markdown">Markdown</SelectItem>
+                <SelectItem value="rust">Rust</SelectItem>
+                <SelectItem value="go">Go</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="content">Content</Label>
             <Textarea
@@ -1193,6 +1379,44 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               placeholder="Description of this content"
             />
           </div>
+
+          <div className="space-y-2">
+            <Label>Editor Settings</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={codeConfig.lineNumbers}
+                  onChange={(e) =>
+                    handleUpdate({
+                      codeConfig: {
+                        ...codeConfig,
+                        lineNumbers: e.target.checked,
+                      },
+                    })
+                  }
+                  className="h-4 w-4"
+                />
+                <Label className="text-xs">Line Numbers</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={codeConfig.autoComplete}
+                  onChange={(e) =>
+                    handleUpdate({
+                      codeConfig: {
+                        ...codeConfig,
+                        autoComplete: e.target.checked,
+                      },
+                    })
+                  }
+                  className="h-4 w-4"
+                />
+                <Label className="text-xs">Auto Complete</Label>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -1200,7 +1424,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderAdvancedProperties = () => {
     // Only show advanced properties for interactive fields
-    if (['section', 'code', 'progress', 'divider'].includes(field.type)) return null;
+    if (['code', 'progress', 'divider', 'grid'].includes(field.type)) return null;
 
     return (
       <Card>
@@ -1396,13 +1620,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             transition={{ duration: 0.4 }}
             className="space-y-4"
           >
-            {renderBasicProperties()}
+            {field.type !== 'divider' && renderBasicProperties()}
             {['text', 'phone', 'url'].includes(field.type) && renderTextProperties()}
-            {renderValidationProperties()}
             {renderOptionsProperties()}
             {renderFileProperties()}
             {renderRatingProperties()}
             {renderSliderProperties()}
+            {renderGridProperties()}
             {renderStructuralProperties()}
             {renderHtmlCodeProperties()}
             {renderLayoutProperties()}

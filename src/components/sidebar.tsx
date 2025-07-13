@@ -26,9 +26,7 @@ import {
   Minus,
   Code,
   Tags,
-  Layers,
   Grid3X3,
-  Section,
   Image,
 } from 'lucide-react';
 
@@ -77,10 +75,8 @@ const fieldCategories = [
   {
     name: 'Layout & Structure',
     fields: [
-      { type: 'section' as FieldType, label: 'Section', icon: Section },
       { type: 'divider' as FieldType, label: 'Divider', icon: Minus },
-      { type: 'grid' as FieldType, label: 'Grid Layout', icon: Grid3X3 },
-      { type: 'accordion' as FieldType, label: 'Accordion', icon: Layers },
+      { type: 'grid' as FieldType, label: 'Grid Table', icon: Grid3X3 },
     ],
   },
   {
@@ -158,9 +154,7 @@ export default function Sidebar() {
       divider: 'Divider',
       'multi-select': 'Multi-Select',
       tags: 'Tags Input',
-      accordion: 'Accordion',
-      grid: 'Grid Layout',
-      section: 'Section',
+      grid: 'Grid Table',
       code: 'Code Editor',
       image: 'Image Upload',
       other: 'Other Field',
@@ -194,10 +188,8 @@ export default function Sidebar() {
       html: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
-      accordion: '',
       grid: '',
       columns: '',
-      section: '',
       group: '',
       code: 'Enter code...',
       image: 'Choose image...',

@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { TemplateSelector } from '@/components/template-selector';
 import { FormTitle } from '@/components/form-title';
+import { CodeEditor } from '@/components/ui/code-editor';
 import {
   Trash2,
   GripVertical,
@@ -33,10 +34,8 @@ import {
   FileText,
   Code,
   Tags,
-  Layers,
   Grid3X3,
   Columns,
-  Section,
   Folder,
   PenTool,
   Sparkles,
@@ -416,69 +415,114 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
 
 
-      case 'accordion':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-3">
-            <div className="mb-2 flex items-center space-x-2">
-              <Layers className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Accordion</span>
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center justify-between rounded bg-background p-2">
-                <span className="text-sm">Section 1</span>
-                <span className="text-xs">▼</span>
-              </div>
-              <div className="flex items-center justify-between rounded bg-background p-2">
-                <span className="text-sm">Section 2</span>
-                <span className="text-xs">▶</span>
-              </div>
-            </div>
-          </div>
-        );
+
 
       case 'grid':
+        const gridConfig = field.gridConfig || {
+          columns: [
+            { id: '1', name: 'Name', type: 'text' as const, required: true },
+            { id: '2', name: 'Email', type: 'email' as const, required: true },
+            { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+          ],
+          rows: [],
+          allowAddRows: true,
+          allowDeleteRows: true,
+          maxRows: 10,
+          minRows: 1
+        };
+        
         return (
           <div className="rounded-lg border border-muted bg-muted p-3">
             <div className="mb-2 flex items-center space-x-2">
               <Grid3X3 className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Grid Layout</span>
+              <span className="text-sm text-muted-foreground">Grid Table</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="border-muted-foreground/25 h-8 rounded border-2 border-dashed bg-background"></div>
-              <div className="border-muted-foreground/25 h-8 rounded border-2 border-dashed bg-background"></div>
-              <div className="border-muted-foreground/25 h-8 rounded border-2 border-dashed bg-background"></div>
-              <div className="border-muted-foreground/25 h-8 rounded border-2 border-dashed bg-background"></div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-muted-foreground/20">
+                    {gridConfig.columns.map((column) => (
+                      <th key={column.id} className="p-2 text-left font-medium">
+                        {column.name}
+                        {column.required && <span className="text-red-500 ml-1">*</span>}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-muted-foreground/10">
+                    {gridConfig.columns.map((column) => (
+                      <td key={column.id} className="p-2">
+                        <div className="text-muted-foreground">
+                          {column.type === 'text' && 'Text input'}
+                          {column.type === 'number' && 'Number input'}
+                          {column.type === 'date' && 'Date picker'}
+                          {column.type === 'time' && 'Time picker'}
+                          {column.type === 'datetime' && 'Date & Time picker'}
+                          {column.type === 'email' && 'Email input'}
+                          {column.type === 'phone' && 'Phone input'}
+                          {column.type === 'url' && 'URL input'}
+                          {column.type === 'select' && 'Dropdown'}
+                          {column.type === 'checkbox' && 'Checkbox'}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    {gridConfig.columns.map((column) => (
+                      <td key={column.id} className="p-2">
+                        <div className="text-muted-foreground">
+                          {column.type === 'text' && 'Text input'}
+                          {column.type === 'number' && 'Number input'}
+                          {column.type === 'date' && 'Date picker'}
+                          {column.type === 'time' && 'Time picker'}
+                          {column.type === 'datetime' && 'Date & Time picker'}
+                          {column.type === 'email' && 'Email input'}
+                          {column.type === 'phone' && 'Phone input'}
+                          {column.type === 'url' && 'URL input'}
+                          {column.type === 'select' && 'Dropdown'}
+                          {column.type === 'checkbox' && 'Checkbox'}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         );
 
 
 
-      case 'section':
-        return (
-          <div className="rounded-lg border border-muted bg-muted p-4">
-            <div className="mb-2 flex items-center space-x-2">
-              <Section className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Section Title</span>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Section description or content area
-            </div>
-          </div>
-        );
+
 
 
 
       case 'code':
+        const codeConfig = field.codeConfig || {
+          language: 'javascript',
+          theme: 'one-dark',
+          lineNumbers: true,
+          autoComplete: true,
+          syntaxHighlighting: true,
+        };
+        
         return (
           <div className="rounded-lg border border-muted bg-muted p-3">
             <div className="mb-2 flex items-center space-x-2">
               <Code className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Code Editor</span>
+              <span className="text-sm text-muted-foreground">
+                Code Editor ({codeConfig.language})
+              </span>
             </div>
-            <div className="rounded bg-background p-2 font-mono text-xs">
-              console.log(&quot;Hello World&quot;);
-            </div>
+            <CodeEditor
+              value={field.advanced?.defaultValue?.toString() || '// Enter your code here...'}
+              onChange={() => {}} // Read-only in canvas
+              language={codeConfig.language || 'javascript'}
+              placeholder="// Enter your code here..."
+              disabled={true}
+              className="w-full"
+            />
           </div>
         );
 
@@ -510,12 +554,18 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       <CardContent className="px-3 py-1.5">
         <div className="mb-1.5 flex items-start justify-between">
           <div className="flex-1">
-            <Input
-              value={field.label}
-              onChange={e => handleLabelChange(e.target.value)}
-              className="h-auto border-none p-0 font-medium focus-visible:ring-0"
-              onClick={e => e.stopPropagation()}
-            />
+            {field.type !== 'divider' ? (
+              <Input
+                value={field.label}
+                onChange={e => handleLabelChange(e.target.value)}
+                className="h-auto border-none p-0 font-medium focus-visible:ring-0"
+                onClick={e => e.stopPropagation()}
+              />
+            ) : (
+              <div className="h-auto p-0 font-medium text-muted-foreground">
+                Divider
+              </div>
+            )}
           </div>
           <div className="ml-2 flex items-center space-x-1">
             <Button
@@ -544,7 +594,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
         <div className="mb-1.5">{renderFieldContent()}</div>
 
         {/* Only show required checkbox for input fields */}
-        {!['divider', 'section', 'code', 'progress'].includes(field.type) && (
+        {!['divider', 'code', 'progress'].includes(field.type) && (
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
               <input
@@ -784,9 +834,7 @@ export default function Canvas() {
       divider: 'Divider',
       'multi-select': 'Multi-Select',
       tags: 'Tags Input',
-      accordion: 'Accordion',
-      grid: 'Grid Layout',
-      section: 'Section',
+      grid: 'Grid Table',
       code: 'Code Editor',
       image: 'Image Upload',
       other: 'Other Field',
@@ -817,9 +865,7 @@ export default function Canvas() {
       divider: '',
       'multi-select': 'Select options...',
       tags: 'Add tags...',
-      accordion: '',
       grid: '',
-      section: '',
       code: 'Enter code...',
       image: 'Choose image...',
       other: 'Enter value...',
@@ -943,18 +989,7 @@ export default function Canvas() {
         case 'divider':
           return <Separator className="my-4 border-dashed" />;
 
-        case 'section':
-          return (
-            <div className="rounded-lg border border-muted bg-muted/50 p-4 border-dashed">
-              <div className="mb-2 flex items-center space-x-2">
-                <Section className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-muted-foreground">Section Title</span>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Section description or content area
-              </div>
-            </div>
-          );
+
 
         default:
           return (

@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock } from 'lucide-react';
 import { useState } from 'react';
+import { CodeEditor } from '@/components/ui/code-editor';
 
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
@@ -427,30 +428,172 @@ export function FormPreview() {
       case 'divider':
         return <hr className="my-4 border-gray-300" />;
 
-      case 'section':
+      case 'code':
+        const codeConfig = field.codeConfig || {
+          language: 'javascript',
+          theme: 'one-dark',
+          lineNumbers: true,
+          autoComplete: true,
+          syntaxHighlighting: true,
+        };
+        
         return (
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-medium text-gray-900">{field.label}</h3>
-            {field.advanced?.description && (
-              <p className="text-sm text-gray-600 mt-1">{field.advanced.description}</p>
-            )}
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <span>Language: {codeConfig.language}</span>
+            </div>
+            <CodeEditor
+              value={fieldValue as string || ''}
+              onChange={(value) => handleInputChange(field.id, value)}
+              language={codeConfig.language || 'javascript'}
+              placeholder="// Enter your code here..."
+              className="w-full"
+            />
           </div>
         );
 
-
-
-      case 'code':
-        return (
-          <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
-            <code>{field.advanced?.defaultValue?.toString() || ''}</code>
-          </pre>
-        );
-
-      case 'accordion':
       case 'grid':
+        const gridConfig = field.gridConfig || {
+          columns: [
+            { id: '1', name: 'Name', type: 'text' as const, required: true },
+            { id: '2', name: 'Email', type: 'email' as const, required: true },
+            { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+          ],
+          rows: [],
+          allowAddRows: true,
+          allowDeleteRows: true,
+          maxRows: 10,
+          minRows: 1
+        };
+
+        const renderGridInput = (column: any) => {
+          switch (column.type) {
+            case 'text':
+              return (
+                <input
+                  type="text"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'number':
+              return (
+                <input
+                  type="number"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'date':
+              return (
+                <input
+                  type="date"
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'time':
+              return (
+                <input
+                  type="time"
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'datetime':
+              return (
+                <input
+                  type="datetime-local"
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'email':
+              return (
+                <input
+                  type="email"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'phone':
+              return (
+                <input
+                  type="tel"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'url':
+              return (
+                <input
+                  type="url"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+            case 'select':
+              return (
+                <select className="w-full px-2 py-1 border border-gray-300 rounded text-sm">
+                  <option value="">Select {column.name.toLowerCase()}</option>
+                  {column.options?.map((option: string, index: number) => (
+                    <option key={index} value={option}>{option}</option>
+                  )) || (
+                    <>
+                      <option value="option1">Option 1</option>
+                      <option value="option2">Option 2</option>
+                      <option value="option3">Option 3</option>
+                    </>
+                  )}
+                </select>
+              );
+            case 'checkbox':
+              return (
+                <input
+                  type="checkbox"
+                  className="h-4 w-4"
+                />
+              );
+            default:
+              return (
+                <input
+                  type="text"
+                  placeholder={`Enter ${column.name.toLowerCase()}`}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                />
+              );
+          }
+        };
+
         return (
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-            <p className="text-sm text-gray-600">{field.label} - Layout container</p>
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    {gridConfig.columns.map((column) => (
+                      <th key={column.id} className="p-2 text-left font-medium text-gray-700">
+                        {column.name}
+                        {column.required && <span className="text-red-500 ml-1">*</span>}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    {gridConfig.columns.map((column) => (
+                      <td key={column.id} className="p-2">
+                        {renderGridInput(column)}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    {gridConfig.columns.map((column) => (
+                      <td key={column.id} className="p-2">
+                        {renderGridInput(column)}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         );
 
@@ -509,10 +652,12 @@ export function FormPreview() {
 
           {fields.map(field => (
             <div key={field.id} className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900">
-                {field.label}
-                {field.required && <span className="ml-1 text-red-500">*</span>}
-              </Label>
+              {field.type !== 'divider' && (
+                <Label className="text-sm font-medium text-gray-900">
+                  {field.label}
+                  {field.required && <span className="ml-1 text-red-500">*</span>}
+                </Label>
+              )}
               {renderField(field)}
               {errors[field.id] && (
                 <p className="text-sm text-red-500">{errors[field.id]}</p>

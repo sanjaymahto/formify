@@ -32,12 +32,33 @@ export type FieldType =
   | 'divider' // Visual divider
   | 'multi-select' // Multi-select dropdown
   | 'tags' // Tags input
-  | 'accordion' // Accordion field
-  | 'grid' // Grid layout
-  | 'section' // Section divider
+  | 'grid' // Grid table with editable columns
   | 'code' // Code editor
   | 'image' // Image upload
   | 'other'; // Other file types
+
+export type GridColumnType = 'text' | 'number' | 'date' | 'time' | 'datetime' | 'email' | 'phone' | 'url' | 'select' | 'checkbox';
+
+export interface GridColumn {
+  id: string;
+  name: string;
+  type: GridColumnType;
+  required?: boolean;
+  placeholder?: string;
+  options?: string[]; // For select type columns
+  validation?: {
+    min?: number;
+    max?: number;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: string;
+  };
+}
+
+export interface GridRow {
+  id: string;
+  data: Record<string, any>;
+}
 
 export interface Field {
   id: string;
@@ -139,6 +160,25 @@ export interface Field {
       operator?: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than';
       value?: string | number | boolean;
     };
+  };
+  
+  // Grid specific properties
+  gridConfig?: {
+    columns: GridColumn[];
+    rows: GridRow[];
+    allowAddRows?: boolean;
+    allowDeleteRows?: boolean;
+    maxRows?: number;
+    minRows?: number;
+  };
+  
+  // Code specific properties
+  codeConfig?: {
+    language?: string;
+    theme?: string;
+    lineNumbers?: boolean;
+    autoComplete?: boolean;
+    syntaxHighlighting?: boolean;
   };
   
   // Advanced properties
