@@ -51,7 +51,7 @@ function InputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        'data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-red-500 dark:aria-invalid:border-red-400 aria-invalid:border-2 data-[active=true]:aria-invalid:border-red-500 dark:data-[active=true]:aria-invalid:border-red-400 data-[active=true]:aria-invalid:border-2 dark:bg-input/30 shadow-xs relative flex h-9 w-9 items-center justify-center border-2 border-gray-300 dark:border-gray-600 text-sm outline-none transition-all first:rounded-l-md first:border-l last:rounded-r-md data-[active=true]:z-10 data-[active=true]:border-blue-500 dark:data-[active=true]:border-blue-400 data-[active=true]:ring-[3px] data-[active=true]:border-2 hover:border-blue-400 dark:hover:border-blue-500 hover:border-2',
+        'data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:ring-destructive/20 dark:data-[active=true]:aria-invalid:ring-destructive/40 aria-invalid:border-red-500 dark:aria-invalid:border-red-400 aria-invalid:border-2 data-[active=true]:aria-invalid:border-red-500 dark:data-[active=true]:aria-invalid:border-red-400 data-[active=true]:aria-invalid:border-2 dark:bg-input/30 shadow-xs relative flex h-9 w-9 items-center justify-center border-2 border-gray-300 text-sm outline-none transition-all first:rounded-l-md first:border-l last:rounded-r-md hover:border-2 hover:border-blue-400 data-[active=true]:z-10 data-[active=true]:border-2 data-[active=true]:border-blue-500 data-[active=true]:ring-[3px] dark:border-gray-600 dark:hover:border-blue-500 dark:data-[active=true]:border-blue-400',
         className
       )}
       {...props}

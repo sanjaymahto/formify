@@ -131,7 +131,7 @@ function SelectTrigger({
       aria-expanded={context.open}
       onClick={() => context.onOpenChange(!context.open)}
       className={cn(
-        "focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-red-500 dark:aria-invalid:border-red-400 aria-invalid:border-2 dark:bg-input/30 dark:hover:bg-input/50 shadow-xs flex w-fit items-center justify-between gap-2 whitespace-nowrap rounded-md border-2 border-gray-300 dark:border-gray-600 bg-transparent px-3 py-2 text-sm outline-none transition-[color,box-shadow,border-color] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 focus-visible:ring-[3px] focus-visible:border-2 hover:border-blue-400 dark:hover:border-blue-500 hover:border-2 disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-red-500 dark:aria-invalid:border-red-400 aria-invalid:border-2 dark:bg-input/30 dark:hover:bg-input/50 shadow-xs flex w-fit items-center justify-between gap-2 whitespace-nowrap rounded-md border-2 border-gray-300 bg-transparent px-3 py-2 text-sm outline-none transition-[color,box-shadow,border-color] hover:border-2 hover:border-blue-400 focus-visible:border-2 focus-visible:border-blue-500 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 data-[placeholder]:text-muted-foreground *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       {...props}
@@ -156,7 +156,11 @@ function SelectContent({
   const [mounted, setMounted] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = React.useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
+  const [coords, setCoords] = React.useState<{
+    top: number;
+    left: number;
+    width: number;
+  }>({ top: 0, left: 0, width: 0 });
 
   React.useEffect(() => {
     setMounted(true);
@@ -164,10 +168,16 @@ function SelectContent({
 
   React.useEffect(() => {
     if (!context.open) return;
-    const trigger = triggerRef.current?.parentElement?.querySelector('[data-slot="select-trigger"]');
+    const trigger = triggerRef.current?.parentElement?.querySelector(
+      '[data-slot="select-trigger"]'
+    );
     if (trigger) {
       const rect = (trigger as HTMLElement).getBoundingClientRect();
-      setCoords({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+      setCoords({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
     }
   }, [context.open]);
 
@@ -175,7 +185,9 @@ function SelectContent({
   React.useEffect(() => {
     if (!context.open) return;
     function handleClick(event: MouseEvent) {
-      const trigger = triggerRef.current?.parentElement?.querySelector('[data-slot="select-trigger"]');
+      const trigger = triggerRef.current?.parentElement?.querySelector(
+        '[data-slot="select-trigger"]'
+      );
       const content = contentRef.current;
       if (
         content &&
@@ -246,7 +258,7 @@ function SelectItem({ className, children, value, ...props }: SelectItemProps) {
     <div
       data-slot="select-item"
       className={cn(
-        "outline-hidden relative flex w-full cursor-default select-none items-center gap-2 rounded-sm py-1.5 pl-2 pr-8 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 whitespace-nowrap overflow-hidden text-ellipsis",
+        "outline-hidden relative flex w-full cursor-default select-none items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap rounded-sm py-1.5 pl-2 pr-8 text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className
       )}
       onClick={() => context.onValueChange?.(value)}
@@ -255,7 +267,9 @@ function SelectItem({ className, children, value, ...props }: SelectItemProps) {
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         {isSelected && <CheckIcon className="size-4" />}
       </span>
-      <span className="block max-w-full whitespace-nowrap overflow-hidden text-ellipsis">{children}</span>
+      <span className="block max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+        {children}
+      </span>
     </div>
   );
 }

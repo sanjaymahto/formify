@@ -23,10 +23,14 @@ import { CodeEditor } from '@/components/ui/code-editor';
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
   const { colorPalette } = useSettingsStore();
-  const [formData, setFormData] = useState<Record<string, string | number | boolean | string[]>>({});
+  const [formData, setFormData] = useState<
+    Record<string, string | number | boolean | string[]>
+  >({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
+  const [selectedFiles, setSelectedFiles] = useState<
+    Record<string, FileList | null>
+  >({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const getButtonColors = () => {
@@ -85,7 +89,10 @@ export function FormPreview() {
     return colors[colorPalette] || colors.default;
   };
 
-  const handleInputChange = (fieldId: string, value: string | number | boolean | string[]) => {
+  const handleInputChange = (
+    fieldId: string,
+    value: string | number | boolean | string[]
+  ) => {
     setFormData(prev => ({
       ...prev,
       [fieldId]: value,
@@ -240,9 +247,15 @@ export function FormPreview() {
               <div key={index} className="flex items-center space-x-2">
                 <Checkbox
                   id={`${field.id}-${index}`}
-                  checked={Array.isArray(fieldValue) ? fieldValue.includes(option) : false}
-                  onCheckedChange={(checked) => {
-                    const currentValues = Array.isArray(fieldValue) ? fieldValue : [];
+                  checked={
+                    Array.isArray(fieldValue)
+                      ? fieldValue.includes(option)
+                      : false
+                  }
+                  onCheckedChange={checked => {
+                    const currentValues = Array.isArray(fieldValue)
+                      ? fieldValue
+                      : [];
                     const newValues = checked
                       ? [...currentValues, option]
                       : currentValues.filter(val => val !== option);
@@ -250,7 +263,10 @@ export function FormPreview() {
                   }}
                   className={fieldError ? 'border-red-500' : ''}
                 />
-                <Label htmlFor={`${field.id}-${index}`} className="text-sm text-gray-600">
+                <Label
+                  htmlFor={`${field.id}-${index}`}
+                  className="text-sm text-gray-600"
+                >
                   {option}
                 </Label>
               </div>
@@ -263,12 +279,12 @@ export function FormPreview() {
           <div className="flex items-center space-x-2">
             <Checkbox
               checked={fieldValue as boolean}
-              onCheckedChange={checked => handleInputChange(field.id, checked as boolean)}
+              onCheckedChange={checked =>
+                handleInputChange(field.id, checked as boolean)
+              }
               className={fieldError ? 'border-red-500' : ''}
             />
-            <Label className="text-sm text-gray-600">
-              {field.label}
-            </Label>
+            <Label className="text-sm text-gray-600">{field.label}</Label>
           </div>
         );
 
@@ -294,12 +310,14 @@ export function FormPreview() {
               type="date"
               value={fieldValue as string}
               onChange={e => handleInputChange(field.id, e.target.value)}
-              className={`${baseClasses} bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
+              className={`${baseClasses} focus:ring-primary/20 border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
             />
-            <Calendar 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Calendar
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
@@ -313,12 +331,14 @@ export function FormPreview() {
               type="time"
               value={fieldValue as string}
               onChange={e => handleInputChange(field.id, e.target.value)}
-              className={`${baseClasses} bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
+              className={`${baseClasses} focus:ring-primary/20 border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
             />
-            <Clock 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Clock
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
@@ -332,12 +352,14 @@ export function FormPreview() {
               type="datetime-local"
               value={fieldValue as string}
               onChange={e => handleInputChange(field.id, e.target.value)}
-              className={`${baseClasses} bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
+              className={`${baseClasses} focus:ring-primary/20 border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden`}
             />
-            <Calendar 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Calendar
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
@@ -369,9 +391,12 @@ export function FormPreview() {
           e.preventDefault();
           e.stopPropagation();
           setDragActive(prev => ({ ...prev, [field.id]: false }));
-          
+
           if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            setSelectedFiles(prev => ({ ...prev, [field.id]: e.dataTransfer.files }));
+            setSelectedFiles(prev => ({
+              ...prev,
+              [field.id]: e.dataTransfer.files,
+            }));
             handleInputChange(field.id, e.dataTransfer.files);
           }
         };
@@ -389,9 +414,9 @@ export function FormPreview() {
 
         return (
           <div
-            className={`border-2 border-dashed p-6 text-center transition-colors cursor-pointer rounded-lg ${
-              dragActive[field.id] 
-                ? 'border-primary bg-primary/5' 
+            className={`cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+              dragActive[field.id]
+                ? 'bg-primary/5 border-primary'
                 : 'border-muted-foreground/25 hover:border-primary/50'
             } ${fieldError ? 'border-red-500' : ''}`}
             onDragEnter={handleDragIn}
@@ -402,7 +427,9 @@ export function FormPreview() {
           >
             <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
             <p className="mb-2 text-sm text-muted-foreground">
-              {dragActive[field.id] ? 'Drop files here' : `Click or drag to upload ${field.type} files`}
+              {dragActive[field.id]
+                ? 'Drop files here'
+                : `Click or drag to upload ${field.type} files`}
             </p>
             {field.fileConfig?.maxSize && (
               <p className="text-xs text-muted-foreground">
@@ -419,9 +446,14 @@ export function FormPreview() {
               </div>
             )}
             <Input
-              ref={(el) => { fileInputRefs.current[field.id] = el; }}
+              ref={el => {
+                fileInputRefs.current[field.id] = el;
+              }}
               type="file"
-              accept={field.fileConfig?.accept || (field.type === 'image' ? 'image/*' : undefined)}
+              accept={
+                field.fileConfig?.accept ||
+                (field.type === 'image' ? 'image/*' : undefined)
+              }
               multiple={field.fileConfig?.multiple}
               onChange={handleFileSelect}
               className="hidden"
@@ -444,41 +476,46 @@ export function FormPreview() {
         return (
           <div className="flex items-center space-x-1">
             {Array.from(
-              { length: field.ratingConfig?.maxRating || 5 }, 
+              { length: field.ratingConfig?.maxRating || 5 },
               (_, i) => {
                 const starValue = i + 1;
                 const minRating = field.ratingConfig?.minRating || 1;
                 const maxRating = field.ratingConfig?.maxRating || 5;
                 const allowHalf = field.ratingConfig?.allowHalf || false;
                 const currentRating = fieldValue || 0;
-                
+
                 if (allowHalf) {
                   return (
                     <div key={i} className="relative">
                       <button
                         type="button"
                         className={`text-2xl ${
-                          starValue <= currentRating ? 'text-yellow-400' : 'text-gray-300'
+                          starValue <= currentRating
+                            ? 'text-yellow-400'
+                            : 'text-gray-300'
                         }`}
                         onClick={() => handleInputChange(field.id, starValue)}
                       >
                         ★
                       </button>
-                      {starValue - 0.5 <= currentRating && currentRating < starValue && (
-                        <div className="absolute inset-0 overflow-hidden">
-                          <button
-                            type="button"
-                            className="text-2xl text-yellow-400"
-                            style={{ clipPath: 'inset(0 50% 0 0)' }}
-                          >
-                            ★
-                          </button>
-                        </div>
-                      )}
-                      <button 
+                      {starValue - 0.5 <= currentRating &&
+                        currentRating < starValue && (
+                          <div className="absolute inset-0 overflow-hidden">
+                            <button
+                              type="button"
+                              className="text-2xl text-yellow-400"
+                              style={{ clipPath: 'inset(0 50% 0 0)' }}
+                            >
+                              ★
+                            </button>
+                          </div>
+                        )}
+                      <button
                         type="button"
                         className="absolute inset-0"
-                        onClick={() => handleInputChange(field.id, starValue - 0.5)}
+                        onClick={() =>
+                          handleInputChange(field.id, starValue - 0.5)
+                        }
                         style={{ width: '50%' }}
                       />
                     </div>
@@ -490,7 +527,9 @@ export function FormPreview() {
                       type="button"
                       onClick={() => handleInputChange(field.id, starValue)}
                       className={`text-2xl ${
-                        starValue <= currentRating ? 'text-yellow-400' : 'text-gray-300'
+                        starValue <= currentRating
+                          ? 'text-yellow-400'
+                          : 'text-gray-300'
                       }`}
                     >
                       ★
@@ -501,8 +540,9 @@ export function FormPreview() {
             )}
             {field.ratingConfig?.showLabels && fieldValue && (
               <span className="ml-2 text-sm text-muted-foreground">
-                {field.ratingConfig.labels?.[Math.floor((fieldValue as number) - 1)] ||
-                  `${fieldValue} stars`}
+                {field.ratingConfig.labels?.[
+                  Math.floor((fieldValue as number) - 1)
+                ] || `${fieldValue} stars`}
               </span>
             )}
           </div>
@@ -516,18 +556,30 @@ export function FormPreview() {
               min={field.sliderConfig?.min || 0}
               max={field.sliderConfig?.max || 100}
               step={field.sliderConfig?.step || 1}
-              value={fieldValue !== undefined ? fieldValue as number : (field.sliderConfig?.defaultValue ?? 0)}
-              onChange={e => handleInputChange(field.id, parseInt(e.target.value))}
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+              value={
+                fieldValue !== undefined
+                  ? (fieldValue as number)
+                  : (field.sliderConfig?.defaultValue ?? 0)
+              }
+              onChange={e =>
+                handleInputChange(field.id, parseInt(e.target.value))
+              }
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg border-2 border-gray-300 bg-gray-200 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:bg-gray-700 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
             />
-            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
+            <div className="mt-1 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
               <span>{field.sliderConfig?.min || 0}</span>
-              <span>{fieldValue !== undefined ? fieldValue as number : (field.sliderConfig?.defaultValue ?? 0)}</span>
+              <span>
+                {fieldValue !== undefined
+                  ? (fieldValue as number)
+                  : (field.sliderConfig?.defaultValue ?? 0)}
+              </span>
               <span>{field.sliderConfig?.max || 100}</span>
             </div>
             {field.sliderConfig?.showValue && (
               <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                {fieldValue !== undefined ? fieldValue as number : (field.sliderConfig?.defaultValue ?? 0)}
+                {fieldValue !== undefined
+                  ? (fieldValue as number)
+                  : (field.sliderConfig?.defaultValue ?? 0)}
               </div>
             )}
           </div>
@@ -540,11 +592,9 @@ export function FormPreview() {
               type="checkbox"
               checked={fieldValue as boolean}
               onChange={e => handleInputChange(field.id, e.target.checked)}
-              className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
             />
-            <Label className="text-sm text-gray-600">
-              {field.label}
-            </Label>
+            <Label className="text-sm text-gray-600">{field.label}</Label>
           </div>
         );
 
@@ -559,8 +609,6 @@ export function FormPreview() {
           />
         );
 
-
-
       case 'divider':
         return <hr className="my-4 border-gray-300" />;
 
@@ -572,15 +620,15 @@ export function FormPreview() {
           autoComplete: true,
           syntaxHighlighting: true,
         };
-        
+
         return (
           <div className="space-y-2">
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <span>Language: {codeConfig.language}</span>
             </div>
             <CodeEditor
-              value={fieldValue as string || ''}
-              onChange={(value) => handleInputChange(field.id, value)}
+              value={(fieldValue as string) || ''}
+              onChange={value => handleInputChange(field.id, value)}
               language={codeConfig.language || 'javascript'}
               placeholder="// Enter your code here..."
               className="w-full"
@@ -593,13 +641,13 @@ export function FormPreview() {
           columns: [
             { id: '1', name: 'Name', type: 'text' as const, required: true },
             { id: '2', name: 'Email', type: 'email' as const, required: true },
-            { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+            { id: '3', name: 'Phone', type: 'phone' as const, required: false },
           ],
           rows: [],
           allowAddRows: true,
           allowDeleteRows: true,
           maxRows: 10,
-          minRows: 1
+          minRows: 1,
         };
 
         const renderGridInput = (column: any) => {
@@ -609,7 +657,7 @@ export function FormPreview() {
                 <input
                   type="text"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'number':
@@ -617,28 +665,28 @@ export function FormPreview() {
                 <input
                   type="number"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'date':
               return (
                 <input
                   type="date"
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'time':
               return (
                 <input
                   type="time"
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'datetime':
               return (
                 <input
                   type="datetime-local"
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'email':
@@ -646,7 +694,7 @@ export function FormPreview() {
                 <input
                   type="email"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'phone':
@@ -654,7 +702,7 @@ export function FormPreview() {
                 <input
                   type="tel"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'url':
@@ -662,15 +710,17 @@ export function FormPreview() {
                 <input
                   type="url"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'select':
               return (
-                <select className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]">
+                <select className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400">
                   <option value="">Select {column.name.toLowerCase()}</option>
                   {column.options?.map((option: string, index: number) => (
-                    <option key={index} value={option}>{option}</option>
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
                   )) || (
                     <>
                       <option value="option1">Option 1</option>
@@ -684,7 +734,7 @@ export function FormPreview() {
               return (
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                 />
               );
             default:
@@ -692,36 +742,41 @@ export function FormPreview() {
                 <input
                   type="text"
                   placeholder={`Enter ${column.name.toLowerCase()}`}
-                  className="w-full px-2 py-1 border-2 border-gray-300 dark:border-gray-600 rounded text-sm focus-visible:ring-blue-500/50 focus-visible:ring-[3px] focus-visible:border-blue-500 dark:focus-visible:border-blue-400 hover:border-blue-400 dark:hover:border-blue-500 transition-[border-color]"
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
           }
         };
 
         return (
-          <div className="border border-gray-200 rounded-lg p-4">
+          <div className="rounded-lg border border-gray-200 p-4">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    {gridConfig.columns.map((column) => (
-                      <th key={column.id} className="p-2 text-left font-medium text-gray-700">
+                    {gridConfig.columns.map(column => (
+                      <th
+                        key={column.id}
+                        className="p-2 text-left font-medium text-gray-700"
+                      >
                         {column.name}
-                        {column.required && <span className="text-red-500 ml-1">*</span>}
+                        {column.required && (
+                          <span className="ml-1 text-red-500">*</span>
+                        )}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-gray-100">
-                    {gridConfig.columns.map((column) => (
+                    {gridConfig.columns.map(column => (
                       <td key={column.id} className="p-2">
                         {renderGridInput(column)}
                       </td>
                     ))}
                   </tr>
                   <tr>
-                    {gridConfig.columns.map((column) => (
+                    {gridConfig.columns.map(column => (
                       <td key={column.id} className="p-2">
                         {renderGridInput(column)}
                       </td>
@@ -748,12 +803,12 @@ export function FormPreview() {
         const buttonColors = getButtonColors();
         const hasOtherFields = fields.some(f => f.type !== 'submit');
         const isDisabled = !hasOtherFields;
-        
+
         return (
-          <Button 
+          <Button
             type="submit"
             className={`w-full ${buttonColors.bg} ${buttonColors.hover} ${buttonColors.text} ${
-              isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+              isDisabled ? 'cursor-not-allowed opacity-50' : ''
             }`}
             disabled={isDisabled}
           >
@@ -809,7 +864,9 @@ export function FormPreview() {
               {field.type !== 'divider' && field.type !== 'submit' && (
                 <Label className="text-sm font-medium text-gray-900">
                   {field.label}
-                  {field.required && <span className="ml-1 text-red-500">*</span>}
+                  {field.required && (
+                    <span className="ml-1 text-red-500">*</span>
+                  )}
                 </Label>
               )}
               {renderField(field)}

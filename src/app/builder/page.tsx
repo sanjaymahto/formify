@@ -19,7 +19,7 @@ export default function BuilderPage() {
   useAutoSave();
 
   return (
-    <motion.div 
+    <motion.div
       className="flex h-screen flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -34,13 +34,13 @@ export default function BuilderPage() {
               initial={{ x: -384, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -384, opacity: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
               <Sidebar />
             </motion.div>
           )}
         </AnimatePresence>
-        
+
         <main className="flex-1 overflow-auto">
           <AnimatePresence mode="wait">
             {isPreviewMode ? (
@@ -49,7 +49,7 @@ export default function BuilderPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
               >
                 <Preview fields={fields} formTitle={formTitle} />
               </motion.div>
@@ -59,14 +59,14 @@ export default function BuilderPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
               >
                 <Canvas />
               </motion.div>
             )}
           </AnimatePresence>
         </main>
-        
+
         <AnimatePresence mode="wait">
           {!isPreviewMode && selectedFieldId && (
             <motion.div
@@ -74,7 +74,7 @@ export default function BuilderPage() {
               initial={{ x: '85%', opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '85%', opacity: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             >
               <PropertyPanel
                 field={fields.find(f => f.id === selectedFieldId) || null}

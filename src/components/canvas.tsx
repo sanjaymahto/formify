@@ -209,7 +209,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             {field.options?.map((option, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <Checkbox disabled />
-                <Label className="text-sm text-muted-foreground">{option}</Label>
+                <Label className="text-sm text-muted-foreground">
+                  {option}
+                </Label>
               </div>
             ))}
           </div>
@@ -246,8 +248,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-
-
       case 'date':
         return (
           <div className="relative">
@@ -255,12 +255,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               type="date"
               placeholder={field.placeholder}
               disabled
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              className="border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
             />
-            <Calendar 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Calendar
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
@@ -274,12 +276,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               type="time"
               placeholder={field.placeholder}
               disabled
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              className="border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
             />
-            <Clock 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Clock
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
@@ -293,25 +297,25 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               type="datetime-local"
               placeholder={field.placeholder}
               disabled
-              className="bg-background border-border text-foreground placeholder:text-muted-foreground pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              className="border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
             />
-            <Calendar 
-              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+            <Calendar
+              className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
               onClick={() => {
-                const input = document.getElementById(field.id) as HTMLInputElement;
+                const input = document.getElementById(
+                  field.id
+                ) as HTMLInputElement;
                 if (input) input.showPicker();
               }}
             />
           </div>
         );
 
-
-
       case 'rating':
         return (
           <div className="flex items-center space-x-1">
             {Array.from(
-              { length: field.ratingConfig?.maxRating || 5 }, 
+              { length: field.ratingConfig?.maxRating || 5 },
               (_, i) => (
                 <Star
                   key={i}
@@ -333,9 +337,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               step={field.sliderConfig?.step || 1}
               defaultValue={field.sliderConfig?.defaultValue ?? 0}
               disabled
-              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+              className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
             />
-            <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+            <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
               <span>{field.sliderConfig?.min || 0}</span>
               <span>{field.sliderConfig?.defaultValue ?? 0}</span>
               <span>{field.sliderConfig?.max || 100}</span>
@@ -404,26 +408,20 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
       case 'divider':
         return <Separator className="my-4" />;
 
-
-
-
-
-
-
       case 'grid':
         const gridConfig = field.gridConfig || {
           columns: [
             { id: '1', name: 'Name', type: 'text' as const, required: true },
             { id: '2', name: 'Email', type: 'email' as const, required: true },
-            { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+            { id: '3', name: 'Phone', type: 'phone' as const, required: false },
           ],
           rows: [],
           allowAddRows: true,
           allowDeleteRows: true,
           maxRows: 10,
-          minRows: 1
+          minRows: 1,
         };
-        
+
         return (
           <div className="rounded-lg border border-muted bg-muted p-3">
             <div className="mb-2 flex items-center space-x-2">
@@ -433,18 +431,20 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-muted-foreground/20">
-                    {gridConfig.columns.map((column) => (
+                  <tr className="border-muted-foreground/20 border-b">
+                    {gridConfig.columns.map(column => (
                       <th key={column.id} className="p-2 text-left font-medium">
                         {column.name}
-                        {column.required && <span className="text-red-500 ml-1">*</span>}
+                        {column.required && (
+                          <span className="ml-1 text-red-500">*</span>
+                        )}
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-muted-foreground/10">
-                    {gridConfig.columns.map((column) => (
+                  <tr className="border-muted-foreground/10 border-b">
+                    {gridConfig.columns.map(column => (
                       <td key={column.id} className="p-2">
                         <div className="text-muted-foreground">
                           {column.type === 'text' && 'Text input'}
@@ -462,7 +462,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                     ))}
                   </tr>
                   <tr>
-                    {gridConfig.columns.map((column) => (
+                    {gridConfig.columns.map(column => (
                       <td key={column.id} className="p-2">
                         <div className="text-muted-foreground">
                           {column.type === 'text' && 'Text input'}
@@ -485,12 +485,6 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           </div>
         );
 
-
-
-
-
-
-
       case 'code':
         const codeConfig = field.codeConfig || {
           language: 'javascript',
@@ -499,7 +493,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
           autoComplete: true,
           syntaxHighlighting: true,
         };
-        
+
         return (
           <div className="rounded-lg border border-muted bg-muted p-3">
             <div className="mb-2 flex items-center space-x-2">
@@ -509,7 +503,10 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
               </span>
             </div>
             <CodeEditor
-              value={field.advanced?.defaultValue?.toString() || '// Enter your code here...'}
+              value={
+                field.advanced?.defaultValue?.toString() ||
+                '// Enter your code here...'
+              }
               onChange={() => {}} // Read-only in canvas
               language={codeConfig.language || 'javascript'}
               placeholder="// Enter your code here..."
@@ -521,9 +518,9 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
       case 'submit':
         return (
-          <Button 
+          <Button
             type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="hover:bg-primary/90 w-full bg-primary text-primary-foreground"
             disabled
           >
             <Send className="mr-2 h-4 w-4" />
@@ -546,15 +543,15 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
     <Card
       className={`cursor-pointer transition-all ${
         isSelected ? 'shadow-lg ring-2 ring-primary' : 'hover:shadow-md'
-      } ${isDragOver ? 'ring-2 ring-blue-300 bg-blue-50' : ''} ${
+      } ${isDragOver ? 'bg-blue-50 ring-2 ring-blue-300' : ''} ${
         isDragging ? 'opacity-50' : ''
       }`}
       onClick={onSelect}
       draggable={field.type !== 'submit'}
       onDragStart={() => field.type !== 'submit' && onDragStart(field.id)}
-      onDragOver={(e) => onDragOver(e, field.id)}
+      onDragOver={e => onDragOver(e, field.id)}
       onDragLeave={onDragLeave}
-      onDrop={(e) => onDrop(e, field.id)}
+      onDrop={e => onDrop(e, field.id)}
     >
       <CardContent className="px-3 py-1.5">
         <div className="mb-1.5 flex items-start justify-between">
@@ -584,14 +581,14 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 e.stopPropagation();
                 onDelete();
               }}
-              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive cursor-pointer"
+              className="h-6 w-6 cursor-pointer p-0 text-muted-foreground hover:text-destructive"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
             {field.type !== 'submit' && (
-              <div 
-                className="cursor-grab active:cursor-grabbing cursor-pointer"
-                onMouseDown={(e) => {
+              <div
+                className="cursor-grab cursor-pointer active:cursor-grabbing"
+                onMouseDown={e => {
                   e.stopPropagation();
                   onDragStart(field.id);
                 }}
@@ -612,23 +609,25 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
                 type="checkbox"
                 id={`required-${field.id}`}
                 checked={field.required}
-                onChange={(e) => {
+                onChange={e => {
                   e.stopPropagation();
                   handleRequiredChange(e.target.checked);
                 }}
-                onClick={(e) => e.stopPropagation()}
-                className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                  field.required 
-                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                onClick={e => e.stopPropagation()}
+                className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                  field.required
+                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                     : 'border-border'
                 } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
                 style={{
-                  accentColor: field.required ? getCheckboxColors().cssColor : undefined
+                  accentColor: field.required
+                    ? getCheckboxColors().cssColor
+                    : undefined,
                 }}
               />
-              <Label 
+              <Label
                 htmlFor={`required-${field.id}`}
-                className="text-xs text-muted-foreground cursor-pointer select-none"
+                className="cursor-pointer select-none text-xs text-muted-foreground"
               >
                 Required
               </Label>
@@ -662,15 +661,15 @@ export default function Canvas() {
   const scrollToField = (fieldId: string) => {
     console.log('Scrolling to field:', fieldId);
     const fieldElement = fieldRefs.current[fieldId];
-    
+
     console.log('Field element:', fieldElement);
-    
+
     if (fieldElement) {
       // Use scrollIntoView for simpler and more reliable scrolling
       fieldElement.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       });
     }
   };
@@ -682,29 +681,31 @@ export default function Canvas() {
   const handleDragOver = (e: React.DragEvent, fieldId?: string) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Clear any existing timeout
     if (dragOverTimeoutRef.current) {
       clearTimeout(dragOverTimeoutRef.current);
     }
-    
+
     // Debounce the drag over updates to prevent shaky effect
     dragOverTimeoutRef.current = setTimeout(() => {
       // Check if we're dragging a new field from sidebar
       if (draggedFieldTypeRef.current) {
         setGhostFieldType(draggedFieldTypeRef.current);
-        
+
         if (fieldId) {
           // Insert before specific field
           const targetField = fields.find(f => f.id === fieldId);
-          
+
           // Don't allow dropping after submit buttons
           if (targetField && targetField.type === 'submit') {
             return;
           }
-          
+
           // Calculate index in otherFields array
-          const targetIndexInOtherFields = otherFields.findIndex(f => f.id === fieldId);
+          const targetIndexInOtherFields = otherFields.findIndex(
+            f => f.id === fieldId
+          );
           if (targetIndexInOtherFields !== -1) {
             setGhostInsertIndex(targetIndexInOtherFields);
             setDragOverFieldId(fieldId);
@@ -718,7 +719,7 @@ export default function Canvas() {
         // Reordering existing fields - only set drag over state, don't interfere with ghost
         const draggedField = fields.find(f => f.id === draggedFieldId);
         const targetField = fields.find(f => f.id === fieldId);
-        
+
         // Don't allow reordering submit buttons or dropping after them
         if (draggedField && draggedField.type === 'submit') {
           return;
@@ -726,7 +727,7 @@ export default function Canvas() {
         if (targetField && targetField.type === 'submit') {
           return;
         }
-        
+
         setDragOverFieldId(fieldId);
       } else if (!fieldId && draggedFieldTypeRef.current) {
         // Dragging over canvas area (not over a specific field)
@@ -740,9 +741,11 @@ export default function Canvas() {
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    console.log('DragEnter triggered:', { draggedFieldType: draggedFieldTypeRef.current });
-    
+
+    console.log('DragEnter triggered:', {
+      draggedFieldType: draggedFieldTypeRef.current,
+    });
+
     // Show ghost component immediately when entering canvas area
     if (draggedFieldTypeRef.current) {
       setGhostFieldType(draggedFieldTypeRef.current);
@@ -754,7 +757,7 @@ export default function Canvas() {
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Only clear if we're leaving the canvas area entirely
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsDragOverCanvas(false);
@@ -767,9 +770,10 @@ export default function Canvas() {
   const handleDrop = (e: React.DragEvent, targetFieldId?: string) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    const fieldType = draggedFieldTypeRef.current || e.dataTransfer.getData('fieldType');
-    
+
+    const fieldType =
+      draggedFieldTypeRef.current || e.dataTransfer.getData('fieldType');
+
     if (fieldType) {
       // Adding new field from sidebar
       const field = {
@@ -785,7 +789,7 @@ export default function Canvas() {
             ? ['Option 1', 'Option 2', 'Option 3']
             : undefined,
       };
-      
+
       // For submit buttons, always add at the end
       if (fieldType === 'submit') {
         addField(field);
@@ -794,13 +798,14 @@ export default function Canvas() {
         // Insert at specific position (but not after submit buttons)
         const targetIndex = fields.findIndex(f => f.id === targetFieldId);
         const submitButtonIndex = fields.findIndex(f => f.type === 'submit');
-        
+
         if (targetIndex !== -1) {
           // If there's a submit button, insert before it
-          const insertIndex = submitButtonIndex !== -1 && targetIndex > submitButtonIndex 
-            ? submitButtonIndex 
-            : targetIndex;
-          
+          const insertIndex =
+            submitButtonIndex !== -1 && targetIndex > submitButtonIndex
+              ? submitButtonIndex
+              : targetIndex;
+
           const newFields = [...fields];
           newFields.splice(insertIndex, 0, field);
           // Update the store with the new field order
@@ -840,30 +845,35 @@ export default function Canvas() {
           setSelectedField(field.id); // Auto-select the newly added field
         }
       }
-    } else if (draggedFieldId && targetFieldId && draggedFieldId !== targetFieldId) {
+    } else if (
+      draggedFieldId &&
+      targetFieldId &&
+      draggedFieldId !== targetFieldId
+    ) {
       // Reordering existing fields (but not submit buttons)
       const draggedField = fields.find(f => f.id === draggedFieldId);
       if (draggedField && draggedField.type === 'submit') {
         // Don't allow reordering submit buttons
         return;
       }
-      
+
       const fromIndex = fields.findIndex(f => f.id === draggedFieldId);
       const toIndex = fields.findIndex(f => f.id === targetFieldId);
       const submitButtonIndex = fields.findIndex(f => f.type === 'submit');
-      
+
       if (fromIndex !== -1 && toIndex !== -1) {
         // Don't allow moving fields after submit button
-        const adjustedToIndex = submitButtonIndex !== -1 && toIndex > submitButtonIndex 
-          ? submitButtonIndex 
-          : toIndex;
-        
+        const adjustedToIndex =
+          submitButtonIndex !== -1 && toIndex > submitButtonIndex
+            ? submitButtonIndex
+            : toIndex;
+
         if (adjustedToIndex !== toIndex) {
           // If we adjusted the position, we need to handle it differently
           const newFields = [...fields];
           const [movedField] = newFields.splice(fromIndex, 1);
           newFields.splice(adjustedToIndex, 0, movedField);
-          
+
           // Update the store
           fields.forEach((_, index) => {
             if (index >= Math.min(fromIndex, adjustedToIndex)) {
@@ -880,13 +890,13 @@ export default function Canvas() {
         }
       }
     }
-    
+
     // Clear any pending timeout
     if (dragOverTimeoutRef.current) {
       clearTimeout(dragOverTimeoutRef.current);
       dragOverTimeoutRef.current = null;
     }
-    
+
     setDraggedFieldId(null);
     setDragOverFieldId(null);
     setIsDragOverCanvas(false);
@@ -903,7 +913,7 @@ export default function Canvas() {
       const timeoutId = setTimeout(() => {
         scrollToField(selectedFieldId);
       }, 300);
-      
+
       return () => clearTimeout(timeoutId);
     }
   }, [selectedFieldId]);
@@ -935,7 +945,7 @@ export default function Canvas() {
         clearTimeout(dragOverTimeoutRef.current);
         dragOverTimeoutRef.current = null;
       }
-      
+
       draggedFieldTypeRef.current = null;
       setGhostFieldType(null);
       setGhostInsertIndex(null);
@@ -944,7 +954,7 @@ export default function Canvas() {
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('dragstart', handleGlobalDragStart);
     document.addEventListener('dragend', handleGlobalDragEnd);
-    
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('dragstart', handleGlobalDragStart);
@@ -1047,7 +1057,7 @@ export default function Canvas() {
             <Textarea
               placeholder={getDefaultPlaceholder(fieldType)}
               disabled
-              className="resize-none bg-muted/50 border-dashed"
+              className="bg-muted/50 resize-none border-dashed"
               rows={3}
             />
           );
@@ -1067,8 +1077,17 @@ export default function Canvas() {
             <RadioGroup className="space-y-2">
               {['Option 1', 'Option 2', 'Option 3'].map((option, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option} id={`ghost-${index}`} disabled />
-                  <Label htmlFor={`ghost-${index}`} className="text-muted-foreground">{option}</Label>
+                  <RadioGroupItem
+                    value={option}
+                    id={`ghost-${index}`}
+                    disabled
+                  />
+                  <Label
+                    htmlFor={`ghost-${index}`}
+                    className="text-muted-foreground"
+                  >
+                    {option}
+                  </Label>
                 </div>
               ))}
             </RadioGroup>
@@ -1085,7 +1104,7 @@ export default function Canvas() {
         case 'file':
         case 'image':
           return (
-            <div className="border-muted-foreground/25 rounded-lg border-2 border-dashed p-6 text-center bg-muted/50">
+            <div className="border-muted-foreground/25 bg-muted/50 rounded-lg border-2 border-dashed p-6 text-center">
               <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
                 Click to upload {fieldType} files
@@ -1116,9 +1135,9 @@ export default function Canvas() {
                 step={1}
                 defaultValue={0}
                 disabled
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200/50 dark:bg-gray-700/50 border-dashed [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary/50 [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary/50 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+                className="[&::-webkit-slider-thumb]:bg-primary/50 [&::-moz-range-thumb]:bg-primary/50 h-2 w-full cursor-pointer appearance-none rounded-lg border-dashed bg-gray-200/50 dark:bg-gray-700/50 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full"
               />
-              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+              <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                 <span>0</span>
                 <span>0</span>
                 <span>100</span>
@@ -1127,22 +1146,20 @@ export default function Canvas() {
             </div>
           );
 
-                      case 'divider':
+        case 'divider':
           return <Separator className="my-4 border-dashed" />;
 
         case 'submit':
           return (
-            <Button 
+            <Button
               type="submit"
-              className="w-full bg-primary/50 hover:bg-primary/60 text-primary-foreground border-dashed"
+              className="bg-primary/50 hover:bg-primary/60 w-full border-dashed text-primary-foreground"
               disabled
             >
               <Send className="mr-2 h-4 w-4" />
               Submit
             </Button>
           );
-
-
 
         default:
           return (
@@ -1156,14 +1173,14 @@ export default function Canvas() {
     };
 
     return (
-      <Card className="opacity-60 border-dashed border-2 bg-muted/20">
+      <Card className="bg-muted/20 border-2 border-dashed opacity-60">
         <CardContent className="px-3 py-1.5">
           <div className="mb-1.5 flex items-start justify-between">
             <div className="flex-1">
               <Input
                 value={getDefaultLabel(fieldType)}
                 disabled
-                className="h-auto border-none p-0 font-medium text-muted-foreground bg-transparent"
+                className="h-auto border-none bg-transparent p-0 font-medium text-muted-foreground"
               />
             </div>
           </div>
@@ -1173,9 +1190,9 @@ export default function Canvas() {
               <input
                 type="checkbox"
                 disabled
-                className="h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors opacity-50"
+                className="h-4 w-4 cursor-pointer rounded-md border border-border bg-background opacity-50 transition-colors"
               />
-              <Label className="text-xs text-muted-foreground cursor-pointer select-none">
+              <Label className="cursor-pointer select-none text-xs text-muted-foreground">
                 Required
               </Label>
             </div>
@@ -1190,240 +1207,249 @@ export default function Canvas() {
   const otherFields = fields.filter(field => field.type !== 'submit');
 
   return (
-    <motion.div 
-      className="h-full flex flex-col bg-background"
+    <motion.div
+      className="flex h-full flex-col bg-background"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       {/* Main content area with scroll */}
-      <div 
+      <div
         ref={scrollContainerRef}
         className="flex-1 overflow-y-auto p-6"
         onDragEnter={handleDragEnter}
-        onDragOver={(e) => handleDragOver(e)}
+        onDragOver={e => handleDragOver(e)}
         onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e)}
+        onDrop={e => handleDrop(e)}
       >
-        <motion.div 
+        <motion.div
           className="mx-auto max-w-4xl space-y-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           onDragEnter={handleDragEnter}
-          onDragOver={(e) => handleDragOver(e)}
+          onDragOver={e => handleDragOver(e)}
           onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e)}
+          onDrop={e => handleDrop(e)}
         >
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <FormTitle />
-        </motion.div>
-        
-        <AnimatePresence mode="wait">
-          {fields.length === 0 ? (
-            <motion.div 
-              key="empty-state"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-              className={`flex flex-col items-center justify-center py-12 text-center transition-all duration-200 ${
-                isDragOverCanvas ? 'bg-primary/5 border-2 border-dashed border-primary/30 rounded-lg' : ''
-              }`}
-              onDragOver={(e) => handleDragOver(e)}
-              onDrop={(e) => handleDrop(e)}
-            >
-              <motion.div 
-                className="mb-4 text-muted-foreground"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <FileText className="mx-auto h-12 w-12" />
-              </motion.div>
-              <motion.h3 
-                className="mb-2 text-lg font-medium"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                No fields added yet
-              </motion.h3>
-              <motion.p 
-                className="mb-4 text-muted-foreground"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-              >
-                Drag and drop components from the sidebar to start building your form
-              </motion.p>
-              <motion.p 
-                className="mb-6 text-muted-foreground font-medium"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-              >
-                or
-              </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <FormTitle />
+          </motion.div>
+
+          <AnimatePresence mode="wait">
+            {fields.length === 0 ? (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                key="empty-state"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+                className={`flex flex-col items-center justify-center py-12 text-center transition-all duration-200 ${
+                  isDragOverCanvas
+                    ? 'bg-primary/5 border-primary/30 rounded-lg border-2 border-dashed'
+                    : ''
+                }`}
+                onDragOver={e => handleDragOver(e)}
+                onDrop={e => handleDrop(e)}
               >
-                <Button 
-                  onClick={() => setShowTemplateSelector(true)}
-                  className="flex items-center gap-2 cursor-pointer"
+                <motion.div
+                  className="mb-4 text-muted-foreground"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                  <Sparkles className="h-4 w-4" />
-                  Choose a Template
-                </Button>
-              </motion.div>
-            </motion.div>
-          ) : (
-            <AnimatePresence>
-              {otherFields
-                .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
-                .map((field, index) => (
-                <motion.div 
-                  key={field.id}
-                  ref={(el) => {
-                    fieldRefs.current[field.id] = el;
-                  }}
-                  initial={{ opacity: 0, x: -20, y: 10 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  exit={{ opacity: 0, x: 20, y: -10, height: 0 }}
-                  transition={{ 
-                    duration: 0.4, 
-                    delay: index * 0.1,
-                    ease: "easeOut"
-                  }}
-                  layout
-                >
-                  {/* Drop zone above each field */}
-                  <div
-                    className={`h-2 transition-all duration-200 ${
-                      dragOverFieldId === field.id ? 'bg-primary/20' : 'bg-transparent'
-                    }`}
-                    onDragOver={(e) => handleDragOver(e, field.id)}
-                    onDrop={(e) => handleDrop(e, field.id)}
-                  />
-                  
-                  {/* Ghost field above */}
-                  {ghostFieldType && ghostInsertIndex === index && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <GhostField fieldType={ghostFieldType} />
-                    </motion.div>
-                  )}
-                  
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <FieldRenderer
-                      field={field}
-                      isSelected={selectedFieldId === field.id}
-                      onSelect={() => setSelectedField(field.id)}
-                      onDelete={() => removeField(field.id)}
-                      onDragStart={handleDragStart}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      isDragOver={dragOverFieldId === field.id}
-                      isDragging={draggedFieldId === field.id}
-                    />
-                  </motion.div>
+                  <FileText className="mx-auto h-12 w-12" />
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          )}
-        </AnimatePresence>
-        
-        {/* Ghost field at the end */}
-        {ghostFieldType && ghostInsertIndex === otherFields.length && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
-            <GhostField fieldType={ghostFieldType} />
-          </motion.div>
-        )}
-        
-        {/* Drop zone at the end */}
-        <div
-          className={`h-2 transition-all duration-200 ${
-            isDragOverCanvas && !dragOverFieldId ? 'bg-primary/20' : 'bg-transparent'
-          }`}
-          onDragOver={(e) => handleDragOver(e)}
-          onDrop={(e) => handleDrop(e)}
-        />
-        
-        {/* Extra space at bottom for dragging */}
-        <div className="h-32" />
-      </motion.div>
-      
-      <AnimatePresence>
-        {showTemplateSelector && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <TemplateSelector onClose={() => setShowTemplateSelector(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-    
-    {/* Fixed submit buttons at bottom */}
-    {submitFields.length > 0 && (
-      <motion.div 
-        className="border-t bg-background p-6"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        <div className="mx-auto max-w-4xl space-y-4">
-          {submitFields.map((field, index) => (
-            <motion.div 
-              key={field.id}
-              ref={(el) => {
-                fieldRefs.current[field.id] = el;
-              }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
+                <motion.h3
+                  className="mb-2 text-lg font-medium"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  No fields added yet
+                </motion.h3>
+                <motion.p
+                  className="mb-4 text-muted-foreground"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                  Drag and drop components from the sidebar to start building
+                  your form
+                </motion.p>
+                <motion.p
+                  className="mb-6 font-medium text-muted-foreground"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  or
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button
+                    onClick={() => setShowTemplateSelector(true)}
+                    className="flex cursor-pointer items-center gap-2"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Choose a Template
+                  </Button>
+                </motion.div>
+              </motion.div>
+            ) : (
+              <AnimatePresence>
+                {otherFields
+                  .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
+                  .map((field, index) => (
+                    <motion.div
+                      key={field.id}
+                      ref={el => {
+                        fieldRefs.current[field.id] = el;
+                      }}
+                      initial={{ opacity: 0, x: -20, y: 10 }}
+                      animate={{ opacity: 1, x: 0, y: 0 }}
+                      exit={{ opacity: 0, x: 20, y: -10, height: 0 }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.1,
+                        ease: 'easeOut',
+                      }}
+                      layout
+                    >
+                      {/* Drop zone above each field */}
+                      <div
+                        className={`h-2 transition-all duration-200 ${
+                          dragOverFieldId === field.id
+                            ? 'bg-primary/20'
+                            : 'bg-transparent'
+                        }`}
+                        onDragOver={e => handleDragOver(e, field.id)}
+                        onDrop={e => handleDrop(e, field.id)}
+                      />
+
+                      {/* Ghost field above */}
+                      {ghostFieldType && ghostInsertIndex === index && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <GhostField fieldType={ghostFieldType} />
+                        </motion.div>
+                      )}
+
+                      <motion.div
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <FieldRenderer
+                          field={field}
+                          isSelected={selectedFieldId === field.id}
+                          onSelect={() => setSelectedField(field.id)}
+                          onDelete={() => removeField(field.id)}
+                          onDragStart={handleDragStart}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          onDrop={handleDrop}
+                          isDragOver={dragOverFieldId === field.id}
+                          isDragging={draggedFieldId === field.id}
+                        />
+                      </motion.div>
+                    </motion.div>
+                  ))}
+              </AnimatePresence>
+            )}
+          </AnimatePresence>
+
+          {/* Ghost field at the end */}
+          {ghostFieldType && ghostInsertIndex === otherFields.length && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
             >
-              <FieldRenderer
-                field={field}
-                isSelected={selectedFieldId === field.id}
-                onSelect={() => setSelectedField(field.id)}
-                onDelete={() => removeField(field.id)}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                isDragOver={dragOverFieldId === field.id}
-                isDragging={draggedFieldId === field.id}
+              <GhostField fieldType={ghostFieldType} />
+            </motion.div>
+          )}
+
+          {/* Drop zone at the end */}
+          <div
+            className={`h-2 transition-all duration-200 ${
+              isDragOverCanvas && !dragOverFieldId
+                ? 'bg-primary/20'
+                : 'bg-transparent'
+            }`}
+            onDragOver={e => handleDragOver(e)}
+            onDrop={e => handleDrop(e)}
+          />
+
+          {/* Extra space at bottom for dragging */}
+          <div className="h-32" />
+        </motion.div>
+
+        <AnimatePresence>
+          {showTemplateSelector && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <TemplateSelector
+                onClose={() => setShowTemplateSelector(false)}
               />
             </motion.div>
-          ))}
-        </div>
-      </motion.div>
-    )}
-  </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Fixed submit buttons at bottom */}
+      {submitFields.length > 0 && (
+        <motion.div
+          className="border-t bg-background p-6"
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="mx-auto max-w-4xl space-y-4">
+            {submitFields.map((field, index) => (
+              <motion.div
+                key={field.id}
+                ref={el => {
+                  fieldRefs.current[field.id] = el;
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <FieldRenderer
+                  field={field}
+                  isSelected={selectedFieldId === field.id}
+                  onSelect={() => setSelectedField(field.id)}
+                  onDelete={() => removeField(field.id)}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  isDragOver={dragOverFieldId === field.id}
+                  isDragging={draggedFieldId === field.id}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }

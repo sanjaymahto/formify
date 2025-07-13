@@ -83,22 +83,19 @@ const Header = () => {
   };
 
   return (
-    <motion.header 
+    <motion.header
       className="flex h-16 items-center justify-between border-b border-border bg-background p-4 text-foreground"
       initial={{ y: -64, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      <motion.div 
+      <motion.div
         className="flex items-center space-x-4"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
           <Link
             href="/"
             className="flex items-center space-x-2 transition-opacity hover:opacity-80"
@@ -108,26 +105,26 @@ const Header = () => {
             </span>
           </Link>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="h-6 w-px bg-border"
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
           transition={{ duration: 0.4, delay: 0.4 }}
         ></motion.div>
-        <motion.div 
+        <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <h1 
-            className="text-lg font-semibold truncate max-w-xs"
+          <h1
+            className="max-w-xs truncate text-lg font-semibold"
             title={isPreviewMode ? 'Form Preview' : formTitle}
           >
             {isPreviewMode ? 'Form Preview' : formTitle}
           </h1>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -154,7 +151,7 @@ const Header = () => {
         </motion.div>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         className="flex items-center space-x-3"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -172,7 +169,7 @@ const Header = () => {
               variant="ghost"
               size="sm"
               onClick={toggleAutoSave}
-              className={`h-8 px-2 text-xs cursor-pointer ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
+              className={`h-8 cursor-pointer px-2 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
               title={`Auto-save is ${autoSaveEnabled ? 'enabled' : 'disabled'}`}
             >
               <Save className="mr-1 h-3 w-3" />
@@ -197,7 +194,7 @@ const Header = () => {
             onClick={() =>
               updateSettings({ theme: theme === 'light' ? 'dark' : 'light' })
             }
-            className="bg-background/50 h-8 w-8 border-2 backdrop-blur-sm transition-all duration-200 hover:scale-110 cursor-pointer"
+            className="bg-background/50 h-8 w-8 cursor-pointer border-2 backdrop-blur-sm transition-all duration-200 hover:scale-110"
             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
             {theme === 'light' ? (
@@ -217,7 +214,7 @@ const Header = () => {
             variant={isPreviewMode ? 'default' : 'outline'}
             size="sm"
             onClick={togglePreviewMode}
-            className="flex items-center space-x-2 cursor-pointer"
+            className="flex cursor-pointer items-center space-x-2"
             title={
               isPreviewMode
                 ? 'Switch to edit mode (Ctrl+P)'
@@ -251,7 +248,7 @@ const Header = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-2 cursor-pointer"
+                className="flex cursor-pointer items-center space-x-2"
                 title="Save form (Ctrl+S)"
               >
                 <Save className="h-4 w-4" />
@@ -261,7 +258,6 @@ const Header = () => {
           )}
         </AnimatePresence>
       </motion.div>
-      
     </motion.header>
   );
 };

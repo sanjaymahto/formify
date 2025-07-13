@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { FormTemplate } from './templates';
 
-// Utility function to get timestamp 
+// Utility function to get timestamp
 const getClientTimestamp = (): number => {
   if (typeof window === 'undefined') {
     return 0; // Return 0 for server-side rendering
@@ -38,7 +38,17 @@ export type FieldType =
   | 'submit' // Submit button
   | 'other'; // Other file types
 
-export type GridColumnType = 'text' | 'number' | 'date' | 'time' | 'datetime' | 'email' | 'phone' | 'url' | 'select' | 'checkbox';
+export type GridColumnType =
+  | 'text'
+  | 'number'
+  | 'date'
+  | 'time'
+  | 'datetime'
+  | 'email'
+  | 'phone'
+  | 'url'
+  | 'select'
+  | 'checkbox';
 
 export interface GridColumn {
   id: string;
@@ -68,7 +78,7 @@ export interface Field {
   placeholder?: string;
   required: boolean;
   options?: string[]; // For select and radio fields
-  
+
   // Advanced field properties
   validation?: {
     min?: number;
@@ -78,7 +88,7 @@ export interface Field {
     pattern?: string; // Regex pattern
     customValidation?: string; // Custom validation function
   };
-  
+
   // File upload specific properties
   fileConfig?: {
     maxSize?: number; // MB
@@ -87,7 +97,7 @@ export interface Field {
     maxFiles?: number;
     minFiles?: number;
   };
-  
+
   // Date/time specific properties
   dateConfig?: {
     format?: string;
@@ -96,7 +106,7 @@ export interface Field {
     defaultDate?: string;
     timezone?: string;
   };
-  
+
   // Rating specific properties
   ratingConfig?: {
     minRating?: number;
@@ -105,7 +115,7 @@ export interface Field {
     showLabels?: boolean;
     labels?: string[];
   };
-  
+
   // Slider specific properties
   sliderConfig?: {
     min?: number;
@@ -116,7 +126,7 @@ export interface Field {
     showMarks?: boolean;
     marks?: { value: number; label: string }[];
   };
-  
+
   // Signature specific properties
   signatureConfig?: {
     width?: number;
@@ -125,7 +135,7 @@ export interface Field {
     backgroundColor?: string;
     lineWidth?: number;
   };
-  
+
   // Text input specific properties
   textConfig?: {
     autoFocus?: boolean;
@@ -134,7 +144,7 @@ export interface Field {
     minLength?: number;
     pattern?: string;
   };
-  
+
   // Layout and styling properties
   layout?: {
     width?: string; // CSS width (e.g., '100%', '200px')
@@ -143,26 +153,43 @@ export interface Field {
     padding?: string; // CSS padding
     display?: 'block' | 'inline' | 'inline-block' | 'flex' | 'grid';
     flexDirection?: 'row' | 'column';
-    justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around';
+    justifyContent?:
+      | 'flex-start'
+      | 'center'
+      | 'flex-end'
+      | 'space-between'
+      | 'space-around';
     alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
     gridTemplateColumns?: string;
     gridGap?: string;
   };
-  
+
   // Conditional logic properties
   conditional?: {
     showIf?: {
       fieldId?: string;
-      operator?: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than';
+      operator?:
+        | 'equals'
+        | 'not_equals'
+        | 'contains'
+        | 'not_contains'
+        | 'greater_than'
+        | 'less_than';
       value?: string | number | boolean;
     };
     hideIf?: {
       fieldId?: string;
-      operator?: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than';
+      operator?:
+        | 'equals'
+        | 'not_equals'
+        | 'contains'
+        | 'not_contains'
+        | 'greater_than'
+        | 'less_than';
       value?: string | number | boolean;
     };
   };
-  
+
   // Grid specific properties
   gridConfig?: {
     columns: GridColumn[];
@@ -172,7 +199,7 @@ export interface Field {
     maxRows?: number;
     minRows?: number;
   };
-  
+
   // Code specific properties
   codeConfig?: {
     language?: string;
@@ -181,7 +208,7 @@ export interface Field {
     autoComplete?: boolean;
     syntaxHighlighting?: boolean;
   };
-  
+
   // Advanced properties
   advanced?: {
     helpText?: string;
@@ -261,13 +288,20 @@ interface Command {
 }
 
 // Conditional logic evaluation function
-const evaluateCondition = (condition: any, formData: Record<string, any>): boolean => {
-  if (!condition?.fieldId || !condition?.operator || condition?.value === undefined) {
+const evaluateCondition = (
+  condition: any,
+  formData: Record<string, any>
+): boolean => {
+  if (
+    !condition?.fieldId ||
+    !condition?.operator ||
+    condition?.value === undefined
+  ) {
     return true; // No condition = always show
   }
-  
+
   const fieldValue = formData[condition.fieldId];
-  
+
   switch (condition.operator) {
     case 'equals':
       return fieldValue === condition.value;
@@ -287,7 +321,10 @@ const evaluateCondition = (condition: any, formData: Record<string, any>): boole
 };
 
 // Check if a field should be visible based on conditional logic
-const shouldShowField = (field: Field, formData: Record<string, any>): boolean => {
+const shouldShowField = (
+  field: Field,
+  formData: Record<string, any>
+): boolean => {
   if (field.conditional?.showIf) {
     return evaluateCondition(field.conditional.showIf, formData);
   }
@@ -348,7 +385,7 @@ export const useFormStore = create<FormState>()(
       addField: field => {
         const state = get();
         const newHistory = state.history.slice(0, state.historyIndex + 1);
-        
+
         // Ensure submit buttons are always at the end
         let insertIndex = state.fields.length;
         if (field.type === 'submit') {
@@ -356,10 +393,13 @@ export const useFormStore = create<FormState>()(
           insertIndex = state.fields.length;
         } else {
           // Other fields go before any existing submit buttons
-          const submitButtonIndex = state.fields.findIndex(f => f.type === 'submit');
-          insertIndex = submitButtonIndex !== -1 ? submitButtonIndex : state.fields.length;
+          const submitButtonIndex = state.fields.findIndex(
+            f => f.type === 'submit'
+          );
+          insertIndex =
+            submitButtonIndex !== -1 ? submitButtonIndex : state.fields.length;
         }
-        
+
         newHistory.push({
           type: 'add',
           data: { field, index: insertIndex },
@@ -369,7 +409,7 @@ export const useFormStore = create<FormState>()(
         set(state => {
           const newFields = [...state.fields];
           newFields.splice(insertIndex, 0, field);
-          
+
           return {
             fields: newFields,
             selectedFieldId: null, // Don't automatically select the newly added field
@@ -438,25 +478,30 @@ export const useFormStore = create<FormState>()(
         set(state => {
           const newFields = [...state.fields];
           const movedField = newFields[fromIndex];
-          
+
           // Don't allow reordering submit buttons
           if (movedField.type === 'submit') {
             return state;
           }
-          
+
           // Find the last non-submit field index
-          const submitButtonIndex = newFields.findIndex(f => f.type === 'submit');
-          const lastNonSubmitIndex = submitButtonIndex !== -1 ? submitButtonIndex - 1 : newFields.length - 1;
-          
+          const submitButtonIndex = newFields.findIndex(
+            f => f.type === 'submit'
+          );
+          const lastNonSubmitIndex =
+            submitButtonIndex !== -1
+              ? submitButtonIndex - 1
+              : newFields.length - 1;
+
           // Adjust toIndex to not go beyond submit buttons
           const adjustedToIndex = Math.min(toIndex, lastNonSubmitIndex);
-          
+
           // Remove the field from its original position
           newFields.splice(fromIndex, 1);
-          
+
           // Insert it at the adjusted position
           newFields.splice(adjustedToIndex, 0, movedField);
-          
+
           return {
             fields: newFields,
             history: newHistory,
@@ -470,14 +515,22 @@ export const useFormStore = create<FormState>()(
 
       setFormTitle: (title: string) => {
         const currentState = get();
-        const newHistory = currentState.history.slice(0, currentState.historyIndex + 1);
+        const newHistory = currentState.history.slice(
+          0,
+          currentState.historyIndex + 1
+        );
         newHistory.push({
           type: 'update',
-          data: { 
-            id: 'form-title', 
-            oldField: { id: 'form-title', type: 'text', label: currentState.formTitle, required: false },
+          data: {
+            id: 'form-title',
+            oldField: {
+              id: 'form-title',
+              type: 'text',
+              label: currentState.formTitle,
+              required: false,
+            },
             updates: { label: title },
-            index: -1 
+            index: -1,
           },
           timestamp: getClientTimestamp(),
         });

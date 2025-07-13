@@ -113,14 +113,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   if (!field) {
     return (
-      <motion.div 
-        className="w-[80%] h-full flex flex-col border-l border-border bg-background"
+      <motion.div
+        className="flex h-full w-[80%] flex-col border-l border-border bg-background"
         initial={{ x: '85%', opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <div className="overflow-y-auto flex-1 p-4">
-          <motion.div 
+        <div className="flex-1 overflow-y-auto p-4">
+          <motion.div
             className="py-8 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -133,7 +133,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             >
               <Settings className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
             </motion.div>
-            <motion.p 
+            <motion.p
               className="text-sm text-muted-foreground"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -188,14 +188,16 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="required"
               checked={field.required}
-              onChange={(e) => handleUpdate({ required: e.target.checked })}
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.required 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              onChange={e => handleUpdate({ required: e.target.checked })}
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.required
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.required ? getCheckboxColors().cssColor : undefined
+                accentColor: field.required
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="required" className="cursor-pointer select-none">
@@ -300,7 +302,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="multiple"
               checked={field.fileConfig?.multiple || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   fileConfig: {
                     ...field.fileConfig,
@@ -308,13 +310,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.fileConfig?.multiple 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.fileConfig?.multiple
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.fileConfig?.multiple ? getCheckboxColors().cssColor : undefined
+                accentColor: field.fileConfig?.multiple
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="multiple" className="cursor-pointer select-none">
@@ -401,7 +405,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 type="checkbox"
                 id="allowHalf"
                 checked={field.ratingConfig?.allowHalf || false}
-                onChange={(e) =>
+                onChange={e =>
                   handleUpdate({
                     ratingConfig: {
                       ...field.ratingConfig,
@@ -409,13 +413,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                     },
                   })
                 }
-                className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                  field.ratingConfig?.allowHalf 
-                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+                className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                  field.ratingConfig?.allowHalf
+                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                     : 'border-border'
                 } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
                 style={{
-                  accentColor: field.ratingConfig?.allowHalf ? getCheckboxColors().cssColor : undefined
+                  accentColor: field.ratingConfig?.allowHalf
+                    ? getCheckboxColors().cssColor
+                    : undefined,
                 }}
               />
               <Label htmlFor="allowHalf" className="cursor-pointer select-none">
@@ -429,7 +435,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="showLabels"
               checked={field.ratingConfig?.showLabels || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   ratingConfig: {
                     ...field.ratingConfig,
@@ -437,13 +443,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.ratingConfig?.showLabels 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.ratingConfig?.showLabels
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.ratingConfig?.showLabels ? getCheckboxColors().cssColor : undefined
+                accentColor: field.ratingConfig?.showLabels
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="showLabels" className="cursor-pointer select-none">
@@ -526,7 +534,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="showValue"
               checked={field.sliderConfig?.showValue || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   sliderConfig: {
                     ...field.sliderConfig,
@@ -534,13 +542,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.sliderConfig?.showValue 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.sliderConfig?.showValue
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.sliderConfig?.showValue ? getCheckboxColors().cssColor : undefined
+                accentColor: field.sliderConfig?.showValue
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="showValue" className="cursor-pointer select-none">
@@ -552,10 +562,32 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     );
   };
 
-
-
   const renderValidationProperties = () => {
-    if (['divider', 'progress', 'password', 'textarea', 'url', 'phone', 'select', 'radio', 'checkbox', 'multi-select', 'toggle', 'rating', 'slider', 'color', 'date', 'time', 'datetime', 'file', 'image', 'grid'].includes(field.type)) return null;
+    if (
+      [
+        'divider',
+        'progress',
+        'password',
+        'textarea',
+        'url',
+        'phone',
+        'select',
+        'radio',
+        'checkbox',
+        'multi-select',
+        'toggle',
+        'rating',
+        'slider',
+        'color',
+        'date',
+        'time',
+        'datetime',
+        'file',
+        'image',
+        'grid',
+      ].includes(field.type)
+    )
+      return null;
 
     return (
       <Card>
@@ -563,9 +595,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <CardTitle className="text-sm">Validation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {['text', 'email'].includes(
-            field.type
-          ) && (
+          {['text', 'email'].includes(field.type) && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="minLength">Minimum Length</Label>
@@ -737,7 +767,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="autoFocus"
               checked={field.textConfig?.autoFocus || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   textConfig: {
                     ...field.textConfig,
@@ -745,13 +775,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.textConfig?.autoFocus 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.textConfig?.autoFocus
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.textConfig?.autoFocus ? getCheckboxColors().cssColor : undefined
+                accentColor: field.textConfig?.autoFocus
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="autoFocus" className="cursor-pointer select-none">
@@ -764,7 +796,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="spellCheck"
               checked={field.textConfig?.spellCheck !== false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   textConfig: {
                     ...field.textConfig,
@@ -772,13 +804,16 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.textConfig?.spellCheck !== false 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.textConfig?.spellCheck !== false
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.textConfig?.spellCheck !== false ? getCheckboxColors().cssColor : undefined
+                accentColor:
+                  field.textConfig?.spellCheck !== false
+                    ? getCheckboxColors().cssColor
+                    : undefined,
               }}
             />
             <Label htmlFor="spellCheck" className="cursor-pointer select-none">
@@ -792,7 +827,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderLayoutProperties = () => {
     // Only show layout properties for fields that can have layout, not structural elements
-    if (['divider', 'section', 'html', 'code'].includes(field.type)) return null;
+    if (['divider', 'section', 'html', 'code'].includes(field.type))
+      return null;
 
     return (
       <Card>
@@ -846,7 +882,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 handleUpdate({
                   layout: {
                     ...field.layout,
-                    display: value as 'block' | 'inline' | 'inline-block' | 'flex' | 'grid',
+                    display: value as
+                      | 'block'
+                      | 'inline'
+                      | 'inline-block'
+                      | 'flex'
+                      | 'grid',
                   },
                 })
               }
@@ -904,7 +945,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderConditionalProperties = () => {
     // Only show conditional properties for interactive fields
-    if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type)) return null;
+    if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type))
+      return null;
 
     // Debug: Log available fields
     const availableFields = fields.filter(f => f.id !== field.id);
@@ -923,7 +965,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Show if</Label>
-            <div className="grid grid-cols-3 gap-2 relative">
+            <div className="relative grid grid-cols-3 gap-2">
               <Select
                 value={field.conditional?.showIf?.fieldId || ''}
                 onValueChange={value =>
@@ -942,11 +984,17 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   <SelectValue placeholder="Field" />
                 </SelectTrigger>
                 <SelectContent className="absolute z-50">
-                  {fields.filter(f => f.id !== field.id).map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
-                  ))}
+                  {fields
+                    .filter(f => f.id !== field.id)
+                    .map(f => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.label}
+                      </SelectItem>
+                    ))}
                   {fields.filter(f => f.id !== field.id).length === 0 && (
-                    <SelectItem value="" disabled>No other fields available</SelectItem>
+                    <SelectItem value="" disabled>
+                      No other fields available
+                    </SelectItem>
                   )}
                 </SelectContent>
               </Select>
@@ -958,7 +1006,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       ...field.conditional,
                       showIf: {
                         ...field.conditional?.showIf,
-                        operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
+                        operator: value as
+                          | 'equals'
+                          | 'not_equals'
+                          | 'contains'
+                          | 'not_contains'
+                          | 'greater_than'
+                          | 'less_than',
                       },
                     },
                   })
@@ -996,7 +1050,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
           <div className="space-y-2">
             <Label>Hide if</Label>
-            <div className="grid grid-cols-3 gap-2 relative">
+            <div className="relative grid grid-cols-3 gap-2">
               <Select
                 value={field.conditional?.hideIf?.fieldId || ''}
                 onValueChange={value =>
@@ -1015,11 +1069,17 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   <SelectValue placeholder="Field" />
                 </SelectTrigger>
                 <SelectContent className="absolute z-50">
-                  {fields.filter(f => f.id !== field.id).map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.label}</SelectItem>
-                  ))}
+                  {fields
+                    .filter(f => f.id !== field.id)
+                    .map(f => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.label}
+                      </SelectItem>
+                    ))}
                   {fields.filter(f => f.id !== field.id).length === 0 && (
-                    <SelectItem value="" disabled>No other fields available</SelectItem>
+                    <SelectItem value="" disabled>
+                      No other fields available
+                    </SelectItem>
                   )}
                 </SelectContent>
               </Select>
@@ -1031,7 +1091,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       ...field.conditional,
                       hideIf: {
                         ...field.conditional?.hideIf,
-                        operator: value as 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than',
+                        operator: value as
+                          | 'equals'
+                          | 'not_equals'
+                          | 'contains'
+                          | 'not_contains'
+                          | 'greater_than'
+                          | 'less_than',
                       },
                     },
                   })
@@ -1078,13 +1144,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
       columns: [
         { id: '1', name: 'Name', type: 'text' as const, required: true },
         { id: '2', name: 'Email', type: 'email' as const, required: true },
-        { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+        { id: '3', name: 'Phone', type: 'phone' as const, required: false },
       ],
       rows: [],
       allowAddRows: true,
       allowDeleteRows: true,
       maxRows: 10,
-      minRows: 1
+      minRows: 1,
     };
 
     const addColumn = () => {
@@ -1092,13 +1158,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
         id: `col-${Date.now()}`,
         name: `Column ${gridConfig.columns.length + 1}`,
         type: 'text' as const,
-        required: false
+        required: false,
       };
       handleUpdate({
         gridConfig: {
           ...gridConfig,
-          columns: [...gridConfig.columns, newColumn]
-        }
+          columns: [...gridConfig.columns, newColumn],
+        },
       });
     };
 
@@ -1106,19 +1172,22 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
       handleUpdate({
         gridConfig: {
           ...gridConfig,
-          columns: gridConfig.columns.filter(col => col.id !== columnId)
-        }
+          columns: gridConfig.columns.filter(col => col.id !== columnId),
+        },
       });
     };
 
-    const updateColumn = (columnId: string, updates: Partial<typeof gridConfig.columns[0]>) => {
+    const updateColumn = (
+      columnId: string,
+      updates: Partial<(typeof gridConfig.columns)[0]>
+    ) => {
       handleUpdate({
         gridConfig: {
           ...gridConfig,
-          columns: gridConfig.columns.map(col => 
+          columns: gridConfig.columns.map(col =>
             col.id === columnId ? { ...col, ...updates } : col
-          )
-        }
+          ),
+        },
       });
     };
 
@@ -1143,20 +1212,27 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 Add Column
               </Button>
             </div>
-            
+
             <div className="space-y-2">
               {gridConfig.columns.map((column, index) => (
-                <div key={column.id} className="flex items-center space-x-2 p-2 border rounded">
+                <div
+                  key={column.id}
+                  className="flex items-center space-x-2 rounded border p-2"
+                >
                   <div className="flex-1 space-y-2">
                     <Input
                       value={column.name}
-                      onChange={(e) => updateColumn(column.id, { name: e.target.value })}
+                      onChange={e =>
+                        updateColumn(column.id, { name: e.target.value })
+                      }
                       placeholder="Column name"
                       className="h-8 text-sm"
                     />
                     <Select
                       value={column.type}
-                      onValueChange={(value) => updateColumn(column.id, { type: value as any })}
+                      onValueChange={value =>
+                        updateColumn(column.id, { type: value as any })
+                      }
                     >
                       <SelectTrigger className="h-8 text-sm">
                         <SelectValue />
@@ -1179,7 +1255,9 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                     <input
                       type="checkbox"
                       checked={column.required}
-                      onChange={(e) => updateColumn(column.id, { required: e.target.checked })}
+                      onChange={e =>
+                        updateColumn(column.id, { required: e.target.checked })
+                      }
                       className="h-4 w-4"
                     />
                     <Label className="text-xs">Required</Label>
@@ -1204,9 +1282,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 <input
                   type="checkbox"
                   checked={gridConfig.allowAddRows}
-                  onChange={(e) => handleUpdate({
-                    gridConfig: { ...gridConfig, allowAddRows: e.target.checked }
-                  })}
+                  onChange={e =>
+                    handleUpdate({
+                      gridConfig: {
+                        ...gridConfig,
+                        allowAddRows: e.target.checked,
+                      },
+                    })
+                  }
                   className="h-4 w-4"
                 />
                 <Label className="text-xs">Allow Add Rows</Label>
@@ -1215,9 +1298,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 <input
                   type="checkbox"
                   checked={gridConfig.allowDeleteRows}
-                  onChange={(e) => handleUpdate({
-                    gridConfig: { ...gridConfig, allowDeleteRows: e.target.checked }
-                  })}
+                  onChange={e =>
+                    handleUpdate({
+                      gridConfig: {
+                        ...gridConfig,
+                        allowDeleteRows: e.target.checked,
+                      },
+                    })
+                  }
                   className="h-4 w-4"
                 />
                 <Label className="text-xs">Allow Delete Rows</Label>
@@ -1232,9 +1320,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 type="number"
                 min="1"
                 value={gridConfig.minRows || 1}
-                onChange={(e) => handleUpdate({
-                  gridConfig: { ...gridConfig, minRows: parseInt(e.target.value) || 1 }
-                })}
+                onChange={e =>
+                  handleUpdate({
+                    gridConfig: {
+                      ...gridConfig,
+                      minRows: parseInt(e.target.value) || 1,
+                    },
+                  })
+                }
                 className="h-8 text-sm"
               />
             </div>
@@ -1244,9 +1337,14 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 type="number"
                 min="1"
                 value={gridConfig.maxRows || 10}
-                onChange={(e) => handleUpdate({
-                  gridConfig: { ...gridConfig, maxRows: parseInt(e.target.value) || 10 }
-                })}
+                onChange={e =>
+                  handleUpdate({
+                    gridConfig: {
+                      ...gridConfig,
+                      maxRows: parseInt(e.target.value) || 10,
+                    },
+                  })
+                }
                 className="h-8 text-sm"
               />
             </div>
@@ -1312,7 +1410,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             <Label htmlFor="language">Programming Language</Label>
             <Select
               value={codeConfig.language || 'javascript'}
-              onValueChange={(value) =>
+              onValueChange={value =>
                 handleUpdate({
                   codeConfig: {
                     ...codeConfig,
@@ -1387,7 +1485,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 <input
                   type="checkbox"
                   checked={codeConfig.lineNumbers}
-                  onChange={(e) =>
+                  onChange={e =>
                     handleUpdate({
                       codeConfig: {
                         ...codeConfig,
@@ -1403,7 +1501,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 <input
                   type="checkbox"
                   checked={codeConfig.autoComplete}
-                  onChange={(e) =>
+                  onChange={e =>
                     handleUpdate({
                       codeConfig: {
                         ...codeConfig,
@@ -1424,7 +1522,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderAdvancedProperties = () => {
     // Only show advanced properties for interactive fields
-    if (['code', 'progress', 'divider', 'grid'].includes(field.type)) return null;
+    if (['code', 'progress', 'divider', 'grid'].includes(field.type))
+      return null;
 
     return (
       <Card>
@@ -1506,7 +1605,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="hidden"
               checked={field.advanced?.hidden || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
@@ -1514,13 +1613,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.advanced?.hidden 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.advanced?.hidden
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.advanced?.hidden ? getCheckboxColors().cssColor : undefined
+                accentColor: field.advanced?.hidden
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="hidden" className="cursor-pointer select-none">
@@ -1533,7 +1634,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="readonly"
               checked={field.advanced?.readonly || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
@@ -1541,13 +1642,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.advanced?.readonly 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.advanced?.readonly
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.advanced?.readonly ? getCheckboxColors().cssColor : undefined
+                accentColor: field.advanced?.readonly
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="readonly" className="cursor-pointer select-none">
@@ -1560,7 +1663,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               type="checkbox"
               id="disabled"
               checked={field.advanced?.disabled || false}
-              onChange={(e) =>
+              onChange={e =>
                 handleUpdate({
                   advanced: {
                     ...field.advanced,
@@ -1568,13 +1671,15 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   },
                 })
               }
-              className={`h-4 w-4 rounded-md border border-border bg-background cursor-pointer transition-colors ${
-                field.advanced?.disabled 
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}` 
+              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
+                field.advanced?.disabled
+                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
                   : 'border-border'
               } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
               style={{
-                accentColor: field.advanced?.disabled ? getCheckboxColors().cssColor : undefined
+                accentColor: field.advanced?.disabled
+                  ? getCheckboxColors().cssColor
+                  : undefined,
               }}
             />
             <Label htmlFor="disabled" className="cursor-pointer select-none">
@@ -1587,53 +1692,54 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   };
 
   return (
-    <motion.div 
-      className="w-92 h-full flex flex-col border-l border-border bg-background"
+    <motion.div
+      className="w-92 flex h-full flex-col border-l border-border bg-background"
       initial={{ x: 320, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="overflow-y-auto flex-1 p-4">
-        <motion.div 
+      <div className="flex-1 overflow-y-auto p-4">
+        <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <h2 className="mb-2 text-lg font-semibold">Field Properties</h2>
-          <p className="text-sm text-muted-foreground">
-            Configure the selected field
-          </p>
-        </motion.div>
-
-        <AnimatePresence mode="wait">
           <motion.div
-            key={field.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-4"
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
-            {field.type !== 'divider' && renderBasicProperties()}
-            {['text', 'phone', 'url'].includes(field.type) && renderTextProperties()}
-            {field.type !== 'submit' && renderOptionsProperties()}
-            {field.type !== 'submit' && renderFileProperties()}
-            {field.type !== 'submit' && renderRatingProperties()}
-            {field.type !== 'submit' && renderSliderProperties()}
-            {field.type !== 'submit' && renderGridProperties()}
-            {field.type !== 'submit' && renderStructuralProperties()}
-            {field.type !== 'submit' && renderHtmlCodeProperties()}
-            {field.type !== 'submit' && renderLayoutProperties()}
-            {field.type !== 'submit' && renderConditionalProperties()}
-            {field.type !== 'submit' && renderAdvancedProperties()}
+            <h2 className="mb-2 text-lg font-semibold">Field Properties</h2>
+            <p className="text-sm text-muted-foreground">
+              Configure the selected field
+            </p>
           </motion.div>
-        </AnimatePresence>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={field.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="space-y-4"
+            >
+              {field.type !== 'divider' && renderBasicProperties()}
+              {['text', 'phone', 'url'].includes(field.type) &&
+                renderTextProperties()}
+              {field.type !== 'submit' && renderOptionsProperties()}
+              {field.type !== 'submit' && renderFileProperties()}
+              {field.type !== 'submit' && renderRatingProperties()}
+              {field.type !== 'submit' && renderSliderProperties()}
+              {field.type !== 'submit' && renderGridProperties()}
+              {field.type !== 'submit' && renderStructuralProperties()}
+              {field.type !== 'submit' && renderHtmlCodeProperties()}
+              {field.type !== 'submit' && renderLayoutProperties()}
+              {field.type !== 'submit' && renderConditionalProperties()}
+              {field.type !== 'submit' && renderAdvancedProperties()}
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </div>
     </motion.div>

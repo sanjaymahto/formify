@@ -22,7 +22,7 @@ export function SettingsButton({
         variant="ghost"
         size="sm"
         onClick={() => setIsSettingsOpen(true)}
-        className={`h-10 w-10 p-0 cursor-pointer ${className}`}
+        className={`h-10 w-10 cursor-pointer p-0 ${className}`}
         aria-label="Settings"
         title={tooltipText}
       >

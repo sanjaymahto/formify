@@ -126,7 +126,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[80vh] w-full max-w-4xl flex-col rounded-lg bg-background border border-border shadow-xl">
+      <div className="flex max-h-[80vh] w-full max-w-4xl flex-col rounded-lg border border-border bg-background shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border p-6">
           <div>
@@ -141,7 +141,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0 cursor-pointer"
+            className="h-8 w-8 cursor-pointer p-0"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -157,7 +157,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                   placeholder="Search templates..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-background border-border text-foreground placeholder:text-muted-foreground"
+                  className="border-border bg-background pl-10 text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             </div>
@@ -167,25 +167,83 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                 size="sm"
                 onClick={() => setSelectedCategory('All')}
                 style={{
-                  backgroundColor: selectedCategory === 'All' ? buttonColors.bg.replace('bg-', '').includes('blue') ? '#3b82f6' : 
-                    buttonColors.bg.replace('bg-', '').includes('green') ? '#10b981' :
-                    buttonColors.bg.replace('bg-', '').includes('purple') ? '#8b5cf6' :
-                    buttonColors.bg.replace('bg-', '').includes('orange') ? '#f97316' :
-                    buttonColors.bg.replace('bg-', '').includes('pink') ? '#ec4899' :
-                    buttonColors.bg.replace('bg-', '').includes('red') ? '#ef4444' :
-                    buttonColors.bg.replace('bg-', '').includes('teal') ? '#14b8a6' :
-                    buttonColors.bg.replace('bg-', '').includes('indigo') ? '#6366f1' :
-                    buttonColors.bg.replace('bg-', '').includes('yellow') ? '#eab308' : '#3b82f6' : undefined,
-                  borderColor: selectedCategory === 'All' ? buttonColors.border.replace('border-', '').includes('blue') ? '#3b82f6' : 
-                    buttonColors.border.replace('border-', '').includes('green') ? '#10b981' :
-                    buttonColors.border.replace('border-', '').includes('purple') ? '#8b5cf6' :
-                    buttonColors.border.replace('border-', '').includes('orange') ? '#f97316' :
-                    buttonColors.border.replace('border-', '').includes('pink') ? '#ec4899' :
-                    buttonColors.border.replace('border-', '').includes('red') ? '#ef4444' :
-                    buttonColors.border.replace('border-', '').includes('teal') ? '#14b8a6' :
-                    buttonColors.border.replace('border-', '').includes('indigo') ? '#6366f1' :
-                    buttonColors.border.replace('border-', '').includes('yellow') ? '#eab308' : '#3b82f6' : undefined,
-                  color: selectedCategory === 'All' ? '#ffffff' : undefined
+                  backgroundColor:
+                    selectedCategory === 'All'
+                      ? buttonColors.bg.replace('bg-', '').includes('blue')
+                        ? '#3b82f6'
+                        : buttonColors.bg.replace('bg-', '').includes('green')
+                          ? '#10b981'
+                          : buttonColors.bg
+                                .replace('bg-', '')
+                                .includes('purple')
+                            ? '#8b5cf6'
+                            : buttonColors.bg
+                                  .replace('bg-', '')
+                                  .includes('orange')
+                              ? '#f97316'
+                              : buttonColors.bg
+                                    .replace('bg-', '')
+                                    .includes('pink')
+                                ? '#ec4899'
+                                : buttonColors.bg
+                                      .replace('bg-', '')
+                                      .includes('red')
+                                  ? '#ef4444'
+                                  : buttonColors.bg
+                                        .replace('bg-', '')
+                                        .includes('teal')
+                                    ? '#14b8a6'
+                                    : buttonColors.bg
+                                          .replace('bg-', '')
+                                          .includes('indigo')
+                                      ? '#6366f1'
+                                      : buttonColors.bg
+                                            .replace('bg-', '')
+                                            .includes('yellow')
+                                        ? '#eab308'
+                                        : '#3b82f6'
+                      : undefined,
+                  borderColor:
+                    selectedCategory === 'All'
+                      ? buttonColors.border
+                          .replace('border-', '')
+                          .includes('blue')
+                        ? '#3b82f6'
+                        : buttonColors.border
+                              .replace('border-', '')
+                              .includes('green')
+                          ? '#10b981'
+                          : buttonColors.border
+                                .replace('border-', '')
+                                .includes('purple')
+                            ? '#8b5cf6'
+                            : buttonColors.border
+                                  .replace('border-', '')
+                                  .includes('orange')
+                              ? '#f97316'
+                              : buttonColors.border
+                                    .replace('border-', '')
+                                    .includes('pink')
+                                ? '#ec4899'
+                                : buttonColors.border
+                                      .replace('border-', '')
+                                      .includes('red')
+                                  ? '#ef4444'
+                                  : buttonColors.border
+                                        .replace('border-', '')
+                                        .includes('teal')
+                                    ? '#14b8a6'
+                                    : buttonColors.border
+                                          .replace('border-', '')
+                                          .includes('indigo')
+                                      ? '#6366f1'
+                                      : buttonColors.border
+                                            .replace('border-', '')
+                                            .includes('yellow')
+                                        ? '#eab308'
+                                        : '#3b82f6'
+                      : undefined,
+                  color: selectedCategory === 'All' ? '#ffffff' : undefined,
                 }}
                 className={`cursor-pointer ${
                   selectedCategory === 'All'
@@ -202,25 +260,84 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
                   style={{
-                    backgroundColor: selectedCategory === category ? buttonColors.bg.replace('bg-', '').includes('blue') ? '#3b82f6' : 
-                      buttonColors.bg.replace('bg-', '').includes('green') ? '#10b981' :
-                      buttonColors.bg.replace('bg-', '').includes('purple') ? '#8b5cf6' :
-                      buttonColors.bg.replace('bg-', '').includes('orange') ? '#f97316' :
-                      buttonColors.bg.replace('bg-', '').includes('pink') ? '#ec4899' :
-                      buttonColors.bg.replace('bg-', '').includes('red') ? '#ef4444' :
-                      buttonColors.bg.replace('bg-', '').includes('teal') ? '#14b8a6' :
-                      buttonColors.bg.replace('bg-', '').includes('indigo') ? '#6366f1' :
-                      buttonColors.bg.replace('bg-', '').includes('yellow') ? '#eab308' : '#3b82f6' : undefined,
-                    borderColor: selectedCategory === category ? buttonColors.border.replace('border-', '').includes('blue') ? '#3b82f6' : 
-                      buttonColors.border.replace('border-', '').includes('green') ? '#10b981' :
-                      buttonColors.border.replace('border-', '').includes('purple') ? '#8b5cf6' :
-                      buttonColors.border.replace('border-', '').includes('orange') ? '#f97316' :
-                      buttonColors.border.replace('border-', '').includes('pink') ? '#ec4899' :
-                      buttonColors.border.replace('border-', '').includes('red') ? '#ef4444' :
-                      buttonColors.border.replace('border-', '').includes('teal') ? '#14b8a6' :
-                      buttonColors.border.replace('border-', '').includes('indigo') ? '#6366f1' :
-                      buttonColors.border.replace('border-', '').includes('yellow') ? '#eab308' : '#3b82f6' : undefined,
-                    color: selectedCategory === category ? '#ffffff' : undefined
+                    backgroundColor:
+                      selectedCategory === category
+                        ? buttonColors.bg.replace('bg-', '').includes('blue')
+                          ? '#3b82f6'
+                          : buttonColors.bg.replace('bg-', '').includes('green')
+                            ? '#10b981'
+                            : buttonColors.bg
+                                  .replace('bg-', '')
+                                  .includes('purple')
+                              ? '#8b5cf6'
+                              : buttonColors.bg
+                                    .replace('bg-', '')
+                                    .includes('orange')
+                                ? '#f97316'
+                                : buttonColors.bg
+                                      .replace('bg-', '')
+                                      .includes('pink')
+                                  ? '#ec4899'
+                                  : buttonColors.bg
+                                        .replace('bg-', '')
+                                        .includes('red')
+                                    ? '#ef4444'
+                                    : buttonColors.bg
+                                          .replace('bg-', '')
+                                          .includes('teal')
+                                      ? '#14b8a6'
+                                      : buttonColors.bg
+                                            .replace('bg-', '')
+                                            .includes('indigo')
+                                        ? '#6366f1'
+                                        : buttonColors.bg
+                                              .replace('bg-', '')
+                                              .includes('yellow')
+                                          ? '#eab308'
+                                          : '#3b82f6'
+                        : undefined,
+                    borderColor:
+                      selectedCategory === category
+                        ? buttonColors.border
+                            .replace('border-', '')
+                            .includes('blue')
+                          ? '#3b82f6'
+                          : buttonColors.border
+                                .replace('border-', '')
+                                .includes('green')
+                            ? '#10b981'
+                            : buttonColors.border
+                                  .replace('border-', '')
+                                  .includes('purple')
+                              ? '#8b5cf6'
+                              : buttonColors.border
+                                    .replace('border-', '')
+                                    .includes('orange')
+                                ? '#f97316'
+                                : buttonColors.border
+                                      .replace('border-', '')
+                                      .includes('pink')
+                                  ? '#ec4899'
+                                  : buttonColors.border
+                                        .replace('border-', '')
+                                        .includes('red')
+                                    ? '#ef4444'
+                                    : buttonColors.border
+                                          .replace('border-', '')
+                                          .includes('teal')
+                                      ? '#14b8a6'
+                                      : buttonColors.border
+                                            .replace('border-', '')
+                                            .includes('indigo')
+                                        ? '#6366f1'
+                                        : buttonColors.border
+                                              .replace('border-', '')
+                                              .includes('yellow')
+                                          ? '#eab308'
+                                          : '#3b82f6'
+                        : undefined,
+                    color:
+                      selectedCategory === category ? '#ffffff' : undefined,
                   }}
                   className={`cursor-pointer ${
                     selectedCategory === category
@@ -254,7 +371,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
               {filteredTemplates.map(template => (
                 <Card
                   key={template.id}
-                  className="cursor-pointer border-border bg-card p-4 transition-all duration-200 hover:border-primary hover:shadow-lg hover:bg-accent/50"
+                  className="hover:bg-accent/50 cursor-pointer border-border bg-card p-4 transition-all duration-200 hover:border-primary hover:shadow-lg"
                   onClick={() => handleLoadTemplate(template)}
                 >
                   <div className="flex items-start space-x-3">
@@ -283,40 +400,92 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border bg-muted/50 p-6">
+        <div className="bg-muted/50 border-t border-border p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {filteredTemplates.length} template
               {filteredTemplates.length !== 1 ? 's' : ''} available
             </p>
-            <Button 
-              variant="outline" 
-              onClick={onClose} 
+            <Button
+              variant="outline"
+              onClick={onClose}
               style={{
-                borderColor: buttonColors.border.replace('border-', '').includes('blue') ? '#3b82f6' : 
-                  buttonColors.border.replace('border-', '').includes('green') ? '#10b981' :
-                  buttonColors.border.replace('border-', '').includes('purple') ? '#8b5cf6' :
-                  buttonColors.border.replace('border-', '').includes('orange') ? '#f97316' :
-                  buttonColors.border.replace('border-', '').includes('pink') ? '#ec4899' :
-                  buttonColors.border.replace('border-', '').includes('red') ? '#ef4444' :
-                  buttonColors.border.replace('border-', '').includes('teal') ? '#14b8a6' :
-                  buttonColors.border.replace('border-', '').includes('indigo') ? '#6366f1' :
-                  buttonColors.border.replace('border-', '').includes('yellow') ? '#eab308' : '#3b82f6'
+                borderColor: buttonColors.border
+                  .replace('border-', '')
+                  .includes('blue')
+                  ? '#3b82f6'
+                  : buttonColors.border.replace('border-', '').includes('green')
+                    ? '#10b981'
+                    : buttonColors.border
+                          .replace('border-', '')
+                          .includes('purple')
+                      ? '#8b5cf6'
+                      : buttonColors.border
+                            .replace('border-', '')
+                            .includes('orange')
+                        ? '#f97316'
+                        : buttonColors.border
+                              .replace('border-', '')
+                              .includes('pink')
+                          ? '#ec4899'
+                          : buttonColors.border
+                                .replace('border-', '')
+                                .includes('red')
+                            ? '#ef4444'
+                            : buttonColors.border
+                                  .replace('border-', '')
+                                  .includes('teal')
+                              ? '#14b8a6'
+                              : buttonColors.border
+                                    .replace('border-', '')
+                                    .includes('indigo')
+                                ? '#6366f1'
+                                : buttonColors.border
+                                      .replace('border-', '')
+                                      .includes('yellow')
+                                  ? '#eab308'
+                                  : '#3b82f6',
               }}
               className={`cursor-pointer ${buttonColors.focus}`}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = buttonColors.border.replace('border-', '').includes('blue') ? '#3b82f6' : 
-                  buttonColors.border.replace('border-', '').includes('green') ? '#10b981' :
-                  buttonColors.border.replace('border-', '').includes('purple') ? '#8b5cf6' :
-                  buttonColors.border.replace('border-', '').includes('orange') ? '#f97316' :
-                  buttonColors.border.replace('border-', '').includes('pink') ? '#ec4899' :
-                  buttonColors.border.replace('border-', '').includes('red') ? '#ef4444' :
-                  buttonColors.border.replace('border-', '').includes('teal') ? '#14b8a6' :
-                  buttonColors.border.replace('border-', '').includes('indigo') ? '#6366f1' :
-                  buttonColors.border.replace('border-', '').includes('yellow') ? '#eab308' : '#3b82f6';
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = buttonColors.border
+                  .replace('border-', '')
+                  .includes('blue')
+                  ? '#3b82f6'
+                  : buttonColors.border.replace('border-', '').includes('green')
+                    ? '#10b981'
+                    : buttonColors.border
+                          .replace('border-', '')
+                          .includes('purple')
+                      ? '#8b5cf6'
+                      : buttonColors.border
+                            .replace('border-', '')
+                            .includes('orange')
+                        ? '#f97316'
+                        : buttonColors.border
+                              .replace('border-', '')
+                              .includes('pink')
+                          ? '#ec4899'
+                          : buttonColors.border
+                                .replace('border-', '')
+                                .includes('red')
+                            ? '#ef4444'
+                            : buttonColors.border
+                                  .replace('border-', '')
+                                  .includes('teal')
+                              ? '#14b8a6'
+                              : buttonColors.border
+                                    .replace('border-', '')
+                                    .includes('indigo')
+                                ? '#6366f1'
+                                : buttonColors.border
+                                      .replace('border-', '')
+                                      .includes('yellow')
+                                  ? '#eab308'
+                                  : '#3b82f6';
                 e.currentTarget.style.color = '#ffffff';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={e => {
                 e.currentTarget.style.backgroundColor = '';
                 e.currentTarget.style.color = '';
               }}

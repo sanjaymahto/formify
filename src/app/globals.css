@@ -70,22 +70,32 @@
 }
 
 /* Enhanced Input Field Outlines */
-input, textarea, select {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+input,
+textarea,
+select {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease !important;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   border-color: var(--ring) !important;
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1) !important;
   outline: none !important;
 }
 
-input:hover, textarea:hover, select:hover {
+input:hover,
+textarea:hover,
+select:hover {
   border-color: var(--ring) !important;
 }
 
 /* Dark mode input focus */
-.dark input:focus, .dark textarea:focus, .dark select:focus {
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1) !important;
 }
 
@@ -99,7 +109,8 @@ label {
   align-items: center !important;
 }
 
-label:focus, label:focus-visible {
+label:focus,
+label:focus-visible {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;

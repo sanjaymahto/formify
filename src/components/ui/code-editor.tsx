@@ -64,15 +64,16 @@ export function CodeEditor({
   useEffect(() => {
     if (!editorRef.current) return;
 
-    const languageExtension = languageExtensions[language.toLowerCase()] || javascript();
-    
+    const languageExtension =
+      languageExtensions[language.toLowerCase()] || javascript();
+
     const state = EditorState.create({
       doc: value || placeholder,
       extensions: [
         basicSetup,
         languageExtension,
         oneDark,
-        EditorView.updateListener.of((update) => {
+        EditorView.updateListener.of(update => {
           if (update.docChanged) {
             const newValue = update.state.doc.toString();
             if (newValue !== placeholder) {
@@ -83,14 +84,16 @@ export function CodeEditor({
         EditorView.theme({
           '&': {
             fontSize: '14px',
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+            fontFamily:
+              'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
           },
           '.cm-editor': {
             height: '140px !important',
             minHeight: '140px !important',
           },
           '.cm-scroller': {
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+            fontFamily:
+              'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
             height: '140px !important',
           },
         }),
@@ -130,8 +133,11 @@ export function CodeEditor({
   }, [disabled]);
 
   return (
-    <div className={`border-2 border-gray-300 dark:border-gray-600 rounded-md overflow-hidden transition-[border-color] hover:border-blue-400 dark:hover:border-blue-500 focus-within:border-blue-500 dark:focus-within:border-blue-400 focus-within:ring-[3px] focus-within:ring-blue-500/50 ${className}`} style={{ height: '140px' }}>
-      <div ref={editorRef} className="w-full h-full" />
+    <div
+      className={`overflow-hidden rounded-md border-2 border-gray-300 transition-[border-color] focus-within:border-blue-500 focus-within:ring-[3px] focus-within:ring-blue-500/50 hover:border-blue-400 dark:border-gray-600 dark:focus-within:border-blue-400 dark:hover:border-blue-500 ${className}`}
+      style={{ height: '140px' }}
+    >
+      <div ref={editorRef} className="h-full w-full" />
     </div>
   );
-} 
+}

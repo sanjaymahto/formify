@@ -52,10 +52,10 @@ export function FormTitle() {
         <Input
           ref={inputRef}
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={e => setEditValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleSave}
-          className="text-2xl font-bold border-2 border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+          className="focus-visible:ring-primary/20 border-2 border-primary text-2xl font-bold focus-visible:ring-2"
           placeholder="Enter form title..."
           maxLength={100}
         />
@@ -63,7 +63,7 @@ export function FormTitle() {
           size="sm"
           variant="ghost"
           onClick={handleSave}
-          className="h-8 w-8 p-0 cursor-pointer"
+          className="h-8 w-8 cursor-pointer p-0"
         >
           <Check className="h-4 w-4" />
         </Button>
@@ -71,7 +71,7 @@ export function FormTitle() {
           size="sm"
           variant="ghost"
           onClick={handleCancel}
-          className="h-8 w-8 p-0 cursor-pointer"
+          className="h-8 w-8 cursor-pointer p-0"
         >
           <X className="h-4 w-4" />
         </Button>
@@ -80,18 +80,18 @@ export function FormTitle() {
   }
 
   return (
-    <div className="mb-6 flex items-center gap-2 group">
-      <h1 className="text-2xl font-bold text-foreground cursor-pointer hover:text-primary transition-colors">
+    <div className="group mb-6 flex items-center gap-2">
+      <h1 className="cursor-pointer text-2xl font-bold text-foreground transition-colors hover:text-primary">
         {formTitle}
       </h1>
       <Button
         size="sm"
         variant="ghost"
         onClick={() => setIsEditing(true)}
-        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+        className="h-8 w-8 cursor-pointer p-0 opacity-0 transition-opacity group-hover:opacity-100"
       >
         <Edit3 className="h-4 w-4" />
       </Button>
     </div>
   );
-} 
+}

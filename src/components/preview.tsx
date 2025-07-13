@@ -37,7 +37,10 @@ interface PreviewProps {
   formTitle?: string;
 }
 
-const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }) => {
+const Preview: React.FC<PreviewProps> = ({
+  fields,
+  formTitle = 'Untitled Form',
+}) => {
   const storeFormData = useFormStore(state => state.formData);
   const updateFormData = useFormStore(state => state.updateFormData);
   const shouldShowField = useFormStore(state => state.shouldShowField);
@@ -45,7 +48,9 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dragActive, setDragActive] = useState<Record<string, boolean>>({});
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, FileList | null>>({});
+  const [selectedFiles, setSelectedFiles] = useState<
+    Record<string, FileList | null>
+  >({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const getButtonColors = () => {
@@ -260,9 +265,15 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                 <div key={index} className="flex items-center space-x-2">
                   <Checkbox
                     id={`${field.id}-${index}`}
-                    checked={Array.isArray(fieldValue) ? fieldValue.includes(option) : false}
-                    onCheckedChange={(checked) => {
-                      const currentValues = Array.isArray(fieldValue) ? fieldValue : [];
+                    checked={
+                      Array.isArray(fieldValue)
+                        ? fieldValue.includes(option)
+                        : false
+                    }
+                    onCheckedChange={checked => {
+                      const currentValues = Array.isArray(fieldValue)
+                        ? fieldValue
+                        : [];
                       const newValues = checked
                         ? [...currentValues, option]
                         : currentValues.filter(val => val !== option);
@@ -335,16 +346,22 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             e.preventDefault();
             e.stopPropagation();
             setDragActive(prev => ({ ...prev, [field.id]: false }));
-            
+
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-              setSelectedFiles(prev => ({ ...prev, [field.id]: e.dataTransfer.files }));
+              setSelectedFiles(prev => ({
+                ...prev,
+                [field.id]: e.dataTransfer.files,
+              }));
               handleInputChange(field.id, e.dataTransfer.files);
             }
           };
 
           const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
             if (e.target.files && e.target.files.length > 0) {
-              setSelectedFiles(prev => ({ ...prev, [field.id]: e.target.files }));
+              setSelectedFiles(prev => ({
+                ...prev,
+                [field.id]: e.target.files,
+              }));
               handleInputChange(field.id, e.target.files);
             }
           };
@@ -355,9 +372,9 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
           return (
             <div
-              className={`border-2 border-dashed p-6 text-center transition-colors cursor-pointer ${
-                dragActive[field.id] 
-                  ? 'border-primary bg-primary/5' 
+              className={`cursor-pointer border-2 border-dashed p-6 text-center transition-colors ${
+                dragActive[field.id]
+                  ? 'bg-primary/5 border-primary'
                   : 'border-muted-foreground/25 hover:border-primary/50'
               }`}
               onDragEnter={handleDragIn}
@@ -368,7 +385,9 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             >
               <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
               <p className="mb-2 text-sm text-muted-foreground">
-                {dragActive[field.id] ? 'Drop files here' : `Click or drag to upload ${field.type} files`}
+                {dragActive[field.id]
+                  ? 'Drop files here'
+                  : `Click or drag to upload ${field.type} files`}
               </p>
               {field.fileConfig?.maxSize && (
                 <p className="text-xs text-muted-foreground">
@@ -385,9 +404,14 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                 </div>
               )}
               <Input
-                ref={(el) => { fileInputRefs.current[field.id] = el; }}
+                ref={el => {
+                  fileInputRefs.current[field.id] = el;
+                }}
                 type="file"
-                accept={field.fileConfig?.accept || (field.type === 'image' ? 'image/*' : undefined)}
+                accept={
+                  field.fileConfig?.accept ||
+                  (field.type === 'image' ? 'image/*' : undefined)
+                }
                 multiple={field.fileConfig?.multiple}
                 onChange={handleFileSelect}
                 className="hidden"
@@ -396,20 +420,20 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-
-
         case 'date':
           return (
             <div className="relative">
               <Input
                 {...baseFieldProps}
                 type="date"
-                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                className="focus:ring-primary/20 w-full border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
               />
-              <Calendar 
-                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              <Calendar
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 onClick={() => {
-                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  const input = document.getElementById(
+                    field.id
+                  ) as HTMLInputElement;
                   if (input) input.showPicker();
                 }}
               />
@@ -419,15 +443,17 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
         case 'time':
           return (
             <div className="relative">
-              <Input 
-                {...baseFieldProps} 
-                type="time" 
-                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+              <Input
+                {...baseFieldProps}
+                type="time"
+                className="focus:ring-primary/20 w-full border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
               />
-              <Clock 
-                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              <Clock
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 onClick={() => {
-                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  const input = document.getElementById(
+                    field.id
+                  ) as HTMLInputElement;
                   if (input) input.showPicker();
                 }}
               />
@@ -440,32 +466,32 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               <Input
                 {...baseFieldProps}
                 type="datetime-local"
-                className="w-full bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20 pr-10 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
+                className="focus:ring-primary/20 w-full border-border bg-background pr-10 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
               />
-              <Calendar 
-                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300" 
+              <Calendar
+                className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 onClick={() => {
-                  const input = document.getElementById(field.id) as HTMLInputElement;
+                  const input = document.getElementById(
+                    field.id
+                  ) as HTMLInputElement;
                   if (input) input.showPicker();
                 }}
               />
             </div>
           );
 
-
-
         case 'rating':
           return (
             <div className="flex items-center space-x-1">
               {Array.from(
-                { length: field.ratingConfig?.maxRating || 5 }, 
+                { length: field.ratingConfig?.maxRating || 5 },
                 (_, i) => {
                   const starValue = i + 1;
                   const minRating = field.ratingConfig?.minRating || 1;
                   const maxRating = field.ratingConfig?.maxRating || 5;
                   const allowHalf = field.ratingConfig?.allowHalf || false;
                   const currentRating = fieldValue || 0;
-                  
+
                   if (allowHalf) {
                     return (
                       <div key={i} className="relative">
@@ -477,17 +503,20 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                           }`}
                           onClick={() => handleInputChange(field.id, starValue)}
                         />
-                        {starValue - 0.5 <= currentRating && currentRating < starValue && (
-                          <div className="absolute inset-0 overflow-hidden">
-                            <Star
-                              className="h-5 w-5 fill-current text-yellow-400"
-                              style={{ clipPath: 'inset(0 50% 0 0)' }}
-                            />
-                          </div>
-                        )}
-                        <div 
+                        {starValue - 0.5 <= currentRating &&
+                          currentRating < starValue && (
+                            <div className="absolute inset-0 overflow-hidden">
+                              <Star
+                                className="h-5 w-5 fill-current text-yellow-400"
+                                style={{ clipPath: 'inset(0 50% 0 0)' }}
+                              />
+                            </div>
+                          )}
+                        <div
                           className="absolute inset-0 cursor-pointer"
-                          onClick={() => handleInputChange(field.id, starValue - 0.5)}
+                          onClick={() =>
+                            handleInputChange(field.id, starValue - 0.5)
+                          }
                           style={{ width: '50%' }}
                         />
                       </div>
@@ -509,8 +538,9 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               )}
               {field.ratingConfig?.showLabels && fieldValue && (
                 <span className="ml-2 text-sm text-muted-foreground">
-                  {field.ratingConfig.labels?.[Math.floor((fieldValue as number) - 1)] ||
-                    `${fieldValue} stars`}
+                  {field.ratingConfig.labels?.[
+                    Math.floor((fieldValue as number) - 1)
+                  ] || `${fieldValue} stars`}
                 </span>
               )}
             </div>
@@ -524,21 +554,31 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                 min={field.sliderConfig?.min || 0}
                 max={field.sliderConfig?.max || 100}
                 step={field.sliderConfig?.step || 1}
-                value={fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}
+                value={
+                  fieldValue !== undefined
+                    ? fieldValue
+                    : (field.sliderConfig?.defaultValue ?? 0)
+                }
                 onChange={e =>
                   handleInputChange(field.id, parseInt(e.target.value))
                 }
                 disabled={field.advanced?.disabled}
-                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
+                className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-primary [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
               />
-              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
+              <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
                 <span>{field.sliderConfig?.min || 0}</span>
-                <span>{fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}</span>
+                <span>
+                  {fieldValue !== undefined
+                    ? fieldValue
+                    : (field.sliderConfig?.defaultValue ?? 0)}
+                </span>
                 <span>{field.sliderConfig?.max || 100}</span>
               </div>
               {field.sliderConfig?.showValue && (
                 <div className="text-center text-sm text-muted-foreground">
-                  {fieldValue !== undefined ? fieldValue : (field.sliderConfig?.defaultValue ?? 0)}
+                  {fieldValue !== undefined
+                    ? fieldValue
+                    : (field.sliderConfig?.defaultValue ?? 0)}
                 </div>
               )}
             </div>
@@ -568,8 +608,6 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
         case 'divider':
           return <Separator className="my-4" />;
-
-
 
         case 'tags':
           return (
@@ -613,30 +651,47 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             </div>
           );
 
-
-
-
-
         case 'grid':
           const gridConfig = field.gridConfig || {
             columns: [
               { id: '1', name: 'Name', type: 'text' as const, required: true },
-              { id: '2', name: 'Email', type: 'email' as const, required: true },
-              { id: '3', name: 'Phone', type: 'phone' as const, required: false }
+              {
+                id: '2',
+                name: 'Email',
+                type: 'email' as const,
+                required: true,
+              },
+              {
+                id: '3',
+                name: 'Phone',
+                type: 'phone' as const,
+                required: false,
+              },
             ],
             rows: [],
             allowAddRows: true,
             allowDeleteRows: true,
             maxRows: 10,
-            minRows: 1
+            minRows: 1,
           };
 
           const renderGridInput = (column: any) => {
             switch (column.type) {
               case 'text':
-                return <Input placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
               case 'number':
-                return <Input type="number" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    type="number"
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
               case 'date':
                 return <Input type="date" className="h-8 text-xs" />;
               case 'time':
@@ -644,20 +699,42 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               case 'datetime':
                 return <Input type="datetime-local" className="h-8 text-xs" />;
               case 'email':
-                return <Input type="email" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    type="email"
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
               case 'phone':
-                return <Input type="tel" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    type="tel"
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
               case 'url':
-                return <Input type="url" placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    type="url"
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
               case 'select':
                 return (
                   <Select>
                     <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder={`Select ${column.name.toLowerCase()}`} />
+                      <SelectValue
+                        placeholder={`Select ${column.name.toLowerCase()}`}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {column.options?.map((option: string, index: number) => (
-                        <SelectItem key={index} value={option}>{option}</SelectItem>
+                        <SelectItem key={index} value={option}>
+                          {option}
+                        </SelectItem>
                       )) || (
                         <>
                           <SelectItem value="option1">Option 1</SelectItem>
@@ -669,12 +746,19 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                   </Select>
                 );
               case 'checkbox':
-                return <input 
-                  type="checkbox" 
-                  className="h-4 w-4 rounded border-2 border-gray-300 dark:border-gray-600 bg-transparent text-blue-500 focus-visible:ring-blue-500/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50" 
-                />;
+                return (
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+                  />
+                );
               default:
-                return <Input placeholder={`Enter ${column.name.toLowerCase()}`} className="h-8 text-xs" />;
+                return (
+                  <Input
+                    placeholder={`Enter ${column.name.toLowerCase()}`}
+                    className="h-8 text-xs"
+                  />
+                );
             }
           };
 
@@ -687,25 +771,30 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-muted-foreground/20">
-                      {gridConfig.columns.map((column) => (
-                        <th key={column.id} className="p-2 text-left font-medium">
+                    <tr className="border-muted-foreground/20 border-b">
+                      {gridConfig.columns.map(column => (
+                        <th
+                          key={column.id}
+                          className="p-2 text-left font-medium"
+                        >
                           {column.name}
-                          {column.required && <span className="text-red-500 ml-1">*</span>}
+                          {column.required && (
+                            <span className="ml-1 text-red-500">*</span>
+                          )}
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-muted-foreground/10">
-                      {gridConfig.columns.map((column) => (
+                    <tr className="border-muted-foreground/10 border-b">
+                      {gridConfig.columns.map(column => (
                         <td key={column.id} className="p-2">
                           {renderGridInput(column)}
                         </td>
                       ))}
                     </tr>
                     <tr>
-                      {gridConfig.columns.map((column) => (
+                      {gridConfig.columns.map(column => (
                         <td key={column.id} className="p-2">
                           {renderGridInput(column)}
                         </td>
@@ -716,8 +805,6 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
               </div>
             </div>
           );
-
-
 
         case 'json':
           return (
@@ -763,7 +850,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             autoComplete: true,
             syntaxHighlighting: true,
           };
-          
+
           return (
             <div className="rounded-lg border border-muted p-3">
               <div className="mb-2 flex items-center space-x-2">
@@ -773,8 +860,8 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                 </span>
               </div>
               <CodeEditor
-                value={fieldValue as string || ''}
-                onChange={(value) => handleInputChange(field.id, value)}
+                value={(fieldValue as string) || ''}
+                onChange={value => handleInputChange(field.id, value)}
                 language={codeConfig.language || 'javascript'}
                 placeholder="// Enter your code here..."
                 disabled={field.advanced?.disabled || field.advanced?.readonly}
@@ -787,12 +874,12 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
           const buttonColors = getButtonColors();
           const hasOtherFields = fields.some(f => f.type !== 'submit');
           const isDisabled = isSubmitting || !hasOtherFields;
-          
+
           return (
-            <Button 
+            <Button
               type="submit"
               className={`w-full ${buttonColors.bg} ${buttonColors.hover} ${buttonColors.text} ${
-                isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                isDisabled ? 'cursor-not-allowed opacity-50' : ''
               }`}
               disabled={isDisabled}
             >
@@ -845,11 +932,11 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="mx-auto w-[60%] p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -873,7 +960,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
             <form onSubmit={handleSubmit} className="space-y-6">
               <AnimatePresence mode="wait">
                 {fields.length === 0 ? (
-                  <motion.div 
+                  <motion.div
                     key="empty-preview"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -888,7 +975,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                     >
                       <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                     </motion.div>
-                    <motion.h3 
+                    <motion.h3
                       className="mb-2 text-lg font-medium"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -896,7 +983,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                     >
                       No fields to display
                     </motion.h3>
-                    <motion.p 
+                    <motion.p
                       className="text-muted-foreground"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -910,59 +997,60 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
                     {fields
                       .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
                       .map((field, index) => (
-                      <motion.div
-                        key={field.id}
-                        initial={{ opacity: 0, x: -20, y: 10 }}
-                        animate={{ opacity: 1, x: 0, y: 0 }}
-                        exit={{ opacity: 0, x: 20, y: -10 }}
-                        transition={{ 
-                          duration: 0.4, 
-                          delay: index * 0.1,
-                          ease: "easeOut"
-                        }}
-                        layout
-                      >
-                        {renderField(field)}
-                      </motion.div>
-                    ))}
+                        <motion.div
+                          key={field.id}
+                          initial={{ opacity: 0, x: -20, y: 10 }}
+                          animate={{ opacity: 1, x: 0, y: 0 }}
+                          exit={{ opacity: 0, x: 20, y: -10 }}
+                          transition={{
+                            duration: 0.4,
+                            delay: index * 0.1,
+                            ease: 'easeOut',
+                          }}
+                          layout
+                        >
+                          {renderField(field)}
+                        </motion.div>
+                      ))}
                   </AnimatePresence>
                 )}
               </AnimatePresence>
 
               <AnimatePresence>
-                {fields.length > 0 && !fields.some(field => field.type === 'submit') && (
-                  <motion.div 
-                    className="border-t pt-4"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                  >
+                {fields.length > 0 &&
+                  !fields.some(field => field.type === 'submit') && (
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0.2 }}
+                      className="border-t pt-4"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
                     >
-                      <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={isSubmitting}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        {isSubmitting ? (
-                          <>
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
-                            Submitting...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="mr-2 h-4 w-4" />
-                            Submit Form
-                          </>
-                        )}
-                      </Button>
+                        <Button
+                          type="submit"
+                          className="w-full"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                              Submitting...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="mr-2 h-4 w-4" />
+                              Submit Form
+                            </>
+                          )}
+                        </Button>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )}
+                  )}
               </AnimatePresence>
             </form>
           </CardContent>
