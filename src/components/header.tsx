@@ -187,9 +187,9 @@ const Header = () => {
         />
 
         <motion.div
-          whileHover={{ scale: 1.1, rotate: 180 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ duration: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
         >
           <Button
             variant="outline"

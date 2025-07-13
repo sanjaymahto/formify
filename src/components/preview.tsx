@@ -696,7 +696,7 @@ const Preview: React.FC<PreviewProps> = ({ fields, formTitle = 'Untitled Form' }
 
   return (
     <motion.div 
-      className="mx-auto max-w-2xl p-6"
+      className="mx-auto w-[60%] p-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
