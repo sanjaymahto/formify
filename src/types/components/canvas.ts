@@ -1,4 +1,4 @@
-import { Field, FieldType } from '../index';
+import { Field } from '../index';
 
 export interface FieldRendererProps {
   field: Field;
