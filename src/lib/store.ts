@@ -24,10 +24,6 @@ const getClientTimestamp = (): number => {
   return Date.now();
 };
 
-
-
-
-
 // Conditional logic evaluation function
 const evaluateCondition = (
   condition: { fieldId?: string; operator?: string; value?: string | number | boolean },
@@ -74,8 +70,6 @@ const shouldShowField = (
   }
   return true;
 };
-
-
 
 export const useFormStore = create<FormState>()(
   persist(
