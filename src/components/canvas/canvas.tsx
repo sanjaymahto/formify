@@ -682,6 +682,7 @@ export default function Canvas() {
   const handleCoverClick = () => {
     coverInputRef.current?.click();
   };
+  
   // Utility to compress/resize image before storing as base64
   async function compressImage(
     file: File,
@@ -725,6 +726,7 @@ export default function Canvas() {
       reader.readAsDataURL(file);
     });
   }
+
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -746,6 +748,7 @@ export default function Canvas() {
       }
     }
   };
+
   const handleRemoveCover = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCoverImage(null);
@@ -757,6 +760,7 @@ export default function Canvas() {
   const handleLogoClick = () => {
     logoInputRef.current?.click();
   };
+
   const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -778,6 +782,7 @@ export default function Canvas() {
       }
     }
   };
+
   const handleRemoveLogo = (e: React.MouseEvent) => {
     e.stopPropagation();
     setLogoImage(null);
