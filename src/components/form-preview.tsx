@@ -131,6 +131,24 @@ export function FormPreview() {
           newErrors[field.id] = 'Please enter a valid email address';
         }
       }
+
+      // Text input settings validation
+      if (formData[field.id] && field.textConfig) {
+        const value = String(formData[field.id]);
+        const { minLength, maxLength, pattern } = field.textConfig;
+
+        if (minLength && value.length < minLength) {
+          newErrors[field.id] = `${field.label} must be at least ${minLength} characters`;
+        }
+
+        if (maxLength && value.length > maxLength) {
+          newErrors[field.id] = `${field.label} must be no more than ${maxLength} characters`;
+        }
+
+        if (pattern && !new RegExp(pattern).test(value)) {
+          newErrors[field.id] = `${field.label} format is invalid`;
+        }
+      }
     });
 
     setErrors(newErrors);
@@ -169,10 +187,16 @@ export function FormPreview() {
         return (
           <Input
             type={field.type === 'url' ? 'url' : 'text'}
-            value={getStringValue()}
+            value={getStringValue() || field.advanced?.defaultValue?.toString() || ''}
             onChange={e => handleInputChange(field.id, e.target.value)}
             placeholder={field.placeholder || `Enter ${field.type}`}
             className={baseClasses}
+            pattern={field.textConfig?.pattern}
+            minLength={field.textConfig?.minLength}
+            maxLength={field.textConfig?.maxLength}
+            autoFocus={field.textConfig?.autoFocus}
+            disabled={field.advanced?.disabled}
+            readOnly={field.advanced?.readonly}
           />
         );
 
@@ -860,22 +884,57 @@ export function FormPreview() {
             </p>
           </div>
 
-          {fields.map(field => (
-            <div key={field.id} className="space-y-2">
-              {field.type !== 'divider' && field.type !== 'submit' && (
-                <Label className="text-sm font-medium text-gray-900">
-                  {field.label}
-                  {field.required && (
-                    <span className="ml-1 text-red-500">*</span>
-                  )}
-                </Label>
-              )}
-              {renderField(field)}
-              {errors[field.id] && (
-                <p className="text-sm text-red-500">{errors[field.id]}</p>
-              )}
-            </div>
-          ))}
+          {fields.map(field => {
+            // Apply layout styles
+            const layoutStyles: React.CSSProperties = {};
+            if (field.layout) {
+              if (field.layout.width) layoutStyles.width = field.layout.width;
+              if (field.layout.height) layoutStyles.height = field.layout.height;
+              if (field.layout.margin) layoutStyles.margin = field.layout.margin;
+              if (field.layout.padding) layoutStyles.padding = field.layout.padding;
+              if (field.layout.display) layoutStyles.display = field.layout.display;
+              if (field.layout.flexDirection) layoutStyles.flexDirection = field.layout.flexDirection;
+              if (field.layout.justifyContent) layoutStyles.justifyContent = field.layout.justifyContent;
+              if (field.layout.alignItems) layoutStyles.alignItems = field.layout.alignItems;
+              if (field.layout.gridTemplateColumns) layoutStyles.gridTemplateColumns = field.layout.gridTemplateColumns;
+              if (field.layout.gridGap) layoutStyles.gap = field.layout.gridGap;
+            }
+
+            return (
+              <div key={field.id} className="space-y-2" style={layoutStyles}>
+                {field.type !== 'divider' && field.type !== 'submit' && (
+                  <Label className="text-sm font-medium text-gray-900">
+                    {field.label}
+                    {field.required && (
+                      <span className="ml-1 text-red-500">*</span>
+                    )}
+                    {field.advanced?.tooltip && (
+                      <span 
+                        className="ml-1 text-xs text-gray-500 cursor-help" 
+                        title={field.advanced.tooltip}
+                      >
+                        ℹ️
+                      </span>
+                    )}
+                  </Label>
+                )}
+                {renderField(field)}
+                {errors[field.id] && (
+                  <p className="text-sm text-red-500">{errors[field.id]}</p>
+                )}
+                {field.advanced?.helpText && (
+                  <p className="text-xs text-gray-500">
+                    {field.advanced.helpText}
+                  </p>
+                )}
+                {field.advanced?.description && (
+                  <p className="text-xs text-gray-500 italic">
+                    {field.advanced.description}
+                  </p>
+                )}
+              </div>
+            );
+          })}
 
           {!fields.some(field => field.type === 'submit') && (
             <div className="border-t pt-6">

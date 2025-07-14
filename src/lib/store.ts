@@ -295,7 +295,7 @@ const evaluateCondition = (
   if (
     !condition?.fieldId ||
     !condition?.operator ||
-    condition?.value === undefined
+    condition?.value === undefined || condition?.value === null
   ) {
     return true; // No condition = always show
   }
@@ -308,13 +308,13 @@ const evaluateCondition = (
     case 'not_equals':
       return fieldValue !== condition.value;
     case 'contains':
-      return String(fieldValue).includes(String(condition.value));
+      return String(fieldValue || '').includes(String(condition.value));
     case 'not_contains':
-      return !String(fieldValue).includes(String(condition.value));
+      return !String(fieldValue || '').includes(String(condition.value));
     case 'greater_than':
-      return Number(fieldValue) > Number(condition.value);
+      return Number(fieldValue || 0) > Number(condition.value);
     case 'less_than':
-      return Number(fieldValue) < Number(condition.value);
+      return Number(fieldValue || 0) < Number(condition.value);
     default:
       return true;
   }
@@ -560,6 +560,10 @@ export const useFormStore = create<FormState>()(
 
       shouldShowField: (field: Field) => {
         const state = get();
+        // Only apply conditional logic in preview mode
+        if (!state.isPreviewMode) {
+          return true; // Always show fields in builder mode
+        }
         return shouldShowField(field, state.formData);
       },
 

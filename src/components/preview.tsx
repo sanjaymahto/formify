@@ -38,6 +38,51 @@ interface PreviewProps {
   formTitle?: string;
 }
 
+// Custom Tooltip Component
+const CustomTooltip: React.FC<{ content: string; children: React.ReactNode }> = ({ content, children }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Reduced delay to 200ms (default is usually 1000ms)
+    timeoutRef.current = setTimeout(() => setIsVisible(true), 200);
+  };
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsVisible(false);
+  };
+
+  return (
+    <div 
+      className="relative inline-block"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5 }}
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg whitespace-nowrap z-50"
+          >
+            {content}
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 const Preview: React.FC<PreviewProps> = ({
   fields,
   formTitle = 'Untitled Form',
@@ -126,27 +171,47 @@ const Preview: React.FC<PreviewProps> = ({
       return field.advanced?.errorMessage || `${field.label} is required`;
     }
 
-    if (value && field.validation) {
-      const { minLength, maxLength, min, max, pattern } = field.validation;
+    if (value) {
+      // Check validation properties
+      if (field.validation) {
+        const { minLength, maxLength, min, max, pattern } = field.validation;
 
-      if (minLength && value.length < minLength) {
-        return `${field.label} must be at least ${minLength} characters`;
+        if (minLength && value.length < minLength) {
+          return `${field.label} must be at least ${minLength} characters`;
+        }
+
+        if (maxLength && value.length > maxLength) {
+          return `${field.label} must be no more than ${maxLength} characters`;
+        }
+
+        if (min !== undefined && parseFloat(value) < min) {
+          return `${field.label} must be at least ${min}`;
+        }
+
+        if (max !== undefined && parseFloat(value) > max) {
+          return `${field.label} must be no more than ${max}`;
+        }
+
+        if (pattern && !new RegExp(pattern).test(value)) {
+          return `${field.label} format is invalid`;
+        }
       }
 
-      if (maxLength && value.length > maxLength) {
-        return `${field.label} must be no more than ${maxLength} characters`;
-      }
+      // Check textConfig properties (for text input settings)
+      if (field.textConfig) {
+        const { minLength, maxLength, pattern } = field.textConfig;
 
-      if (min !== undefined && parseFloat(value) < min) {
-        return `${field.label} must be at least ${min}`;
-      }
+        if (minLength && value.length < minLength) {
+          return `${field.label} must be at least ${minLength} characters`;
+        }
 
-      if (max !== undefined && parseFloat(value) > max) {
-        return `${field.label} must be no more than ${max}`;
-      }
+        if (maxLength && value.length > maxLength) {
+          return `${field.label} must be no more than ${maxLength} characters`;
+        }
 
-      if (pattern && !new RegExp(pattern).test(value)) {
-        return `${field.label} format is invalid`;
+        if (pattern && !new RegExp(pattern).test(value)) {
+          return `${field.label} format is invalid`;
+        }
       }
     }
 
@@ -192,17 +257,25 @@ const Preview: React.FC<PreviewProps> = ({
   const renderField = (field: Field) => {
     if (field.advanced?.hidden) return null;
 
+    // Check conditional logic - if field should be hidden, don't render it
+    if (!shouldShowField(field)) return null;
+
     const fieldError = errors[field.id];
     const fieldValue = storeFormData[field.id];
+    
+    // Check if user has explicitly set a value (including empty string)
+    const hasUserValue = field.id in storeFormData;
+    const displayValue = hasUserValue ? fieldValue : (field.advanced?.defaultValue?.toString() || '');
 
     const baseFieldProps = {
       id: field.id,
-      value: fieldValue || '',
+      value: displayValue,
       onChange: (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
       ) => handleInputChange(field.id, e.target.value),
       placeholder: field.placeholder,
       disabled: field.advanced?.disabled || field.advanced?.readonly,
+      readOnly: field.advanced?.readonly,
       className: `w-full ${fieldError ? 'border-destructive' : ''}`,
     };
 
@@ -217,6 +290,10 @@ const Preview: React.FC<PreviewProps> = ({
             <Input
               {...baseFieldProps}
               type={field.type === 'password' ? 'password' : 'text'}
+              pattern={field.textConfig?.pattern}
+              minLength={field.textConfig?.minLength}
+              maxLength={field.textConfig?.maxLength}
+              autoFocus={field.textConfig?.autoFocus}
             />
           );
 
@@ -242,7 +319,7 @@ const Preview: React.FC<PreviewProps> = ({
         case 'select':
           return (
             <Select
-              value={fieldValue || ''}
+              value={hasUserValue ? fieldValue || '' : (field.advanced?.defaultValue?.toString() || '')}
               onValueChange={value => handleInputChange(field.id, value)}
               disabled={field.advanced?.disabled}
             >
@@ -293,7 +370,7 @@ const Preview: React.FC<PreviewProps> = ({
         case 'radio':
           return (
             <RadioGroup
-              value={fieldValue || ''}
+              value={hasUserValue ? fieldValue || '' : (field.advanced?.defaultValue?.toString() || '')}
               onValueChange={value => handleInputChange(field.id, value)}
               disabled={field.advanced?.disabled}
               className="space-y-2"
@@ -312,7 +389,7 @@ const Preview: React.FC<PreviewProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id={field.id}
-                checked={fieldValue || false}
+                checked={hasUserValue ? fieldValue || false : (field.advanced?.defaultValue || false)}
                 onCheckedChange={checked =>
                   handleInputChange(field.id, checked)
                 }
@@ -910,12 +987,38 @@ const Preview: React.FC<PreviewProps> = ({
       }
     };
 
+    // Apply layout styles
+    const layoutStyles: React.CSSProperties = {};
+    if (field.layout) {
+      if (field.layout.width) layoutStyles.width = field.layout.width;
+      if (field.layout.height) layoutStyles.height = field.layout.height;
+      if (field.layout.margin) layoutStyles.margin = field.layout.margin;
+      if (field.layout.padding) layoutStyles.padding = field.layout.padding;
+      if (field.layout.display) layoutStyles.display = field.layout.display;
+      if (field.layout.flexDirection) layoutStyles.flexDirection = field.layout.flexDirection;
+      if (field.layout.justifyContent) layoutStyles.justifyContent = field.layout.justifyContent;
+      if (field.layout.alignItems) layoutStyles.alignItems = field.layout.alignItems;
+      if (field.layout.gridTemplateColumns) layoutStyles.gridTemplateColumns = field.layout.gridTemplateColumns;
+      if (field.layout.gridGap) layoutStyles.gap = field.layout.gridGap;
+    }
+
     return (
-      <div key={field.id} className="space-y-2">
+      <div 
+        key={field.id} 
+        className="space-y-2"
+        style={layoutStyles}
+      >
         {field.type !== 'divider' && field.type !== 'submit' && (
           <Label htmlFor={field.id} className="flex items-center space-x-2">
             <span>{field.label}</span>
             {field.required && <span className="text-destructive">*</span>}
+            {field.advanced?.tooltip && (
+              <CustomTooltip content={field.advanced.tooltip}>
+                <span className="text-xs text-muted-foreground cursor-help">
+                  ℹ️
+                </span>
+              </CustomTooltip>
+            )}
           </Label>
         )}
 
@@ -926,6 +1029,12 @@ const Preview: React.FC<PreviewProps> = ({
         {field.advanced?.helpText && (
           <p className="text-xs text-muted-foreground">
             {field.advanced.helpText}
+          </p>
+        )}
+
+        {field.advanced?.description && (
+          <p className="text-xs text-muted-foreground italic">
+            {field.advanced.description}
           </p>
         )}
       </div>
@@ -996,7 +1105,6 @@ const Preview: React.FC<PreviewProps> = ({
                 ) : (
                   <AnimatePresence>
                     {fields
-                      .filter(field => shouldShowField(field)) // Only show fields that meet conditional logic
                       .map((field, index) => (
                         <motion.div
                           key={field.id}

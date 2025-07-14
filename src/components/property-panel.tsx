@@ -762,64 +762,9 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="autoFocus"
-              checked={field.textConfig?.autoFocus || false}
-              onChange={e =>
-                handleUpdate({
-                  textConfig: {
-                    ...field.textConfig,
-                    autoFocus: e.target.checked,
-                  },
-                })
-              }
-              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
-                field.textConfig?.autoFocus
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
-                  : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-              style={{
-                accentColor: field.textConfig?.autoFocus
-                  ? getCheckboxColors().cssColor
-                  : undefined,
-              }}
-            />
-            <Label htmlFor="autoFocus" className="cursor-pointer select-none">
-              Auto focus
-            </Label>
-          </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="spellCheck"
-              checked={field.textConfig?.spellCheck !== false}
-              onChange={e =>
-                handleUpdate({
-                  textConfig: {
-                    ...field.textConfig,
-                    spellCheck: e.target.checked,
-                  },
-                })
-              }
-              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
-                field.textConfig?.spellCheck !== false
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
-                  : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-              style={{
-                accentColor:
-                  field.textConfig?.spellCheck !== false
-                    ? getCheckboxColors().cssColor
-                    : undefined,
-              }}
-            />
-            <Label htmlFor="spellCheck" className="cursor-pointer select-none">
-              Spell check
-            </Label>
-          </div>
+
+
         </CardContent>
       </Card>
     );
@@ -948,11 +893,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
     if (['divider', 'section', 'html', 'code', 'progress'].includes(field.type))
       return null;
 
-    // Debug: Log available fields
+    // Get available fields for conditional logic
     const availableFields = fields.filter(f => f.id !== field.id);
-    console.log('Available fields for conditional logic:', availableFields);
-    console.log('Current field:', field.id, field.label);
-    console.log('Total fields:', fields.length);
 
     return (
       <Card>
@@ -962,175 +904,278 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             <span>Conditional Logic</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Show if</Label>
-            <div className="relative grid grid-cols-3 gap-2">
-              <Select
-                value={field.conditional?.showIf?.fieldId || ''}
-                onValueChange={value =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      showIf: {
-                        ...field.conditional?.showIf,
-                        fieldId: value,
+        <CardContent className="space-y-6">
+          {/* Show If Section */}
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+              <Label className="text-sm font-medium">Show this field when:</Label>
+            </div>
+            
+            <div className="space-y-3 rounded-lg border p-3 bg-muted/30">
+              <div className="grid grid-cols-1 gap-3">
+                {/* Field Selection */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Field</Label>
+                  <Select
+                    value={field.conditional?.showIf?.fieldId || ''}
+                    onValueChange={value =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          showIf: {
+                            ...field.conditional?.showIf,
+                            fieldId: value,
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue>
+                        {field.conditional?.showIf?.fieldId 
+                          ? availableFields.find(f => f.id === field.conditional?.showIf?.fieldId)?.label || 'Unknown field'
+                          : 'Select a field'}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableFields.length > 0 ? (
+                        availableFields.map(f => (
+                          <SelectItem key={f.id} value={f.id}>
+                            <span className="truncate max-w-[120px]" title={f.label}>
+                              {f.label.length > 20 ? `${f.label.substring(0, 20)}...` : f.label}
+                            </span>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="">
+                          No other fields available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Operator Selection */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Condition</Label>
+                  <Select
+                    value={field.conditional?.showIf?.operator || 'equals'}
+                    onValueChange={value =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          showIf: {
+                            ...field.conditional?.showIf,
+                            operator: value as
+                              | 'equals'
+                              | 'not_equals'
+                              | 'contains'
+                              | 'not_contains'
+                              | 'greater_than'
+                              | 'less_than',
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="equals">equals</SelectItem>
+                      <SelectItem value="not_equals">does not equal</SelectItem>
+                      <SelectItem value="contains">contains</SelectItem>
+                      <SelectItem value="not_contains">does not contain</SelectItem>
+                      <SelectItem value="greater_than">is greater than</SelectItem>
+                      <SelectItem value="less_than">is less than</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Value Input */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Value</Label>
+                  <Input
+                    value={field.conditional?.showIf?.value?.toString() || ''}
+                    onChange={e =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          showIf: {
+                            ...field.conditional?.showIf,
+                            value: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                    placeholder="Enter value"
+                    className="h-9"
+                  />
+                </div>
+              </div>
+
+              {/* Clear Show If */}
+              {field.conditional?.showIf?.fieldId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    handleUpdate({
+                      conditional: {
+                        ...field.conditional,
+                        showIf: undefined,
                       },
-                    },
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Field" />
-                </SelectTrigger>
-                <SelectContent className="absolute z-50">
-                  {fields
-                    .filter(f => f.id !== field.id)
-                    .map(f => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.label}
-                      </SelectItem>
-                    ))}
-                  {fields.filter(f => f.id !== field.id).length === 0 && (
-                    <SelectItem value="" disabled>
-                      No other fields available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <Select
-                value={field.conditional?.showIf?.operator || 'equals'}
-                onValueChange={value =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      showIf: {
-                        ...field.conditional?.showIf,
-                        operator: value as
-                          | 'equals'
-                          | 'not_equals'
-                          | 'contains'
-                          | 'not_contains'
-                          | 'greater_than'
-                          | 'less_than',
-                      },
-                    },
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="equals">Equals</SelectItem>
-                  <SelectItem value="not_equals">Not Equals</SelectItem>
-                  <SelectItem value="contains">Contains</SelectItem>
-                  <SelectItem value="not_contains">Not Contains</SelectItem>
-                  <SelectItem value="greater_than">Greater Than</SelectItem>
-                  <SelectItem value="less_than">Less Than</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                value={field.conditional?.showIf?.value?.toString() || ''}
-                onChange={e =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      showIf: {
-                        ...field.conditional?.showIf,
-                        value: e.target.value,
-                      },
-                    },
-                  })
-                }
-                placeholder="Value"
-              />
+                    })
+                  }
+                  className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Clear condition
+                </Button>
+              )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Hide if</Label>
-            <div className="relative grid grid-cols-3 gap-2">
-              <Select
-                value={field.conditional?.hideIf?.fieldId || ''}
-                onValueChange={value =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      hideIf: {
-                        ...field.conditional?.hideIf,
-                        fieldId: value,
-                      },
-                    },
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Field" />
-                </SelectTrigger>
-                <SelectContent className="absolute z-50">
-                  {fields
-                    .filter(f => f.id !== field.id)
-                    .map(f => (
-                      <SelectItem key={f.id} value={f.id}>
-                        {f.label}
-                      </SelectItem>
-                    ))}
-                  {fields.filter(f => f.id !== field.id).length === 0 && (
-                    <SelectItem value="" disabled>
-                      No other fields available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <Select
-                value={field.conditional?.hideIf?.operator || 'equals'}
-                onValueChange={value =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      hideIf: {
-                        ...field.conditional?.hideIf,
-                        operator: value as
-                          | 'equals'
-                          | 'not_equals'
-                          | 'contains'
-                          | 'not_contains'
-                          | 'greater_than'
-                          | 'less_than',
-                      },
-                    },
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="equals">Equals</SelectItem>
-                  <SelectItem value="not_equals">Not Equals</SelectItem>
-                  <SelectItem value="contains">Contains</SelectItem>
-                  <SelectItem value="not_contains">Not Contains</SelectItem>
-                  <SelectItem value="greater_than">Greater Than</SelectItem>
-                  <SelectItem value="less_than">Less Than</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                value={field.conditional?.hideIf?.value?.toString() || ''}
-                onChange={e =>
-                  handleUpdate({
-                    conditional: {
-                      ...field.conditional,
-                      hideIf: {
-                        ...field.conditional?.hideIf,
-                        value: e.target.value,
-                      },
-                    },
-                  })
-                }
-                placeholder="Value"
-              />
+          {/* Hide If Section */}
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <div className="h-2 w-2 rounded-full bg-red-500"></div>
+              <Label className="text-sm font-medium">Hide this field when:</Label>
             </div>
+            
+            <div className="space-y-3 rounded-lg border p-3 bg-muted/30">
+              <div className="grid grid-cols-1 gap-3">
+                {/* Field Selection */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Field</Label>
+                  <Select
+                    value={field.conditional?.hideIf?.fieldId || ''}
+                    onValueChange={value =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          hideIf: {
+                            ...field.conditional?.hideIf,
+                            fieldId: value,
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue>
+                        {field.conditional?.hideIf?.fieldId 
+                          ? availableFields.find(f => f.id === field.conditional?.hideIf?.fieldId)?.label || 'Unknown field'
+                          : 'Select a field'}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableFields.length > 0 ? (
+                        availableFields.map(f => (
+                          <SelectItem key={f.id} value={f.id}>
+                            <span className="truncate max-w-[120px]" title={f.label}>
+                              {f.label.length > 20 ? `${f.label.substring(0, 20)}...` : f.label}
+                            </span>
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="">
+                          No other fields available
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Operator Selection */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Condition</Label>
+                  <Select
+                    value={field.conditional?.hideIf?.operator || 'equals'}
+                    onValueChange={value =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          hideIf: {
+                            ...field.conditional?.hideIf,
+                            operator: value as
+                              | 'equals'
+                              | 'not_equals'
+                              | 'contains'
+                              | 'not_contains'
+                              | 'greater_than'
+                              | 'less_than',
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="equals">equals</SelectItem>
+                      <SelectItem value="not_equals">does not equal</SelectItem>
+                      <SelectItem value="contains">contains</SelectItem>
+                      <SelectItem value="not_contains">does not contain</SelectItem>
+                      <SelectItem value="greater_than">is greater than</SelectItem>
+                      <SelectItem value="less_than">is less than</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Value Input */}
+                <div className="space-y-1">
+                  <Label className="text-xs text-muted-foreground">Value</Label>
+                  <Input
+                    value={field.conditional?.hideIf?.value?.toString() || ''}
+                    onChange={e =>
+                      handleUpdate({
+                        conditional: {
+                          ...field.conditional,
+                          hideIf: {
+                            ...field.conditional?.hideIf,
+                            value: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                    placeholder="Enter value"
+                    className="h-9"
+                  />
+                </div>
+              </div>
+
+              {/* Clear Hide If */}
+              {field.conditional?.hideIf?.fieldId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    handleUpdate({
+                      conditional: {
+                        ...field.conditional,
+                        hideIf: undefined,
+                      },
+                    })
+                  }
+                  className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  Clear condition
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Help Text */}
+          <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
+            <div className="font-medium mb-1">How conditional logic works:</div>
+            <ul className="space-y-1 text-blue-600">
+              <li>• <strong>Show when:</strong> Field appears only when the condition is true</li>
+              <li>• <strong>Hide when:</strong> Field is hidden when the condition is true</li>
+              <li>• Conditions are evaluated based on the selected field's current value</li>
+              <li>• You can use both conditions together for complex logic</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
