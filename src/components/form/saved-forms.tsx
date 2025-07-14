@@ -152,7 +152,7 @@ export function SavedForms() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4 text-muted-foreground" />
-              Saved Forms
+              Saved Form
               <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
                 {savedForms.length}
               </span>
@@ -182,7 +182,7 @@ export function SavedForms() {
                     <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
                       <FileText className="h-8 w-8 opacity-60" />
                     </div>
-                    <p className="text-sm font-medium mb-1">No saved forms yet</p>
+                    <p className="text-sm font-medium mb-1">No saved form yet</p>
                     <p className="text-xs">
                       {fields.length > 0 
                         ? 'Save your current form to get started'
