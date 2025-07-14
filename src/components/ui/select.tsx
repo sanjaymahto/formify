@@ -153,33 +153,81 @@ function SelectContent({
   ...props
 }: SelectContentProps) {
   const context = React.useContext(SelectContext);
+  if (!context) throw new Error('SelectContent must be used within Select');
+  
   const [mounted, setMounted] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = React.useState<{
-    top: number;
-    left: number;
-    width: number;
-  }>({ top: 0, left: 0, width: 0 });
+        const [coords, setCoords] = React.useState<{
+        top: number;
+        left: number;
+        width: number;
+        showAbove: boolean;
+      }>({ top: 0, left: 0, width: 0, showAbove: false });
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  React.useEffect(() => {
+  // Update position when dropdown opens or scrolls
+  const updatePosition = React.useCallback(() => {
     if (!context.open) return;
     const trigger = triggerRef.current?.parentElement?.querySelector(
       '[data-slot="select-trigger"]'
     );
     if (trigger) {
       const rect = (trigger as HTMLElement).getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      
+      // Calculate available space
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      // Determine if dropdown should appear above or below
+      const shouldShowAbove = spaceBelow < 200 && spaceAbove > spaceBelow;
+      
+      // Calculate position
+      const top = shouldShowAbove 
+        ? rect.top + window.scrollY - 200 // Show above
+        : rect.bottom + window.scrollY;   // Show below
+      
+      let left = rect.left + window.scrollX;
+      
+      // Ensure dropdown doesn't go off-screen horizontally
+      if (left + rect.width > viewportWidth + window.scrollX) {
+        left = viewportWidth + window.scrollX - rect.width - 8;
+      }
+      
+      // Ensure dropdown doesn't go off-screen to the left
+      if (left < window.scrollX) {
+        left = window.scrollX + 8;
+      }
+      
       setCoords({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top,
+        left,
         width: rect.width,
+        showAbove: shouldShowAbove,
       });
     }
   }, [context.open]);
+
+  React.useEffect(() => {
+    if (!context.open) return;
+    
+    // Update position when dropdown opens
+    updatePosition();
+    
+    // Update position on scroll and resize
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [context.open, updatePosition]);
 
   // Close on outside click
   React.useEffect(() => {
@@ -195,12 +243,12 @@ function SelectContent({
         trigger &&
         !(trigger as HTMLElement).contains(event.target as Node)
       ) {
-        context.onOpenChange(false);
+        context?.onOpenChange(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [context.open, context]);
+  }, [context.open, context.onOpenChange]);
 
   if (!context.open || !mounted) return null;
 
@@ -210,7 +258,7 @@ function SelectContent({
       data-slot="select-content"
       className={cn(
         'fixed z-50 max-h-96 min-w-[20ch] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md',
-        position === 'popper' && 'mt-1',
+        position === 'popper' && (coords.showAbove ? 'mb-1' : 'mt-1'),
         className
       )}
       style={{

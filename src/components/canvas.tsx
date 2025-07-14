@@ -38,6 +38,7 @@ import {
   Grid3X3,
   Sparkles,
   Send,
+  X,
 } from 'lucide-react';
 
 interface FieldRendererProps {
@@ -645,6 +646,7 @@ export default function Canvas() {
   const selectedFieldId = useFormStore(state => state.selectedFieldId);
   const setSelectedField = useFormStore(state => state.setSelectedField);
   const removeField = useFormStore(state => state.removeField);
+  const updateField = useFormStore(state => state.updateField);
   const shouldShowField = useFormStore(state => state.shouldShowField);
   const reorderFields = useFormStore(state => state.reorderFields);
   const addField = useFormStore(state => state.addField);
@@ -919,16 +921,126 @@ export default function Canvas() {
     }
   }, [selectedFieldId]);
 
-  // Handle ESC key to cancel drag and global drag events
+  // Handle keyboard navigation and shortcuts
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && (ghostFieldType || draggedFieldId)) {
-        setDraggedFieldId(null);
-        setDragOverFieldId(null);
-        setIsDragOverCanvas(false);
-        setGhostFieldType(null);
-        setGhostInsertIndex(null);
-        draggedFieldTypeRef.current = null;
+      // Don't handle keyboard shortcuts if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // ESC key to cancel drag or deselect field
+      if (e.key === 'Escape') {
+        if (ghostFieldType || draggedFieldId) {
+          setDraggedFieldId(null);
+          setDragOverFieldId(null);
+          setIsDragOverCanvas(false);
+          setGhostFieldType(null);
+          setGhostInsertIndex(null);
+          draggedFieldTypeRef.current = null;
+        } else if (selectedFieldId) {
+          setSelectedField(null);
+        }
+        return;
+      }
+
+      // Arrow key navigation for field selection
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        
+        if (fields.length === 0) return;
+
+        const currentIndex = fields.findIndex(f => f.id === selectedFieldId);
+        let newIndex: number;
+
+        if (e.key === 'ArrowUp') {
+          // Navigate to previous field
+          newIndex = currentIndex > 0 ? currentIndex - 1 : fields.length - 1;
+        } else {
+          // Navigate to next field
+          newIndex = currentIndex < fields.length - 1 ? currentIndex + 1 : 0;
+        }
+
+        const newFieldId = fields[newIndex]?.id;
+        if (newFieldId) {
+          setSelectedField(newFieldId);
+          scrollToField(newFieldId);
+        }
+        return;
+      }
+
+      // Delete/Backspace to remove selected field
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedFieldId) {
+        e.preventDefault();
+        removeField(selectedFieldId);
+        setSelectedField(null);
+        return;
+      }
+
+      // Enter to edit field label (focus on label input)
+      if (e.key === 'Enter' && selectedFieldId) {
+        e.preventDefault();
+        const fieldElement = fieldRefs.current[selectedFieldId];
+        if (fieldElement) {
+          const labelInput = fieldElement.querySelector('input[type="text"]') as HTMLInputElement;
+          if (labelInput) {
+            labelInput.focus();
+            labelInput.select();
+          }
+        }
+        return;
+      }
+
+      // Space to toggle required field
+      if (e.key === ' ' && selectedFieldId) {
+        e.preventDefault();
+        const selectedField = fields.find(f => f.id === selectedFieldId);
+        if (selectedField) {
+          updateField(selectedFieldId, { required: !selectedField.required });
+        }
+        return;
+      }
+
+      // Ctrl+A to select all fields (or first field if none selected)
+      if (e.ctrlKey && e.key === 'a') {
+        e.preventDefault();
+        if (fields.length > 0) {
+          const firstFieldId = fields[0].id;
+          setSelectedField(firstFieldId);
+          scrollToField(firstFieldId);
+        }
+        return;
+      }
+
+      // Ctrl+D to duplicate selected field
+      if (e.ctrlKey && e.key === 'd' && selectedFieldId) {
+        e.preventDefault();
+        const selectedField = fields.find(f => f.id === selectedFieldId);
+        if (selectedField) {
+          const duplicatedField = {
+            ...selectedField,
+            id: `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            label: `${selectedField.label} (Copy)`,
+          };
+          const currentIndex = fields.findIndex(f => f.id === selectedFieldId);
+          // Add the duplicated field after the current field
+          const newFields = [...fields];
+          newFields.splice(currentIndex + 1, 0, duplicatedField);
+          // Update the store with the new field order
+          fields.forEach((_, index) => {
+            if (index > currentIndex) {
+              removeField(fields[index].id);
+            }
+          });
+          newFields.forEach((f, index) => {
+            if (index > currentIndex) {
+              addField(f);
+            }
+          });
+          setSelectedField(duplicatedField.id);
+          scrollToField(duplicatedField.id);
+        }
+        return;
       }
     };
 
@@ -961,7 +1073,7 @@ export default function Canvas() {
       document.removeEventListener('dragstart', handleGlobalDragStart);
       document.removeEventListener('dragend', handleGlobalDragEnd);
     };
-  }, [ghostFieldType, draggedFieldId]);
+  }, [ghostFieldType, draggedFieldId, selectedFieldId, fields, setSelectedField, removeField, addField, updateField]);
 
   const getDefaultLabel = (type: string): string => {
     const labels: Record<string, string> = {
@@ -1207,6 +1319,92 @@ export default function Canvas() {
   const submitFields = fields.filter(field => field.type === 'submit');
   const otherFields = fields.filter(field => field.type !== 'submit');
 
+  // Keyboard shortcuts help component
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+  // Add F1 and Ctrl+? to show keyboard help
+  React.useEffect(() => {
+    const handleHelpKey = (e: KeyboardEvent) => {
+      if (e.key === 'F1' || (e.ctrlKey && e.key === '?')) {
+        e.preventDefault();
+        setShowKeyboardHelp(prev => !prev);
+      }
+    };
+
+    document.addEventListener('keydown', handleHelpKey);
+    return () => document.removeEventListener('keydown', handleHelpKey);
+  }, []);
+
+  // Keyboard shortcuts help modal
+  const KeyboardHelpModal = () => {
+    if (!showKeyboardHelp) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="max-w-2xl w-full mx-4 bg-background rounded-lg shadow-lg border">
+          <div className="flex items-center justify-between p-6 border-b">
+            <h2 className="text-xl font-semibold">Keyboard Shortcuts</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowKeyboardHelp(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Navigation</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>↑ ↓</span>
+                    <span>Navigate between fields</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Enter</span>
+                    <span>Edit field label</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Escape</span>
+                    <span>Deselect field / Cancel drag</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Ctrl+A</span>
+                    <span>Select first field</span>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Actions</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Delete / Backspace</span>
+                    <span>Remove selected field</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Ctrl+D</span>
+                    <span>Duplicate selected field</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Space</span>
+                    <span>Toggle required field</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground">
+                Press <kbd className="px-2 py-1 text-xs bg-muted rounded border">F1</kbd> or <kbd className="px-2 py-1 text-xs bg-muted rounded border">Ctrl+?</kbd> to toggle this help.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <motion.div
       className="flex h-full flex-col bg-background"
@@ -1289,6 +1487,14 @@ export default function Canvas() {
                   transition={{ duration: 0.5, delay: 0.7 }}
                 >
                   or
+                </motion.p>
+                <motion.p
+                  className="mb-4 text-xs text-muted-foreground/70"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.1 }}
+                >
+                  💡 Tip: Use arrow keys to navigate fields, F1 for keyboard shortcuts
                 </motion.p>
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -1471,6 +1677,9 @@ export default function Canvas() {
           </div>
         </motion.div>
       )}
+
+      {/* Keyboard shortcuts help modal */}
+      <KeyboardHelpModal />
     </motion.div>
   );
 }

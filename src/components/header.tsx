@@ -4,13 +4,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
-import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, X, Undo2, Redo2 } from 'lucide-react';
+import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, X, Undo2, Redo2, Keyboard } from 'lucide-react';
 import { ExportImportButtons } from './export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
 import { SettingsButton } from './settings-button';
 import { showToast } from '@/lib/utils';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import KeyboardShortcutsModal from './keyboard-shortcuts-modal';
 
 const Header = () => {
   const isPreviewMode = useFormStore(state => state.isPreviewMode);
@@ -29,6 +30,9 @@ const Header = () => {
   const clearHistory = useFormStore(state => state.clearHistory);
   const { theme, updateSettings, colorPalette } = useSettingsStore();
   const { isDirty } = useAutoSave();
+
+  // Keyboard shortcuts modal state
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
 
   // Calculate undo/redo availability
   const canUndo = historyIndex >= 0;
@@ -79,6 +83,8 @@ const Header = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [clearHistory]);
 
+
+
   // Handle save form with toast notification
   const handleSaveForm = () => {
     try {
@@ -108,6 +114,47 @@ const Header = () => {
       showToast('Failed to save form before closing', 'error');
     }
   };
+
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle shortcuts if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      // F1 or Ctrl+? to show keyboard shortcuts
+      if (e.key === 'F1' || (e.ctrlKey && e.key === '?')) {
+        e.preventDefault();
+        setShowKeyboardShortcuts(true);
+        return;
+      }
+
+      // Ctrl+S to save form
+      if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        handleSaveForm();
+        return;
+      }
+
+      // Ctrl+P to toggle preview mode
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        togglePreviewMode();
+        return;
+      }
+
+      // Ctrl+T to toggle theme
+      if (e.ctrlKey && e.key === 't') {
+        e.preventDefault();
+        updateSettings({ theme: theme === 'light' ? 'dark' : 'light' });
+        return;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleSaveForm, togglePreviewMode, updateSettings, theme]);
 
   // Get theme toggle colors based on color palette
   const getThemeToggleColors = () => {
@@ -308,6 +355,22 @@ const Header = () => {
           </motion.div>
         )}
 
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setShowKeyboardShortcuts(true)}
+            className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110"
+            title="Keyboard shortcuts (F1)"
+          >
+            <Keyboard className="h-4 w-4" />
+          </Button>
+        </motion.div>
+
         <SettingsButton
           className="h-8 w-8 p-0"
           tooltipText="Customize app appearance and settings"
@@ -346,6 +409,7 @@ const Header = () => {
               size="sm"
               onClick={togglePreviewMode}
               className="flex cursor-pointer items-center space-x-2"
+              data-preview-toggle
               title={
                 isPreviewMode
                   ? 'Switch to edit mode (Ctrl+P)'
@@ -409,6 +473,12 @@ const Header = () => {
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* Keyboard shortcuts modal */}
+      <KeyboardShortcutsModal
+        isOpen={showKeyboardShortcuts}
+        onClose={() => setShowKeyboardShortcuts(false)}
+      />
     </motion.header>
   );
 };

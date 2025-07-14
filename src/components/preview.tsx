@@ -29,6 +29,8 @@ import {
   Tags,
   Grid3X3,
   Send,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { CodeEditor } from '@/components/ui/code-editor';
 import { showToast } from '@/lib/utils';
@@ -87,6 +89,21 @@ const Preview: React.FC<PreviewProps> = ({
   fields,
   formTitle = 'Untitled Form',
 }) => {
+  // Handle ESC key to exit preview mode
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Exit preview mode by triggering the preview toggle
+        const previewButton = document.querySelector('[data-preview-toggle]') as HTMLButtonElement;
+        if (previewButton) {
+          previewButton.click();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const storeFormData = useFormStore(state => state.formData);
   const updateFormData = useFormStore(state => state.updateFormData);
   const shouldShowField = useFormStore(state => state.shouldShowField);
@@ -157,10 +174,29 @@ const Preview: React.FC<PreviewProps> = ({
 
   const handleInputChange = (fieldId: string, value: any) => {
     updateFormData(fieldId, value);
+    
+    // Get the field to check its type
+    const field = fields.find(f => f.id === fieldId);
+    
     // Clear error when user starts typing
     if (errors[fieldId]) {
       setErrors(prev => ({ ...prev, [fieldId]: '' }));
     }
+    
+    // Real-time validation for email fields
+    if (field?.type === 'email' && value) {
+      const emailValue = String(value).trim();
+      if (!isValidEmail(emailValue)) {
+        setErrors(prev => ({ ...prev, [fieldId]: 'Please enter a valid email address' }));
+      }
+    }
+  };
+
+  // Enhanced email validation function
+  const isValidEmail = (email: string): boolean => {
+    // More comprehensive email regex pattern
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email);
   };
 
   const validateField = (field: Field, value: any): string => {
@@ -172,6 +208,14 @@ const Preview: React.FC<PreviewProps> = ({
     }
 
     if (value) {
+      // Email-specific validation
+      if (field.type === 'email') {
+        const emailValue = String(value).trim();
+        if (!isValidEmail(emailValue)) {
+          return 'Please enter a valid email address';
+        }
+      }
+
       // Check validation properties
       if (field.validation) {
         const { minLength, maxLength, min, max, pattern } = field.validation;
@@ -282,14 +326,36 @@ const Preview: React.FC<PreviewProps> = ({
     const renderFieldContent = () => {
       switch (field.type) {
         case 'text':
-        case 'email':
-        case 'password':
         case 'phone':
         case 'url':
           return (
             <Input
               {...baseFieldProps}
-              type={field.type === 'password' ? 'password' : 'text'}
+              type="text"
+              pattern={field.textConfig?.pattern}
+              minLength={field.textConfig?.minLength}
+              maxLength={field.textConfig?.maxLength}
+              autoFocus={field.textConfig?.autoFocus}
+            />
+          );
+
+        case 'email':
+          return (
+            <Input
+              {...baseFieldProps}
+              type="email"
+              pattern={field.textConfig?.pattern}
+              minLength={field.textConfig?.minLength}
+              maxLength={field.textConfig?.maxLength}
+              autoFocus={field.textConfig?.autoFocus}
+            />
+          );
+
+        case 'password':
+          return (
+            <Input
+              {...baseFieldProps}
+              type="password"
               pattern={field.textConfig?.pattern}
               minLength={field.textConfig?.minLength}
               maxLength={field.textConfig?.maxLength}
@@ -753,11 +819,49 @@ const Preview: React.FC<PreviewProps> = ({
             minRows: 1,
           };
 
-          const renderGridInput = (column: any) => {
+          // Get current grid data from form store
+          const gridData = storeFormData[field.id] || [];
+          
+          // Initialize with minimum rows if no data exists
+          const currentRows = gridData.length > 0 ? gridData : Array(gridConfig.minRows || 1).fill(null).map(() => ({}));
+
+          const addRow = () => {
+            if (currentRows.length < (gridConfig.maxRows || 10)) {
+              const newRows = [...currentRows, {}];
+              updateFormData(field.id, newRows);
+            }
+          };
+
+          const removeRow = (index: number) => {
+            if (currentRows.length > (gridConfig.minRows || 1)) {
+              const newRows = currentRows.filter((_, i) => i !== index);
+              updateFormData(field.id, newRows);
+            }
+          };
+
+          const updateRowData = (rowIndex: number, columnId: string, value: any) => {
+            const newRows = [...currentRows];
+            if (!newRows[rowIndex]) {
+              newRows[rowIndex] = {};
+            }
+            newRows[rowIndex][columnId] = value;
+            updateFormData(field.id, newRows);
+          };
+
+          const renderGridInput = (column: any, rowIndex: number) => {
+            const rowData = currentRows[rowIndex] || {};
+            const value = rowData[column.id] || '';
+
+            const handleChange = (newValue: any) => {
+              updateRowData(rowIndex, column.id, newValue);
+            };
+
             switch (column.type) {
               case 'text':
                 return (
                   <Input
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -766,20 +870,45 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <Input
                     type="number"
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
                 );
               case 'date':
-                return <Input type="date" className="h-8 text-xs" />;
+                return (
+                  <Input 
+                    type="date" 
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
+                    className="h-8 text-xs" 
+                  />
+                );
               case 'time':
-                return <Input type="time" className="h-8 text-xs" />;
+                return (
+                  <Input 
+                    type="time" 
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
+                    className="h-8 text-xs" 
+                  />
+                );
               case 'datetime':
-                return <Input type="datetime-local" className="h-8 text-xs" />;
+                return (
+                  <Input 
+                    type="datetime-local" 
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
+                    className="h-8 text-xs" 
+                  />
+                );
               case 'email':
                 return (
                   <Input
                     type="email"
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -788,6 +917,8 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <Input
                     type="tel"
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -796,13 +927,15 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <Input
                     type="url"
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
                 );
               case 'select':
                 return (
-                  <Select>
+                  <Select value={value} onValueChange={handleChange}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue
                         placeholder={`Select ${column.name.toLowerCase()}`}
@@ -827,12 +960,16 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <input
                     type="checkbox"
+                    checked={value || false}
+                    onChange={(e) => handleChange(e.target.checked)}
                     className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                   />
                 );
               default:
                 return (
                   <Input
+                    value={value}
+                    onChange={(e) => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -842,9 +979,24 @@ const Preview: React.FC<PreviewProps> = ({
 
           return (
             <div className="rounded-lg border border-muted p-3">
-              <div className="mb-3 flex items-center space-x-2">
-                <Grid3X3 className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{field.label}</span>
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Grid3X3 className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">{field.label}</span>
+                </div>
+                {gridConfig.allowAddRows && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addRow}
+                    disabled={currentRows.length >= (gridConfig.maxRows || 10)}
+                    className="h-7 px-2 text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add Row
+                  </Button>
+                )}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -861,23 +1013,37 @@ const Preview: React.FC<PreviewProps> = ({
                           )}
                         </th>
                       ))}
+                      {gridConfig.allowDeleteRows && (
+                        <th className="p-2 text-left font-medium w-12">
+                          Actions
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-muted-foreground/10 border-b">
-                      {gridConfig.columns.map(column => (
-                        <td key={column.id} className="p-2">
-                          {renderGridInput(column)}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      {gridConfig.columns.map(column => (
-                        <td key={column.id} className="p-2">
-                          {renderGridInput(column)}
-                        </td>
-                      ))}
-                    </tr>
+                    {currentRows.map((row, rowIndex) => (
+                      <tr key={rowIndex} className="border-muted-foreground/10 border-b">
+                        {gridConfig.columns.map(column => (
+                          <td key={column.id} className="p-2">
+                            {renderGridInput(column, rowIndex)}
+                          </td>
+                        ))}
+                        {gridConfig.allowDeleteRows && (
+                          <td className="p-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeRow(rowIndex)}
+                              disabled={currentRows.length <= (gridConfig.minRows || 1)}
+                              className="h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </td>
+                        )}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

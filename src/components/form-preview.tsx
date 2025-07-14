@@ -20,6 +20,7 @@ import { Calendar, Clock, Upload, Send } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { CodeEditor } from '@/components/ui/code-editor';
 import { showToast } from '@/lib/utils';
+import { Grid3X3 } from 'lucide-react';
 
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
@@ -125,8 +126,8 @@ export function FormPreview() {
 
       // Email validation
       if (field.type === 'email' && formData[field.id]) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const emailValue = String(formData[field.id]);
+        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        const emailValue = String(formData[field.id]).trim();
         if (!emailRegex.test(emailValue)) {
           newErrors[field.id] = 'Please enter a valid email address';
         }
@@ -675,12 +676,50 @@ export function FormPreview() {
           minRows: 1,
         };
 
-        const renderGridInput = (column: any) => {
+        // Get current grid data from form store
+        const gridData = formData[field.id] as Record<string, any>[] || [];
+        
+        // Initialize with minimum rows if no data exists
+        const currentRows = Array.isArray(gridData) && gridData.length > 0 ? gridData : Array(gridConfig.minRows || 1).fill(null).map(() => ({}));
+
+        const addRow = () => {
+          if (currentRows.length < (gridConfig.maxRows || 10)) {
+            const newRows = [...currentRows, {}];
+            handleInputChange(field.id, newRows);
+          }
+        };
+
+        const removeRow = (index: number) => {
+          if (currentRows.length > (gridConfig.minRows || 1)) {
+            const newRows = currentRows.filter((_, i) => i !== index);
+            handleInputChange(field.id, newRows);
+          }
+        };
+
+        const updateRowData = (rowIndex: number, columnId: string, value: any) => {
+          const newRows = [...currentRows];
+          if (!newRows[rowIndex]) {
+            newRows[rowIndex] = {};
+          }
+          newRows[rowIndex][columnId] = value;
+          handleInputChange(field.id, newRows);
+        };
+
+        const renderGridInput = (column: any, rowIndex: number) => {
+          const rowData = currentRows[rowIndex] || {};
+          const value = rowData[column.id] || '';
+
+          const handleChange = (newValue: any) => {
+            updateRowData(rowIndex, column.id, newValue);
+          };
+
           switch (column.type) {
             case 'text':
               return (
                 <input
                   type="text"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -689,6 +728,8 @@ export function FormPreview() {
               return (
                 <input
                   type="number"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -697,6 +738,8 @@ export function FormPreview() {
               return (
                 <input
                   type="date"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -704,6 +747,8 @@ export function FormPreview() {
               return (
                 <input
                   type="time"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -711,6 +756,8 @@ export function FormPreview() {
               return (
                 <input
                   type="datetime-local"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -718,6 +765,8 @@ export function FormPreview() {
               return (
                 <input
                   type="email"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -726,6 +775,8 @@ export function FormPreview() {
               return (
                 <input
                   type="tel"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -734,13 +785,19 @@ export function FormPreview() {
               return (
                 <input
                   type="url"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'select':
               return (
-                <select className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400">
+                <select 
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
+                  className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
+                >
                   <option value="">Select {column.name.toLowerCase()}</option>
                   {column.options?.map((option: string, index: number) => (
                     <option key={index} value={option}>
@@ -759,6 +816,8 @@ export function FormPreview() {
               return (
                 <input
                   type="checkbox"
+                  checked={value || false}
+                  onChange={(e) => handleChange(e.target.checked)}
                   className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                 />
               );
@@ -766,6 +825,8 @@ export function FormPreview() {
               return (
                 <input
                   type="text"
+                  value={value}
+                  onChange={(e) => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -775,6 +836,22 @@ export function FormPreview() {
 
         return (
           <div className="rounded-lg border border-gray-200 p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Grid3X3 className="h-4 w-4 text-gray-500" />
+                <span className="text-sm font-medium">{field.label}</span>
+              </div>
+              {gridConfig.allowAddRows && (
+                <button
+                  type="button"
+                  onClick={addRow}
+                  disabled={currentRows.length >= (gridConfig.maxRows || 10)}
+                  className="rounded border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  + Add Row
+                </button>
+              )}
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -790,23 +867,35 @@ export function FormPreview() {
                         )}
                       </th>
                     ))}
+                    {gridConfig.allowDeleteRows && (
+                      <th className="p-2 text-left font-medium text-gray-700 w-12">
+                        Actions
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-gray-100">
-                    {gridConfig.columns.map(column => (
-                      <td key={column.id} className="p-2">
-                        {renderGridInput(column)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    {gridConfig.columns.map(column => (
-                      <td key={column.id} className="p-2">
-                        {renderGridInput(column)}
-                      </td>
-                    ))}
-                  </tr>
+                  {currentRows.map((row, rowIndex) => (
+                    <tr key={rowIndex} className="border-b border-gray-100">
+                      {gridConfig.columns.map(column => (
+                        <td key={column.id} className="p-2">
+                          {renderGridInput(column, rowIndex)}
+                        </td>
+                      ))}
+                      {gridConfig.allowDeleteRows && (
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            onClick={() => removeRow(rowIndex)}
+                            disabled={currentRows.length <= (gridConfig.minRows || 1)}
+                            className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
