@@ -234,6 +234,8 @@ export interface FormData {
   name?: string;
   description?: string;
   createdAt: string;
+  coverImage?: string | null;
+  logoImage?: string | null;
 }
 
 export interface SavedForm {
@@ -361,6 +363,10 @@ export interface FormState {
   autoSaveEnabled: boolean;
   isLoadingForm: boolean; // Flag to prevent auto-save during form loading
   formData: Record<string, any>; // Track current form values for conditional logic
+  coverImage?: string | null; // Add cover image to form state
+  logoImage?: string | null; // Add logo image to form state
+  setCoverImage: (image: string | null) => void;
+  setLogoImage: (image: string | null) => void;
   addField: (field: Field) => void;
   updateField: (id: string, updates: Partial<Field>) => void;
   removeField: (id: string) => void;
@@ -410,6 +416,10 @@ export const useFormStore = create<FormState>()(
       autoSaveEnabled: true,
       isLoadingForm: false, // Initialize loading flag
       formData: {}, // Initialize empty form data
+      coverImage: null, // Add cover image to state
+      logoImage: null, // Add logo image to state
+      setCoverImage: (image) => set({ coverImage: image, isDirty: true }),
+      setLogoImage: (image) => set({ logoImage: image, isDirty: true }),
 
       addField: field => {
         const state = get();
@@ -604,6 +614,8 @@ export const useFormStore = create<FormState>()(
           name: state.formTitle,
           description: 'Form created with FormKit',
           createdAt: new Date().toISOString(),
+          coverImage: state.coverImage,
+          logoImage: state.logoImage,
         };
         return formData;
       },
@@ -630,6 +642,8 @@ export const useFormStore = create<FormState>()(
           historyIndex: newHistory.length - 1,
           isDirty: true,
           isLoadingForm: false, // Clear loading flag after import is complete
+          coverImage: formData.coverImage || null,
+          logoImage: formData.logoImage || null,
         });
       },
 
@@ -655,6 +669,8 @@ export const useFormStore = create<FormState>()(
           historyIndex: newHistory.length - 1,
           isDirty: true,
           isLoadingForm: false, // Clear loading flag after template is loaded
+          coverImage: template.formData.coverImage || null,
+          logoImage: template.formData.logoImage || null,
         });
       },
 
@@ -675,6 +691,8 @@ export const useFormStore = create<FormState>()(
           history: newHistory,
           historyIndex: newHistory.length - 1,
           isDirty: true,
+          coverImage: null,
+          logoImage: null,
         });
       },
 
@@ -692,6 +710,8 @@ export const useFormStore = create<FormState>()(
           historyIndex: -1,
           lastSaved: null,
           isDirty: false,
+          coverImage: null,
+          logoImage: null,
         });
 
         // Save current form ID to session
@@ -927,6 +947,8 @@ export const useFormStore = create<FormState>()(
           lastSaved: savedForm.timestamp,
           isDirty: false,
           isLoadingForm: false, // Clear loading flag after form is loaded
+          coverImage: savedForm.formData.coverImage || null,
+          logoImage: savedForm.formData.logoImage || null,
         });
       },
 
@@ -1227,6 +1249,8 @@ export const useFormStore = create<FormState>()(
         fields: state.fields,
         lastSaved: state.lastSaved,
         autoSaveEnabled: state.autoSaveEnabled,
+        coverImage: state.coverImage,
+        logoImage: state.logoImage,
       }),
     }
   )

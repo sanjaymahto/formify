@@ -39,6 +39,8 @@ import {
   Sparkles,
   Send,
 } from 'lucide-react';
+import { useRef } from 'react';
+import { showToast } from '@/lib/utils';
 
 interface FieldRendererProps {
   field: Field;
@@ -659,6 +661,113 @@ export default function Canvas() {
   const dragOverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const fieldRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+
+  // Use cover and logo image from store
+  const coverImage = useFormStore(state => state.coverImage);
+  const logoImage = useFormStore(state => state.logoImage);
+  const setCoverImage = useFormStore(state => state.setCoverImage);
+  const setLogoImage = useFormStore(state => state.setLogoImage);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const MAX_IMAGE_SIZE = 200 * 1024; // 200 KB
+
+  // Handlers for cover image
+  const handleCoverClick = () => {
+    coverInputRef.current?.click();
+  };
+  // Utility to compress/resize image before storing as base64
+  async function compressImage(file: File, maxSize = 800, quality = 0.7): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      const reader = new FileReader();
+      reader.onload = e => {
+        img.onload = () => {
+          // Calculate new size
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+          // Draw to canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject('No canvas context');
+          ctx.drawImage(img, 0, 0, width, height);
+          // Export as JPEG (smaller than PNG)
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        showToast('Cover image is too large. Please select an image under 200 KB.', 'error');
+        return;
+      }
+      try {
+        const compressed = await compressImage(file, 400, 0.5);
+        setCoverImage(compressed);
+      } catch {
+        // fallback to original if compression fails
+        const reader = new FileReader();
+        reader.onload = ev => setCoverImage(ev.target?.result as string);
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+  const handleRemoveCover = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCoverImage(null);
+    // Only set input value if ref is still mounted
+    if (coverInputRef.current) coverInputRef.current.value = '';
+  };
+
+  // Handlers for logo image
+  const handleLogoClick = () => {
+    logoInputRef.current?.click();
+  };
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_IMAGE_SIZE) {
+        showToast('Logo image is too large. Please select an image under 200 KB.', 'error');
+        return;
+      }
+      try {
+        const compressed = await compressImage(file, 400, 0.5);
+        setLogoImage(compressed);
+      } catch {
+        // fallback to original if compression fails
+        const reader = new FileReader();
+        reader.onload = ev => setLogoImage(ev.target?.result as string);
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+  const handleRemoveLogo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLogoImage(null);
+    // Only set input value if ref is still mounted
+    if (logoInputRef.current) logoInputRef.current.value = '';
+  };
 
   const scrollToField = (fieldId: string) => {
     console.log('Scrolling to field:', fieldId);
@@ -1346,6 +1455,66 @@ export default function Canvas() {
           onDragLeave={handleDragLeave}
           onDrop={e => handleDrop(e)}
         >
+          {/* Cover Image Placeholder */}
+          <div className="relative w-full h-48 rounded-xl overflow-hidden mb-[-3.5rem] cursor-pointer group" onClick={handleCoverClick}>
+            {coverImage ? (
+              <img src={coverImage} alt="Cover" className="object-cover w-full h-full" />
+            ) : (
+              <div className="flex items-center justify-center w-full h-full bg-muted-foreground/10 text-muted-foreground text-lg font-medium">
+                Click to upload cover image
+              </div>
+            )}
+            {coverImage && (
+              <button
+                type="button"
+                className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={handleRemoveCover}
+                title="Remove cover image"
+                tabIndex={0}
+              >
+                ×
+              </button>
+            )}
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleCoverChange}
+            />
+          </div>
+          {/* Logo Placeholder (overlapping cover, now left-aligned) */}
+          <div className="relative flex justify-start z-10 group" style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}>
+            <div className="relative ml-6" onClick={handleLogoClick}>
+              {logoImage ? (
+                <img src={logoImage} alt="Logo" className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background object-cover shadow-lg cursor-pointer" />
+              ) : (
+                <div className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background flex items-center justify-center text-3xl text-muted-foreground shadow-lg cursor-pointer">
+                  +
+                </div>
+              )}
+              {logoImage && (
+                <button
+                  type="button"
+                  className="absolute top-0 right-0 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={handleRemoveLogo}
+                  title="Remove logo"
+                  style={{ transform: 'translate(40%, -40%)' }}
+                  tabIndex={0}
+                >
+                  ×
+                </button>
+              )}
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoChange}
+              />
+            </div>
+          </div>
+          {/* Form Title */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

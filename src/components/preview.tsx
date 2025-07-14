@@ -115,6 +115,8 @@ const Preview: React.FC<PreviewProps> = ({
     Record<string, FileList | null>
   >({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const coverImage = useFormStore(state => state.coverImage);
+  const logoImage = useFormStore(state => state.logoImage);
 
   const getButtonColors = () => {
     const colors = {
@@ -1214,6 +1216,29 @@ const Preview: React.FC<PreviewProps> = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
+      {/* Cover Image */}
+      <div className="relative w-full h-48 rounded-xl overflow-hidden mb-[-3.5rem]">
+        {coverImage ? (
+          <img src={coverImage} alt="Cover" className="object-cover w-full h-full" />
+        ) : (
+          <div className="flex items-center justify-center w-full h-full bg-muted-foreground/10 text-muted-foreground text-lg font-medium">
+            Cover image
+          </div>
+        )}
+      </div>
+      {/* Logo (left-aligned, overlapping cover) */}
+      <div className="relative flex justify-start z-10" style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}>
+        <div className="relative ml-6">
+          {logoImage ? (
+            <img src={logoImage} alt="Logo" className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background object-cover shadow-lg" />
+          ) : (
+            <div className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background flex items-center justify-center text-3xl text-muted-foreground shadow-lg">
+              +
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Card/Form Title and Content */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
