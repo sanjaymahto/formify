@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { FormTemplate } from './templates';
+import { v4 as uuidv4 } from 'uuid';
 
 // Utility function to get timestamp
 const getClientTimestamp = (): number => {
@@ -235,10 +236,24 @@ export interface FormData {
   createdAt: string;
 }
 
+export interface SavedForm {
+  id: string;
+  formData: FormData;
+  timestamp: number;
+  version: number;
+  name: string;
+  isAutoSave?: boolean;
+}
+
 export interface AutoSaveData {
   formData: FormData;
   timestamp: number;
   version: number;
+}
+
+export interface FormSession {
+  currentFormId: string | null;
+  forms: Record<string, SavedForm>;
 }
 
 interface AddCommandData {
@@ -344,6 +359,7 @@ export interface FormState {
   lastSaved: number | null;
   isDirty: boolean;
   autoSaveEnabled: boolean;
+  isLoadingForm: boolean; // Flag to prevent auto-save during form loading
   formData: Record<string, any>; // Track current form values for conditional logic
   addField: (field: Field) => void;
   updateField: (id: string, updates: Partial<Field>) => void;
@@ -362,10 +378,21 @@ export interface FormState {
   redo: () => void;
   canUndo: () => boolean;
   canRedo: () => boolean;
-  saveForm: () => void;
-  getAutoSaveData: () => AutoSaveData | null;
-  loadAutoSaveData: (autoSaveData: AutoSaveData) => void;
+  // Unified form management
+  createNewForm: () => string;
+  startNewForm: () => string;
+  getCurrentFormId: () => string | null;
+  saveForm: (name?: string) => void;
+  saveFormAs: (name: string) => string;
+  getSavedForms: () => SavedForm[];
+  loadSavedForm: (savedForm: SavedForm) => void;
+  deleteSavedForm: (id: string) => void;
+  getAutoSaveData: () => SavedForm | null;
+  loadAutoSaveData: (autoSaveData: SavedForm) => void;
   toggleAutoSave: () => void;
+  clearCurrentForm: () => void;
+  getSessionForms: () => Record<string, SavedForm>;
+  limitFormsToMax: (forms: Record<string, SavedForm>, maxCount?: number) => Record<string, SavedForm>;
 }
 
 export const useFormStore = create<FormState>()(
@@ -380,6 +407,7 @@ export const useFormStore = create<FormState>()(
       lastSaved: null,
       isDirty: false,
       autoSaveEnabled: true,
+      isLoadingForm: false, // Initialize loading flag
       formData: {}, // Initialize empty form data
 
       addField: field => {
@@ -581,6 +609,10 @@ export const useFormStore = create<FormState>()(
 
       importForm: (formData: FormData) => {
         const state = get();
+        
+        // Set loading flag to prevent auto-save during import
+        set({ isLoadingForm: true });
+        
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
           type: 'clear',
@@ -596,11 +628,16 @@ export const useFormStore = create<FormState>()(
           history: newHistory,
           historyIndex: newHistory.length - 1,
           isDirty: true,
+          isLoadingForm: false, // Clear loading flag after import is complete
         });
       },
 
       loadTemplate: (template: FormTemplate) => {
         const state = get();
+        
+        // Set loading flag to prevent auto-save during template loading
+        set({ isLoadingForm: true });
+        
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
           type: 'load-template',
@@ -616,6 +653,7 @@ export const useFormStore = create<FormState>()(
           history: newHistory,
           historyIndex: newHistory.length - 1,
           isDirty: true,
+          isLoadingForm: false, // Clear loading flag after template is loaded
         });
       },
 
@@ -639,17 +677,160 @@ export const useFormStore = create<FormState>()(
         });
       },
 
-      saveForm: () => {
+      createNewForm: () => {
         const state = get();
-        const formData = state.exportForm();
-        const autoSaveData: AutoSaveData = {
-          formData,
-          timestamp: Date.now(),
-          version: 1,
-        };
+        const formId = uuidv4();
+        
+        // Clear current form and set new ID
+        set({
+          fields: [],
+          formTitle: 'Untitled Form',
+          selectedFieldId: null,
+          isPreviewMode: false,
+          history: [],
+          historyIndex: -1,
+          lastSaved: null,
+          isDirty: false,
+        });
 
-        // Save to localStorage
-        localStorage.setItem('formkit-autosave', JSON.stringify(autoSaveData));
+        // Save current form ID to session
+        const session: FormSession = {
+          currentFormId: formId,
+          forms: state.getSessionForms(), // Preserve existing forms
+        };
+        localStorage.setItem('formkit-session', JSON.stringify(session));
+
+        return formId;
+      },
+
+      getCurrentFormId: () => {
+        try {
+          const session = localStorage.getItem('formkit-session');
+          if (session) {
+            const parsedSession: FormSession = JSON.parse(session);
+            return parsedSession.currentFormId;
+          }
+        } catch (error) {
+          console.error('Failed to get current form ID:', error);
+        }
+        return null;
+      },
+
+      saveForm: (name?: string) => {
+        const state = get();
+        const currentFormId = state.getCurrentFormId();
+        
+        if (!currentFormId) {
+          // If no current form ID, create a new one without clearing the current form
+          const newFormId = uuidv4();
+          
+          // Create session with new form ID but preserve current form state
+          const session: FormSession = {
+            currentFormId: newFormId,
+            forms: {},
+          };
+          localStorage.setItem('formkit-session', JSON.stringify(session));
+          
+          // Continue with the save process using the new form ID
+          const formData = state.exportForm();
+          
+          // Get current session forms (should be empty for first save)
+          const currentForms = state.getSessionForms();
+          let allForms;
+          const newCurrentFormId = newFormId;
+
+          if (name) {
+            // Manual save - create new form entry with unique ID
+            const newSavedForm: SavedForm = {
+              id: newFormId,
+              formData,
+              timestamp: Date.now(),
+              version: 1,
+              name: name || 'Untitled Form',
+              isAutoSave: false,
+            };
+            allForms = { ...currentForms, [newFormId]: newSavedForm };
+          } else {
+            // Auto-save - update existing form
+            const savedForm: SavedForm = {
+              id: newFormId,
+              formData,
+              timestamp: Date.now(),
+              version: 1,
+              name: state.formTitle || 'Untitled Form',
+              isAutoSave: true,
+            };
+            allForms = { ...currentForms, [newFormId]: savedForm };
+          }
+          
+          // Limit to 10 forms by removing the oldest ones
+          const limitedForms = state.limitFormsToMax(allForms, 10);
+          
+          // Update session with limited forms
+          const finalSession: FormSession = {
+            currentFormId: newCurrentFormId,
+            forms: limitedForms,
+          };
+          
+          console.log('Store: Saving session with forms:', Object.keys(limitedForms).length);
+          console.log('Store: Form IDs:', Object.keys(limitedForms));
+          
+          localStorage.setItem('formkit-session', JSON.stringify(finalSession));
+
+          set({
+            lastSaved: Date.now(),
+            isDirty: false,
+          });
+          
+          return;
+        }
+
+        const formData = state.exportForm();
+        
+        // Get current session forms
+        const currentForms = state.getSessionForms();
+        let allForms;
+        let newCurrentFormId = currentFormId;
+
+        if (name) {
+          // Manual save - create new form entry with unique ID
+          const newFormId = uuidv4();
+          const newSavedForm: SavedForm = {
+            id: newFormId,
+            formData,
+            timestamp: Date.now(),
+            version: 1,
+            name: name || 'Untitled Form',
+            isAutoSave: false,
+          };
+          allForms = { ...currentForms, [newFormId]: newSavedForm };
+          newCurrentFormId = newFormId; // Set current form to the newly saved one
+        } else {
+          // Auto-save - update existing form
+          const savedForm: SavedForm = {
+            id: currentFormId,
+            formData,
+            timestamp: Date.now(),
+            version: 1,
+            name: state.formTitle || 'Untitled Form',
+            isAutoSave: true,
+          };
+          allForms = { ...currentForms, [currentFormId]: savedForm };
+        }
+        
+        // Limit to 10 forms by removing the oldest ones
+        const limitedForms = state.limitFormsToMax(allForms, 10);
+        
+        // Update session with limited forms
+        const session: FormSession = {
+          currentFormId: newCurrentFormId,
+          forms: limitedForms,
+        };
+        
+        console.log('Store: Saving session with forms:', Object.keys(limitedForms).length);
+        console.log('Store: Form IDs:', Object.keys(limitedForms));
+        
+        localStorage.setItem('formkit-session', JSON.stringify(session));
 
         set({
           lastSaved: Date.now(),
@@ -657,19 +838,125 @@ export const useFormStore = create<FormState>()(
         });
       },
 
-      getAutoSaveData: () => {
+      saveFormAs: (name: string) => {
+        const state = get();
+        const formData = state.exportForm();
+        const savedForm: SavedForm = {
+          id: uuidv4(),
+          formData,
+          timestamp: Date.now(),
+          version: 1,
+          name: name || 'Untitled Form',
+          isAutoSave: false,
+        };
+
+        // Get current session forms
+        const currentForms = state.getSessionForms();
+        const allForms = { ...currentForms, [savedForm.id]: savedForm };
+        
+        // Limit to 10 forms by removing the oldest ones
+        const limitedForms = state.limitFormsToMax(allForms, 10);
+        
+        // Update session with limited forms and set current form to the newly saved one
+        const session: FormSession = {
+          currentFormId: savedForm.id,
+          forms: limitedForms,
+        };
+        
+        localStorage.setItem('formkit-session', JSON.stringify(session));
+
+        set({
+          lastSaved: Date.now(),
+          isDirty: false,
+        });
+
+        return savedForm.id;
+      },
+
+      getSessionForms: () => {
         try {
-          const saved = localStorage.getItem('formkit-autosave');
-          if (saved) {
-            return JSON.parse(saved) as AutoSaveData;
+          const session = localStorage.getItem('formkit-session');
+          console.log('Store: Raw session data:', session);
+          if (session) {
+            const parsedSession: FormSession = JSON.parse(session);
+            console.log('Store: Parsed session:', parsedSession);
+            console.log('Store: Number of forms:', Object.keys(parsedSession.forms || {}).length);
+            return parsedSession.forms || {};
           }
         } catch (error) {
-          console.error('Failed to load auto-save data:', error);
+          console.error('Failed to load session forms:', error);
+        }
+        return {};
+      },
+
+      getSavedForms: () => {
+        const forms = get().getSessionForms();
+        const savedForms = Object.values(forms);
+        console.log('Store: getSavedForms returning:', savedForms);
+        return savedForms;
+      },
+
+      loadSavedForm: (savedForm: SavedForm) => {
+        const state = get();
+        
+        // Set loading flag to prevent auto-save during loading
+        set({ isLoadingForm: true });
+        
+        const newHistory = state.history.slice(0, state.historyIndex + 1);
+        newHistory.push({
+          type: 'clear',
+          data: { oldFields: [...state.fields] },
+          timestamp: getClientTimestamp(),
+        });
+
+        // Update session with current form ID
+        const session: FormSession = {
+          currentFormId: savedForm.id,
+          forms: state.getSessionForms(),
+        };
+        localStorage.setItem('formkit-session', JSON.stringify(session));
+
+        set({
+          fields: savedForm.formData.fields,
+          formTitle: savedForm.formData.name || savedForm.name,
+          selectedFieldId: null,
+          isPreviewMode: false,
+          history: newHistory,
+          historyIndex: newHistory.length - 1,
+          lastSaved: savedForm.timestamp,
+          isDirty: false,
+          isLoadingForm: false, // Clear loading flag after form is loaded
+        });
+      },
+
+      deleteSavedForm: (id: string) => {
+        const state = get();
+        const forms = state.getSessionForms();
+        delete forms[id];
+
+        // Update session
+        const session: FormSession = {
+          currentFormId: state.getCurrentFormId(),
+          forms,
+        };
+        localStorage.setItem('formkit-session', JSON.stringify(session));
+      },
+
+      getAutoSaveData: () => {
+        const state = get();
+        const currentFormId = state.getCurrentFormId();
+        if (!currentFormId) return null;
+
+        const forms = state.getSessionForms();
+        const currentForm = forms[currentFormId];
+        
+        if (currentForm && currentForm.isAutoSave) {
+          return currentForm;
         }
         return null;
       },
 
-      loadAutoSaveData: (autoSaveData: AutoSaveData) => {
+      loadAutoSaveData: (autoSaveData: SavedForm) => {
         const state = get();
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
@@ -688,6 +975,73 @@ export const useFormStore = create<FormState>()(
           lastSaved: autoSaveData.timestamp,
           isDirty: false,
         });
+      },
+
+      limitFormsToMax: (forms: Record<string, SavedForm>, maxCount: number = 10) => {
+        const formEntries = Object.entries(forms);
+        if (formEntries.length <= maxCount) {
+          return forms;
+        }
+        
+        // Sort by timestamp (oldest first) and keep only the newest ones
+        const sortedForms = formEntries
+          .sort(([, a], [, b]) => a.timestamp - b.timestamp)
+          .slice(-maxCount); // Keep only the newest forms
+        
+        return Object.fromEntries(sortedForms);
+      },
+
+      clearCurrentForm: () => {
+        const state = get();
+        // Clear session
+        localStorage.removeItem('formkit-session');
+        
+        set({
+          fields: [],
+          formTitle: 'Untitled Form',
+          selectedFieldId: null,
+          isPreviewMode: false,
+          history: [],
+          historyIndex: -1,
+          lastSaved: null,
+          isDirty: false,
+        });
+      },
+
+      // Create a new form while preserving the current one in storage
+      startNewForm: () => {
+        const state = get();
+        const currentFormId = state.getCurrentFormId();
+        
+        // If there's a current form with changes, auto-save it first
+        if (currentFormId && state.isDirty && state.fields.length > 0) {
+          state.saveForm(); // Auto-save current form
+        }
+        
+        // Create new form with unique ID
+        const newFormId = uuidv4();
+        
+        // Clear current form state
+        set({
+          fields: [],
+          formTitle: 'Untitled Form',
+          selectedFieldId: null,
+          isPreviewMode: false,
+          history: [],
+          historyIndex: -1,
+          lastSaved: null,
+          isDirty: false,
+        });
+
+        // Update session with new form ID but preserve existing forms
+        const currentForms = state.getSessionForms();
+        const session: FormSession = {
+          currentFormId: newFormId,
+          forms: currentForms, // Preserve existing forms
+        };
+        localStorage.setItem('formkit-session', JSON.stringify(session));
+
+        return newFormId;
       },
 
       toggleAutoSave: () =>

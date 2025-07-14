@@ -1,21 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { useFormStore } from '@/lib/store';
-import { showToast, showConfirm } from '@/lib/utils';
+import { showToast } from '@/lib/utils';
 
 export function useAutoSave() {
   const isDirty = useFormStore(state => state.isDirty);
   const autoSaveEnabled = useFormStore(state => state.autoSaveEnabled);
+  const isLoadingForm = useFormStore(state => state.isLoadingForm);
   const saveForm = useFormStore(state => state.saveForm);
-  const getAutoSaveData = useFormStore(state => state.getAutoSaveData);
-  const loadAutoSaveData = useFormStore(state => state.loadAutoSaveData);
   const fields = useFormStore(state => state.fields);
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const lastSaveRef = useRef<number>(0);
 
   // Auto-save effect
   useEffect(() => {
-    if (!autoSaveEnabled || !isDirty || fields.length === 0) return;
+    if (!autoSaveEnabled || !isDirty || fields.length === 0 || isLoadingForm) return;
 
     // Debounce auto-save to avoid excessive saves
     if (saveTimeoutRef.current) {
@@ -26,6 +25,7 @@ export function useAutoSave() {
       const now = Date.now();
       // Only save if it's been at least 2 seconds since last save
       if (now - lastSaveRef.current > 2000) {
+        // Auto-save without a name (will be marked as auto-save)
         saveForm();
         lastSaveRef.current = now;
         showToast('Form auto-saved', 'info');
@@ -39,29 +39,8 @@ export function useAutoSave() {
     };
   }, [isDirty, autoSaveEnabled, fields, saveForm]);
 
-  // Check for auto-save data on mount
-  useEffect(() => {
-    const autoSaveData = getAutoSaveData();
-    if (autoSaveData && fields.length === 0) {
-      // Show recovery dialog
-      const checkRecovery = async () => {
-        const shouldRecover = await showConfirm(
-          `We found an auto-saved form from ${new Date(autoSaveData.timestamp).toLocaleString()}. Would you like to recover it?`
-        );
-
-        if (shouldRecover) {
-          loadAutoSaveData(autoSaveData);
-          showToast('Form recovered successfully!', 'success');
-        } else {
-          // Clear the auto-save data if user doesn't want to recover
-          localStorage.removeItem('formkit-autosave');
-          showToast('Auto-save data cleared.', 'info');
-        }
-      };
-      
-      checkRecovery();
-    }
-  }, [getAutoSaveData, loadAutoSaveData, fields.length]);
+  // Auto-save data is now handled by the saved forms section in canvas
+  // No recovery dialog needed
 
   // Save before page unload
   useEffect(() => {
@@ -82,7 +61,5 @@ export function useAutoSave() {
     isDirty,
     autoSaveEnabled,
     saveForm,
-    getAutoSaveData,
-    loadAutoSaveData,
   };
 }

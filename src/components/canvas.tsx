@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { TemplateSelector } from '@/components/template-selector';
 import { FormTitle } from '@/components/form-title';
+import { SavedForms } from '@/components/saved-forms';
 import { CodeEditor } from '@/components/ui/code-editor';
 import {
   Trash2,
@@ -1303,6 +1304,26 @@ export default function Canvas() {
                     <Sparkles className="h-4 w-4" />
                     Choose a Template
                   </Button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                >
+                  <div className="flex items-center gap-4 my-6">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground font-medium">OR</span>
+                    <Separator className="flex-1" />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 1.0 }}
+                >
+                  <SavedForms />
                 </motion.div>
               </motion.div>
             ) : (
