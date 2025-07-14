@@ -1,0 +1,135 @@
+.preview-container {
+  @apply bg-background min-h-screen;
+}
+
+.preview-content {
+  @apply max-w-2xl mx-auto p-6 space-y-6;
+}
+
+.preview-header {
+  @apply space-y-4;
+}
+
+.preview-title {
+  @apply text-2xl font-bold text-foreground;
+}
+
+.preview-description {
+  @apply text-muted-foreground;
+}
+
+.preview-form {
+  @apply space-y-6;
+}
+
+.preview-field {
+  @apply space-y-2;
+}
+
+.preview-field-label {
+  @apply text-sm font-medium text-foreground;
+}
+
+.preview-field-required {
+  @apply text-destructive;
+}
+
+.preview-field-input {
+  @apply w-full;
+}
+
+.preview-field-textarea {
+  @apply w-full resize-none;
+}
+
+.preview-field-select {
+  @apply w-full;
+}
+
+.preview-field-checkbox {
+  @apply flex items-center space-x-2;
+}
+
+.preview-field-radio-group {
+  @apply space-y-2;
+}
+
+.preview-field-radio-item {
+  @apply flex items-center space-x-2;
+}
+
+.preview-field-file {
+  @apply w-full;
+}
+
+.preview-field-date {
+  @apply w-full;
+}
+
+.preview-field-time {
+  @apply w-full;
+}
+
+.preview-field-datetime {
+  @apply w-full;
+}
+
+.preview-field-rating {
+  @apply flex items-center gap-1;
+}
+
+.preview-field-slider {
+  @apply w-full;
+}
+
+.preview-field-color {
+  @apply w-full h-10 rounded border border-input;
+}
+
+.preview-field-toggle {
+  @apply flex items-center space-x-2;
+}
+
+.preview-field-divider {
+  @apply border-t border-border my-4;
+}
+
+.preview-field-grid {
+  @apply space-y-4;
+}
+
+.preview-field-grid-header {
+  @apply grid gap-2;
+}
+
+.preview-field-grid-row {
+  @apply grid gap-2;
+}
+
+.preview-field-code {
+  @apply w-full;
+}
+
+.preview-field-image {
+  @apply w-full;
+}
+
+.preview-field-submit {
+  @apply w-full;
+}
+
+.preview-field-help {
+  @apply text-xs text-muted-foreground;
+}
+
+.preview-field-error {
+  @apply text-xs text-destructive;
+}
+
+.preview-submit-button {
+  @apply w-full;
+}
+
+.preview-mode-toggle {
+  @apply fixed top-4 right-4 z-50;
+} 

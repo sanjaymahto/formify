@@ -1,5 +1,6 @@
 'use client';
 
+import { Settings, X, Plus, Trash2 } from 'lucide-react';
 import { useFormStore, Field } from '@/lib/store';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,8 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Settings, X, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
 
 export function ConfigPanel() {
   const fields = useFormStore(state => state.fields);

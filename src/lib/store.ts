@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { FormTemplate } from './templates';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Field,
@@ -14,6 +13,7 @@ import {
   ReorderCommandData,
   ClearCommandData,
   LoadTemplateCommandData,
+  FormTemplate,
 } from '@/types';
 
 // Utility function to get timestamp
@@ -929,3 +929,5 @@ export const useFormStore = create<FormState>()(
     }
   )
 );
+
+export type { FormData, SavedForm, Field };

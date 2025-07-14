@@ -5,13 +5,13 @@ import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import {
   formTemplates,
-  templateCategories,
-  FormTemplate,
+  templateCategories
 } from '@/lib/templates';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react';
+import { FormTemplate } from '@/types';
 
 interface TemplateSelectorProps {
   onClose: () => void;

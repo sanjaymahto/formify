@@ -1,0 +1,99 @@
+.property-panel-container {
+  @apply w-80 bg-background border-l border-border h-screen overflow-y-auto;
+}
+
+.property-panel-header {
+  @apply p-4 border-b border-border;
+}
+
+.property-panel-content {
+  @apply p-4 space-y-6;
+}
+
+.property-section {
+  @apply space-y-4;
+}
+
+.property-section-header {
+  @apply text-sm font-medium text-foreground;
+}
+
+.property-group {
+  @apply space-y-3;
+}
+
+.property-item {
+  @apply space-y-2;
+}
+
+.property-label {
+  @apply text-sm font-medium text-foreground;
+}
+
+.property-description {
+  @apply text-xs text-muted-foreground;
+}
+
+.property-input {
+  @apply w-full;
+}
+
+.property-select {
+  @apply w-full;
+}
+
+.property-checkbox {
+  @apply flex items-center space-x-2;
+}
+
+.property-radio-group {
+  @apply space-y-2;
+}
+
+.property-radio-item {
+  @apply flex items-center space-x-2;
+}
+
+.property-textarea {
+  @apply w-full resize-none;
+}
+
+.property-color-picker {
+  @apply w-full h-10 rounded border border-input;
+}
+
+.property-slider {
+  @apply w-full;
+}
+
+.property-slider-value {
+  @apply text-sm text-muted-foreground;
+}
+
+.property-file-config {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.property-date-config {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.property-rating-config {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.property-validation {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.property-conditional {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.property-advanced {
+  @apply space-y-3 p-3 border border-border rounded-lg;
+}
+
+.no-field-selected {
+  @apply flex items-center justify-center h-full text-muted-foreground;
+} 

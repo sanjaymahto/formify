@@ -462,4 +462,7 @@ export interface ColorPaletteConfigItem {
   value: ColorPalette;
   label: string;
   preview: string;
-} 
+}
+
+// Component Types
+export * from './components'; 

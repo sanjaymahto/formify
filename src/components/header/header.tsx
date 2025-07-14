@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, X, Undo2, Redo2, Keyboard } from 'lucide-react';
-import { ExportImportButtons } from './export-import';
+import { ExportImportButtons } from '@/components/export-import/export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
-import { SettingsButton } from './settings-button';
+import { SettingsButton } from '@/components/settings/settings-button';
 import { showToast } from '@/lib/utils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import KeyboardShortcutsModal from './keyboard-shortcuts-modal';
+import KeyboardShortcutsModal from '@/components/keyboard-modal/keyboard-shortcuts-modal';
 
 const Header = () => {
   const isPreviewMode = useFormStore(state => state.isPreviewMode);

@@ -1,11 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from 'motion/react';
-import Canvas from '@/components/canvas';
-import Sidebar from '@/components/sidebar';
-import PropertyPanel from '@/components/property-panel';
-import Preview from '@/components/preview';
-import { Header } from '@/components/header';
+import Canvas from '@/components/canvas/canvas';
+import Sidebar from '@/components/sidebar/sidebar';
+import PropertyPanel from '@/components/property-panel/property-panel';
+import Preview from '@/components/preview/preview';
+import { Header } from '@/components/header/header';
 import { useFormStore } from '@/lib/store';
 import { useAutoSave } from '@/hooks/use-auto-save';
 

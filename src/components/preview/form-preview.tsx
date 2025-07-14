@@ -677,7 +677,7 @@ export function FormPreview() {
         };
 
         // Get current grid data from form store
-        const gridData = formData[field.id] as Record<string, any>[] || [];
+        const gridData = formData[field.id] as unknown as Record<string, any>[] || [];
         
         // Initialize with minimum rows if no data exists
         const currentRows = Array.isArray(gridData) && gridData.length > 0 ? gridData : Array(gridConfig.minRows || 1).fill(null).map(() => ({}));

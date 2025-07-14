@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Linkedin, Github, Twitter, Globe } from 'lucide-react';
-import { SettingsButton } from '@/components/settings-button';
+import { SettingsButton } from '@/components/settings';
 import { useSettingsStore } from '@/lib/settings-store';
 
 const words = ['simplest', 'coolest', 'easiest'];
