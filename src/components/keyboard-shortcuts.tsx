@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useFormStore } from '@/lib/store';
+import { showToast } from '@/lib/utils';
 
 export function KeyboardShortcuts() {
   const exportForm = useFormStore(state => state.exportForm);
@@ -123,34 +124,7 @@ export function KeyboardShortcuts() {
     isPreviewMode,
   ]);
 
-  // Simple toast notification
-  const showToast = (message: string, type: 'success' | 'error' | 'info') => {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-white text-sm font-medium transition-all duration-300 transform translate-x-full ${
-      type === 'success'
-        ? 'bg-green-500'
-        : type === 'error'
-          ? 'bg-red-500'
-          : 'bg-blue-500'
-    }`;
-    toast.textContent = message;
 
-    document.body.appendChild(toast);
-
-    // Animate in
-    setTimeout(() => {
-      toast.classList.remove('translate-x-full');
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-      toast.classList.add('translate-x-full');
-      setTimeout(() => {
-        document.body.removeChild(toast);
-      }, 300);
-    }, 3000);
-  };
 
   return null; // This component doesn't render anything
 }

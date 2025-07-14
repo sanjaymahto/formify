@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+
 import {
   Settings,
   X,
@@ -22,7 +22,6 @@ import {
   Monitor,
   RotateCcw,
   Eye,
-  Circle,
 } from 'lucide-react';
 import {
   useSettingsStore,
@@ -70,23 +69,7 @@ const themes: { value: Theme; label: string; icon: React.ReactNode }[] = [
   { value: 'auto', label: 'Auto', icon: <Monitor className="h-4 w-4" /> },
 ];
 
-const borderRadiusOptions: {
-  value: string;
-  label: string;
-  description: string;
-}[] = [
-  { value: 'none', label: 'None', description: 'Sharp corners' },
-  { value: 'small', label: 'Small', description: 'Subtle rounding' },
-  { value: 'medium', label: 'Medium', description: 'Standard rounding' },
-  { value: 'large', label: 'Large', description: 'Pill-shaped elements' },
-];
 
-const animationSpeeds: { value: string; label: string; description: string }[] =
-  [
-    { value: 'slow', label: 'Slow', description: 'Relaxed pace' },
-    { value: 'normal', label: 'Normal', description: 'Standard speed' },
-    { value: 'fast', label: 'Fast', description: 'Quick transitions' },
-  ];
 
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const settings = useSettingsStore();
@@ -219,76 +202,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </CardContent>
           </Card>
 
-          {/* Appearance Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-sm">
-                <Circle className="h-4 w-4" />
-                <span>Appearance</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="borderRadius">Border Radius</Label>
-                <Select
-                  value={settings.borderRadius}
-                  onValueChange={value =>
-                    updateSettings({
-                      borderRadius: value as
-                        | 'none'
-                        | 'small'
-                        | 'medium'
-                        | 'large',
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {borderRadiusOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div>
-                          <div className="font-medium">{option.label}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {option.description}
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="animationSpeed">Animation Speed</Label>
-                <Select
-                  value={settings.animationSpeed}
-                  onValueChange={value =>
-                    updateSettings({
-                      animationSpeed: value as 'slow' | 'normal' | 'fast',
-                    })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {animationSpeeds.map(speed => (
-                      <SelectItem key={speed.value} value={speed.value}>
-                        <div>
-                          <div className="font-medium">{speed.label}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {speed.description}
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Accessibility Section */}
           <Card>
@@ -319,27 +233,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                 />
               </div>
 
-              <Separator />
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label htmlFor="reducedMotion">Reduced Motion</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Minimize animations and transitions
-                  </p>
-                </div>
-                <Switch
-                  id="reducedMotion"
-                  checked={settings.reducedMotion}
-                  onChange={e => {
-                    console.log(
-                      'Reduced Motion Switch clicked:',
-                      e.target.checked
-                    );
-                    updateSettings({ reducedMotion: e.target.checked });
-                  }}
-                />
-              </div>
             </CardContent>
           </Card>
         </div>

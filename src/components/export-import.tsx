@@ -4,6 +4,7 @@ import { useFormStore, FormData } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Download, Upload, Trash2 } from 'lucide-react';
 import { useRef } from 'react';
+import { showToast, showConfirm } from '@/lib/utils';
 
 export function ExportImportButtons() {
   const exportForm = useFormStore(state => state.exportForm);
@@ -28,10 +29,10 @@ export function ExportImportButtons() {
       URL.revokeObjectURL(url);
 
       // Show success message
-      alert('Form exported successfully!');
+      showToast('Form exported successfully!', 'success');
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Failed to export form. Please try again.');
+      showToast('Failed to export form. Please try again.', 'error');
     }
   };
 
@@ -60,15 +61,15 @@ export function ExportImportButtons() {
         });
 
         importForm(formData);
-        alert('Form imported successfully!');
+        showToast('Form imported successfully!', 'success');
       } catch (error) {
         console.error('Import failed:', error);
-        alert('Failed to import form. Please check the file format.');
+        showToast('Failed to import form. Please check the file format.', 'error');
       }
     };
 
     reader.onerror = () => {
-      alert('Failed to read file. Please try again.');
+      showToast('Failed to read file. Please try again.', 'error');
     };
 
     reader.readAsText(file);
@@ -79,18 +80,18 @@ export function ExportImportButtons() {
     }
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     if (fields.length === 0) {
-      alert('Form is already empty.');
+      showToast('Form is already empty.', 'info');
       return;
     }
 
-    const confirmed = confirm(
+    const confirmed = await showConfirm(
       'Are you sure you want to clear the form? This action cannot be undone.'
     );
     if (confirmed) {
       clearForm();
-      alert('Form cleared successfully!');
+      showToast('Form cleared successfully!', 'success');
     }
   };
 

@@ -8,6 +8,7 @@ import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle } from 'lucide-react';
 import { ExportImportButtons } from './export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
 import { SettingsButton } from './settings-button';
+import { showToast } from '@/lib/utils';
 import Link from 'next/link';
 
 const Header = () => {
@@ -18,8 +19,20 @@ const Header = () => {
   const toggleAutoSave = useFormStore(state => state.toggleAutoSave);
   const autoSaveEnabled = useFormStore(state => state.autoSaveEnabled);
   const lastSaved = useFormStore(state => state.lastSaved);
+  const saveForm = useFormStore(state => state.saveForm);
   const { theme, updateSettings, colorPalette } = useSettingsStore();
   const { isDirty } = useAutoSave();
+
+  // Handle save form with toast notification
+  const handleSaveForm = () => {
+    try {
+      saveForm();
+      showToast('Form saved successfully!', 'success');
+    } catch (error) {
+      console.error('Save failed:', error);
+      showToast('Failed to save form', 'error');
+    }
+  };
 
   // Get theme toggle colors based on color palette
   const getThemeToggleColors = () => {
@@ -248,6 +261,7 @@ const Header = () => {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={handleSaveForm}
                 className="flex cursor-pointer items-center space-x-2"
                 title="Save form (Ctrl+S)"
               >

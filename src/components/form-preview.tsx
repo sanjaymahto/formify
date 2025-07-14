@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Upload, Send } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { CodeEditor } from '@/components/ui/code-editor';
+import { showToast } from '@/lib/utils';
 
 export function FormPreview() {
   const fields = useFormStore(state => state.fields);
@@ -140,7 +141,7 @@ export function FormPreview() {
     e.preventDefault();
     if (validateForm()) {
       console.log('Form submitted:', formData);
-      alert('Form submitted successfully! Check console for data.');
+      showToast('Form submitted successfully! Check console for data.', 'success');
     }
   };
 

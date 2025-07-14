@@ -31,6 +31,7 @@ import {
   Send,
 } from 'lucide-react';
 import { CodeEditor } from '@/components/ui/code-editor';
+import { showToast } from '@/lib/utils';
 
 interface PreviewProps {
   fields: Field[];
@@ -183,7 +184,7 @@ const Preview: React.FC<PreviewProps> = ({
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     console.log('Form submitted:', storeFormData);
-    alert('Form submitted successfully!');
+    showToast('Form submitted successfully!', 'success');
 
     setIsSubmitting(false);
   };

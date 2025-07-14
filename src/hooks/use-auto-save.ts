@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useFormStore } from '@/lib/store';
+import { showToast, showConfirm } from '@/lib/utils';
 
 export function useAutoSave() {
   const isDirty = useFormStore(state => state.isDirty);
@@ -27,6 +28,7 @@ export function useAutoSave() {
       if (now - lastSaveRef.current > 2000) {
         saveForm();
         lastSaveRef.current = now;
+        showToast('Form auto-saved', 'info');
       }
     }, 1000); // Wait 1 second after last change
 
@@ -42,16 +44,22 @@ export function useAutoSave() {
     const autoSaveData = getAutoSaveData();
     if (autoSaveData && fields.length === 0) {
       // Show recovery dialog
-      const shouldRecover = confirm(
-        `We found an auto-saved form from ${new Date(autoSaveData.timestamp).toLocaleString()}. Would you like to recover it?`
-      );
+      const checkRecovery = async () => {
+        const shouldRecover = await showConfirm(
+          `We found an auto-saved form from ${new Date(autoSaveData.timestamp).toLocaleString()}. Would you like to recover it?`
+        );
 
-      if (shouldRecover) {
-        loadAutoSaveData(autoSaveData);
-      } else {
-        // Clear the auto-save data if user doesn't want to recover
-        localStorage.removeItem('formkit-autosave');
-      }
+        if (shouldRecover) {
+          loadAutoSaveData(autoSaveData);
+          showToast('Form recovered successfully!', 'success');
+        } else {
+          // Clear the auto-save data if user doesn't want to recover
+          localStorage.removeItem('formkit-autosave');
+          showToast('Auto-save data cleared.', 'info');
+        }
+      };
+      
+      checkRecovery();
     }
   }, [getAutoSaveData, loadAutoSaveData, fields.length]);
 
