@@ -1567,7 +1567,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   const renderAdvancedProperties = () => {
     // Only show advanced properties for interactive fields
-    if (['code', 'progress', 'divider', 'grid'].includes(field.type))
+    if (['code', 'progress', 'divider', 'grid', 'avatar'].includes(field.type))
       return null;
 
     return (

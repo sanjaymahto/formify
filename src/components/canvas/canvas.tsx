@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useFormStore, Field, FieldType } from '@/lib/store';
+import { useFormStore, Field } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { TemplateSelector } from '@/components/template-selector/template-selector';
 import { FormTitle } from '@/components/form/form-title';
 import { SavedForms } from '@/components/form/saved-forms';
@@ -41,6 +42,7 @@ import {
 } from 'lucide-react';
 import { useRef } from 'react';
 import { showToast } from '@/lib/utils';
+import { FieldType } from '@/types';
 
 interface FieldRendererProps {
   field: Field;
@@ -248,6 +250,22 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             <p className="text-sm text-muted-foreground">
               Click to upload {field.type} files
             </p>
+          </div>
+        );
+
+      case 'avatar':
+        return (
+          <div className="flex flex-col items-center space-y-3">
+            <Avatar className="h-20 w-20">
+              <AvatarImage src="" alt="Avatar preview" />
+              <AvatarFallback className="text-lg">👤</AvatarFallback>
+            </Avatar>
+            <div className="border-muted-foreground/25 rounded-lg border-2 border-dashed p-4 text-center">
+              <Upload className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Click to upload avatar
+              </p>
+            </div>
           </div>
         );
 
@@ -1330,6 +1348,21 @@ export default function Canvas() {
               <p className="text-sm text-muted-foreground">
                 Click to upload {fieldType} files
               </p>
+            </div>
+          );
+
+        case 'avatar':
+          return (
+            <div className="flex flex-col items-center space-y-3">
+              <Avatar className="h-16 w-16 bg-muted/50">
+                <AvatarFallback className="text-lg text-muted-foreground">👤</AvatarFallback>
+              </Avatar>
+              <div className="border-muted-foreground/25 bg-muted/50 rounded-lg border-2 border-dashed p-4 text-center">
+                <Upload className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  Click to upload avatar
+                </p>
+              </div>
             </div>
           );
 

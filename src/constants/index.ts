@@ -29,6 +29,7 @@ import {
   Eye,
   Keyboard,
   Edit3,
+  User,
 } from 'lucide-react';
 import { FieldType, ColorPalette, Theme, FontSize } from '@/types';
 
@@ -72,6 +73,7 @@ export const FIELD_CATEGORIES = [
     fields: [
       { type: 'file' as FieldType, label: 'File Upload', icon: Upload },
       { type: 'image' as FieldType, label: 'Image Upload', icon: Image },
+      { type: 'avatar' as FieldType, label: 'Avatar Upload', icon: User },
     ],
   },
   {
@@ -114,6 +116,7 @@ export const DEFAULT_FIELD_LABELS: Record<FieldType, string> = {
   grid: 'Grid Table',
   code: 'Code Editor',
   image: 'Image Upload',
+  avatar: 'Avatar Upload',
   submit: 'Submit',
   other: 'Other Field',
 };
@@ -144,6 +147,7 @@ export const DEFAULT_FIELD_PLACEHOLDERS: Record<FieldType, string> = {
   grid: '',
   code: 'Enter code...',
   image: 'Choose image...',
+  avatar: 'Upload avatar...',
   submit: '',
   other: 'Enter value...',
 };

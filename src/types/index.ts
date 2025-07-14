@@ -24,6 +24,7 @@ export type FieldType =
   | 'grid'
   | 'code'
   | 'image'
+  | 'avatar'
   | 'submit'
   | 'other';
 

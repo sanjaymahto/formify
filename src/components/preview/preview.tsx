@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   Upload,
   Calendar,
@@ -563,6 +564,109 @@ const Preview: React.FC<PreviewProps> = ({
                 className="hidden"
                 id={`file-${field.id}`}
               />
+            </div>
+          );
+
+        case 'avatar':
+          const handleAvatarDrag = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+
+          const handleAvatarDragIn = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+              setDragActive(prev => ({ ...prev, [field.id]: true }));
+            }
+          };
+
+          const handleAvatarDragOut = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDragActive(prev => ({ ...prev, [field.id]: false }));
+          };
+
+          const handleAvatarDrop = (e: React.DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setDragActive(prev => ({ ...prev, [field.id]: false }));
+
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+              const file = e.dataTransfer.files[0];
+              if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const result = e.target?.result as string;
+                  handleInputChange(field.id, result);
+                };
+                reader.readAsDataURL(file);
+              }
+            }
+          };
+
+          const handleAvatarFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.files && e.target.files.length > 0) {
+              const file = e.target.files[0];
+              if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const result = e.target?.result as string;
+                  handleInputChange(field.id, result);
+                };
+                reader.readAsDataURL(file);
+              }
+            }
+          };
+
+          const handleAvatarClick = () => {
+            fileInputRefs.current[field.id]?.click();
+          };
+
+          const avatarValue = fieldValue as string;
+          const hasAvatar = avatarValue && avatarValue.startsWith('data:image');
+
+          return (
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="h-24 w-24">
+                {hasAvatar ? (
+                  <AvatarImage src={avatarValue} alt="User avatar" />
+                ) : (
+                  <AvatarFallback className="text-2xl">👤</AvatarFallback>
+                )}
+              </Avatar>
+              <div
+                className={`cursor-pointer border-2 border-dashed p-4 text-center transition-colors ${
+                  dragActive[field.id]
+                    ? 'bg-primary/5 border-primary'
+                    : 'border-muted-foreground/25 hover:border-primary/50'
+                }`}
+                onDragEnter={handleAvatarDragIn}
+                onDragLeave={handleAvatarDragOut}
+                onDragOver={handleAvatarDrag}
+                onDrop={handleAvatarDrop}
+                onClick={handleAvatarClick}
+              >
+                <Upload className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  {dragActive[field.id]
+                    ? 'Drop image here'
+                    : 'Click or drag to upload avatar'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Supports: JPG, PNG, GIF, WebP
+                </p>
+                <Input
+                  ref={el => {
+                    fileInputRefs.current[field.id] = el;
+                  }}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarFileSelect}
+                  className="hidden"
+                  id={`avatar-${field.id}`}
+                />
+              </div>
             </div>
           );
 
