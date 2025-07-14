@@ -13,4 +13,4 @@ export interface FieldDefinition {
   type: FieldType;
   label: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-} 
+}

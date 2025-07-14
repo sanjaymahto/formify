@@ -126,7 +126,8 @@ export function FormPreview() {
 
       // Email validation
       if (field.type === 'email' && formData[field.id]) {
-        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        const emailRegex =
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
         const emailValue = String(formData[field.id]).trim();
         if (!emailRegex.test(emailValue)) {
           newErrors[field.id] = 'Please enter a valid email address';
@@ -139,11 +140,13 @@ export function FormPreview() {
         const { minLength, maxLength, pattern } = field.textConfig;
 
         if (minLength && value.length < minLength) {
-          newErrors[field.id] = `${field.label} must be at least ${minLength} characters`;
+          newErrors[field.id] =
+            `${field.label} must be at least ${minLength} characters`;
         }
 
         if (maxLength && value.length > maxLength) {
-          newErrors[field.id] = `${field.label} must be no more than ${maxLength} characters`;
+          newErrors[field.id] =
+            `${field.label} must be no more than ${maxLength} characters`;
         }
 
         if (pattern && !new RegExp(pattern).test(value)) {
@@ -160,7 +163,10 @@ export function FormPreview() {
     e.preventDefault();
     if (validateForm()) {
       console.log('Form submitted:', formData);
-      showToast('Form submitted successfully! Check console for data.', 'success');
+      showToast(
+        'Form submitted successfully! Check console for data.',
+        'success'
+      );
     }
   };
 
@@ -188,7 +194,9 @@ export function FormPreview() {
         return (
           <Input
             type={field.type === 'url' ? 'url' : 'text'}
-            value={getStringValue() || field.advanced?.defaultValue?.toString() || ''}
+            value={
+              getStringValue() || field.advanced?.defaultValue?.toString() || ''
+            }
             onChange={e => handleInputChange(field.id, e.target.value)}
             placeholder={field.placeholder || `Enter ${field.type}`}
             className={baseClasses}
@@ -677,10 +685,16 @@ export function FormPreview() {
         };
 
         // Get current grid data from form store
-        const gridData = formData[field.id] as unknown as Record<string, any>[] || [];
-        
+        const gridData =
+          (formData[field.id] as unknown as Record<string, any>[]) || [];
+
         // Initialize with minimum rows if no data exists
-        const currentRows = Array.isArray(gridData) && gridData.length > 0 ? gridData : Array(gridConfig.minRows || 1).fill(null).map(() => ({}));
+        const currentRows =
+          Array.isArray(gridData) && gridData.length > 0
+            ? gridData
+            : Array(gridConfig.minRows || 1)
+                .fill(null)
+                .map(() => ({}));
 
         const addRow = () => {
           if (currentRows.length < (gridConfig.maxRows || 10)) {
@@ -696,7 +710,11 @@ export function FormPreview() {
           }
         };
 
-        const updateRowData = (rowIndex: number, columnId: string, value: any) => {
+        const updateRowData = (
+          rowIndex: number,
+          columnId: string,
+          value: any
+        ) => {
           const newRows = [...currentRows];
           if (!newRows[rowIndex]) {
             newRows[rowIndex] = {};
@@ -719,7 +737,7 @@ export function FormPreview() {
                 <input
                   type="text"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -729,7 +747,7 @@ export function FormPreview() {
                 <input
                   type="number"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -739,7 +757,7 @@ export function FormPreview() {
                 <input
                   type="date"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -748,7 +766,7 @@ export function FormPreview() {
                 <input
                   type="time"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -757,7 +775,7 @@ export function FormPreview() {
                 <input
                   type="datetime-local"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
@@ -766,7 +784,7 @@ export function FormPreview() {
                 <input
                   type="email"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -776,7 +794,7 @@ export function FormPreview() {
                 <input
                   type="tel"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -786,16 +804,16 @@ export function FormPreview() {
                 <input
                   type="url"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
               );
             case 'select':
               return (
-                <select 
+                <select
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 >
                   <option value="">Select {column.name.toLowerCase()}</option>
@@ -817,7 +835,7 @@ export function FormPreview() {
                 <input
                   type="checkbox"
                   checked={value || false}
-                  onChange={(e) => handleChange(e.target.checked)}
+                  onChange={e => handleChange(e.target.checked)}
                   className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                 />
               );
@@ -826,7 +844,7 @@ export function FormPreview() {
                 <input
                   type="text"
                   value={value}
-                  onChange={(e) => handleChange(e.target.value)}
+                  onChange={e => handleChange(e.target.value)}
                   placeholder={`Enter ${column.name.toLowerCase()}`}
                   className="w-full rounded border-2 border-gray-300 px-2 py-1 text-sm transition-[border-color] hover:border-blue-400 focus-visible:border-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 dark:border-gray-600 dark:hover:border-blue-500 dark:focus-visible:border-blue-400"
                 />
@@ -846,7 +864,7 @@ export function FormPreview() {
                   type="button"
                   onClick={addRow}
                   disabled={currentRows.length >= (gridConfig.maxRows || 10)}
-                  className="rounded border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="rounded border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   + Add Row
                 </button>
@@ -868,7 +886,7 @@ export function FormPreview() {
                       </th>
                     ))}
                     {gridConfig.allowDeleteRows && (
-                      <th className="p-2 text-left font-medium text-gray-700 w-12">
+                      <th className="w-12 p-2 text-left font-medium text-gray-700">
                         Actions
                       </th>
                     )}
@@ -887,8 +905,10 @@ export function FormPreview() {
                           <button
                             type="button"
                             onClick={() => removeRow(rowIndex)}
-                            disabled={currentRows.length <= (gridConfig.minRows || 1)}
-                            className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={
+                              currentRows.length <= (gridConfig.minRows || 1)
+                            }
+                            className="text-red-500 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             ✕
                           </button>
@@ -978,14 +998,23 @@ export function FormPreview() {
             const layoutStyles: React.CSSProperties = {};
             if (field.layout) {
               if (field.layout.width) layoutStyles.width = field.layout.width;
-              if (field.layout.height) layoutStyles.height = field.layout.height;
-              if (field.layout.margin) layoutStyles.margin = field.layout.margin;
-              if (field.layout.padding) layoutStyles.padding = field.layout.padding;
-              if (field.layout.display) layoutStyles.display = field.layout.display;
-              if (field.layout.flexDirection) layoutStyles.flexDirection = field.layout.flexDirection;
-              if (field.layout.justifyContent) layoutStyles.justifyContent = field.layout.justifyContent;
-              if (field.layout.alignItems) layoutStyles.alignItems = field.layout.alignItems;
-              if (field.layout.gridTemplateColumns) layoutStyles.gridTemplateColumns = field.layout.gridTemplateColumns;
+              if (field.layout.height)
+                layoutStyles.height = field.layout.height;
+              if (field.layout.margin)
+                layoutStyles.margin = field.layout.margin;
+              if (field.layout.padding)
+                layoutStyles.padding = field.layout.padding;
+              if (field.layout.display)
+                layoutStyles.display = field.layout.display;
+              if (field.layout.flexDirection)
+                layoutStyles.flexDirection = field.layout.flexDirection;
+              if (field.layout.justifyContent)
+                layoutStyles.justifyContent = field.layout.justifyContent;
+              if (field.layout.alignItems)
+                layoutStyles.alignItems = field.layout.alignItems;
+              if (field.layout.gridTemplateColumns)
+                layoutStyles.gridTemplateColumns =
+                  field.layout.gridTemplateColumns;
               if (field.layout.gridGap) layoutStyles.gap = field.layout.gridGap;
             }
 
@@ -998,8 +1027,8 @@ export function FormPreview() {
                       <span className="ml-1 text-red-500">*</span>
                     )}
                     {field.advanced?.tooltip && (
-                      <span 
-                        className="ml-1 text-xs text-gray-500 cursor-help" 
+                      <span
+                        className="ml-1 cursor-help text-xs text-gray-500"
                         title={field.advanced.tooltip}
                       >
                         ℹ️
@@ -1017,7 +1046,7 @@ export function FormPreview() {
                   </p>
                 )}
                 {field.advanced?.description && (
-                  <p className="text-xs text-gray-500 italic">
+                  <p className="text-xs italic text-gray-500">
                     {field.advanced.description}
                   </p>
                 )}

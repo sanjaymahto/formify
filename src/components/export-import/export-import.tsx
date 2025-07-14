@@ -64,7 +64,10 @@ export function ExportImportButtons() {
         showToast('Form imported successfully!', 'success');
       } catch (error) {
         console.error('Import failed:', error);
-        showToast('Failed to import form. Please check the file format.', 'error');
+        showToast(
+          'Failed to import form. Please check the file format.',
+          'error'
+        );
       }
     };
 

@@ -21,14 +21,14 @@ export const createField = (type: FieldType, id?: string): Field => {
 
 export const validateField = (field: Field): string[] => {
   const errors: string[] = [];
-  
+
   if (!field.label.trim()) {
     errors.push('Field label is required');
   }
-  
+
   if (field.required && !field.placeholder?.trim()) {
     errors.push('Placeholder is required for required fields');
   }
-  
+
   return errors;
-}; 
+};

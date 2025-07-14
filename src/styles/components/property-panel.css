@@ -1,13 +1,13 @@
 .property-panel-container {
-  @apply w-80 bg-background border-l border-border h-screen overflow-y-auto;
+  @apply h-screen w-80 overflow-y-auto border-l border-border bg-background;
 }
 
 .property-panel-header {
-  @apply p-4 border-b border-border;
+  @apply border-b border-border p-4;
 }
 
 .property-panel-content {
-  @apply p-4 space-y-6;
+  @apply space-y-6 p-4;
 }
 
 .property-section {
@@ -59,7 +59,7 @@
 }
 
 .property-color-picker {
-  @apply w-full h-10 rounded border border-input;
+  @apply h-10 w-full rounded border border-input;
 }
 
 .property-slider {
@@ -71,29 +71,29 @@
 }
 
 .property-file-config {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .property-date-config {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .property-rating-config {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .property-validation {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .property-conditional {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .property-advanced {
-  @apply space-y-3 p-3 border border-border rounded-lg;
+  @apply space-y-3 rounded-lg border border-border p-3;
 }
 
 .no-field-selected {
-  @apply flex items-center justify-center h-full text-muted-foreground;
-} 
+  @apply flex h-full items-center justify-center text-muted-foreground;
+}

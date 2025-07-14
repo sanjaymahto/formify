@@ -16,13 +16,13 @@ export const CardSection: React.FC<CardSectionProps> = ({
 }) => (
   <Card className={className}>
     <CardHeader>
-      <CardTitle className={icon ? 'flex items-center space-x-2 text-sm' : 'text-sm'}>
+      <CardTitle
+        className={icon ? 'flex items-center space-x-2 text-sm' : 'text-sm'}
+      >
         {icon && icon}
         <span>{title}</span>
       </CardTitle>
     </CardHeader>
-    <CardContent className="space-y-4">
-      {children}
-    </CardContent>
+    <CardContent className="space-y-4">{children}</CardContent>
   </Card>
-); 
+);

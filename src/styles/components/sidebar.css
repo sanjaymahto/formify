@@ -1,13 +1,13 @@
 .sidebar-container {
-  @apply w-80 bg-background border-r border-border h-screen overflow-y-auto;
+  @apply h-screen w-80 overflow-y-auto border-r border-border bg-background;
 }
 
 .sidebar-header {
-  @apply p-4 border-b border-border;
+  @apply border-b border-border p-4;
 }
 
 .sidebar-content {
-  @apply p-4 space-y-6;
+  @apply space-y-6 p-4;
 }
 
 .field-category {
@@ -15,7 +15,7 @@
 }
 
 .category-header {
-  @apply flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wide;
+  @apply flex items-center gap-2 text-sm font-medium uppercase tracking-wide text-muted-foreground;
 }
 
 .field-grid {
@@ -23,7 +23,7 @@
 }
 
 .field-item {
-  @apply p-3 border border-border rounded-lg hover:border-primary/50 hover:bg-muted/50 transition-all duration-200 cursor-grab active:cursor-grabbing;
+  @apply hover:border-primary/50 hover:bg-muted/50 cursor-grab rounded-lg border border-border p-3 transition-all duration-200 active:cursor-grabbing;
 }
 
 .field-item:hover {
@@ -35,7 +35,7 @@
 }
 
 .field-icon {
-  @apply w-6 h-6 text-muted-foreground;
+  @apply h-6 w-6 text-muted-foreground;
 }
 
 .field-label {
@@ -55,5 +55,5 @@
 }
 
 .search-icon {
-  @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground;
-} 
+  @apply absolute left-3 top-1/2 -translate-y-1/2 transform text-muted-foreground;
+}

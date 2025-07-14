@@ -29,4 +29,4 @@ export interface ColorPaletteConfigItem {
   value: ColorPalette;
   label: string;
   preview: string;
-} 
+}

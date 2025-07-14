@@ -683,7 +683,11 @@ export default function Canvas() {
     coverInputRef.current?.click();
   };
   // Utility to compress/resize image before storing as base64
-  async function compressImage(file: File, maxSize = 800, quality = 0.7): Promise<string> {
+  async function compressImage(
+    file: File,
+    maxSize = 800,
+    quality = 0.7
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       const img = new window.Image();
       const reader = new FileReader();
@@ -725,7 +729,10 @@ export default function Canvas() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > MAX_IMAGE_SIZE) {
-        showToast('Cover image is too large. Please select an image under 200 KB.', 'error');
+        showToast(
+          'Cover image is too large. Please select an image under 200 KB.',
+          'error'
+        );
         return;
       }
       try {
@@ -754,7 +761,10 @@ export default function Canvas() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > MAX_IMAGE_SIZE) {
-        showToast('Logo image is too large. Please select an image under 200 KB.', 'error');
+        showToast(
+          'Logo image is too large. Please select an image under 200 KB.',
+          'error'
+        );
         return;
       }
       try {
@@ -1039,7 +1049,10 @@ export default function Canvas() {
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't handle keyboard shortcuts if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -1061,7 +1074,7 @@ export default function Canvas() {
       // Arrow key navigation for field selection
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
-        
+
         if (fields.length === 0) return;
 
         const currentIndex = fields.findIndex(f => f.id === selectedFieldId);
@@ -1096,7 +1109,9 @@ export default function Canvas() {
         e.preventDefault();
         const fieldElement = fieldRefs.current[selectedFieldId];
         if (fieldElement) {
-          const labelInput = fieldElement.querySelector('input[type="text"]') as HTMLInputElement;
+          const labelInput = fieldElement.querySelector(
+            'input[type="text"]'
+          ) as HTMLInputElement;
           if (labelInput) {
             labelInput.focus();
             labelInput.select();
@@ -1187,7 +1202,16 @@ export default function Canvas() {
       document.removeEventListener('dragstart', handleGlobalDragStart);
       document.removeEventListener('dragend', handleGlobalDragEnd);
     };
-  }, [ghostFieldType, draggedFieldId, selectedFieldId, fields, setSelectedField, removeField, addField, updateField]);
+  }, [
+    ghostFieldType,
+    draggedFieldId,
+    selectedFieldId,
+    fields,
+    setSelectedField,
+    removeField,
+    addField,
+    updateField,
+  ]);
 
   const getDefaultLabel = (type: string): string => {
     const labels: Record<string, string> = {
@@ -1342,8 +1366,10 @@ export default function Canvas() {
         case 'avatar':
           return (
             <div className="flex flex-col items-center space-y-3">
-              <Avatar className="h-16 w-16 bg-muted/50">
-                <AvatarFallback className="text-lg text-muted-foreground">👤</AvatarFallback>
+              <Avatar className="bg-muted/50 h-16 w-16">
+                <AvatarFallback className="text-lg text-muted-foreground">
+                  👤
+                </AvatarFallback>
               </Avatar>
               <div className="border-muted-foreground/25 bg-muted/50 rounded-lg border-2 border-dashed p-4 text-center">
                 <Upload className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
@@ -1448,8 +1474,6 @@ export default function Canvas() {
   const submitFields = fields.filter(field => field.type === 'submit');
   const otherFields = fields.filter(field => field.type !== 'submit');
 
-
-
   return (
     <motion.div
       className="flex h-full flex-col bg-background"
@@ -1477,18 +1501,25 @@ export default function Canvas() {
           onDrop={e => handleDrop(e)}
         >
           {/* Cover Image Placeholder */}
-          <div className="relative w-full h-48 rounded-xl overflow-hidden mb-[-3.5rem] cursor-pointer group" onClick={handleCoverClick}>
+          <div
+            className="group relative mb-[-3.5rem] h-48 w-full cursor-pointer overflow-hidden rounded-xl"
+            onClick={handleCoverClick}
+          >
             {coverImage ? (
-              <img src={coverImage} alt="Cover" className="object-cover w-full h-full" />
+              <img
+                src={coverImage}
+                alt="Cover"
+                className="h-full w-full object-cover"
+              />
             ) : (
-              <div className="flex items-center justify-center w-full h-full bg-muted-foreground/10 text-muted-foreground text-lg font-medium">
+              <div className="bg-muted-foreground/10 flex h-full w-full items-center justify-center text-lg font-medium text-muted-foreground">
                 Click to upload cover image
               </div>
             )}
             {coverImage && (
               <button
                 type="button"
-                className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-2 top-2 z-10 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity hover:bg-black/80 group-hover:opacity-100"
                 onClick={handleRemoveCover}
                 title="Remove cover image"
                 tabIndex={0}
@@ -1505,19 +1536,26 @@ export default function Canvas() {
             />
           </div>
           {/* Logo Placeholder (overlapping cover, now left-aligned) */}
-          <div className="relative flex justify-start z-10 group" style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}>
+          <div
+            className="group relative z-10 flex justify-start"
+            style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}
+          >
             <div className="relative ml-6" onClick={handleLogoClick}>
               {logoImage ? (
-                <img src={logoImage} alt="Logo" className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background object-cover shadow-lg cursor-pointer" />
+                <img
+                  src={logoImage}
+                  alt="Logo"
+                  className="h-20 w-20 cursor-pointer rounded-full border-4 border-neutral-300 bg-background object-cover shadow-lg dark:border-neutral-700"
+                />
               ) : (
-                <div className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background flex items-center justify-center text-3xl text-muted-foreground shadow-lg cursor-pointer">
+                <div className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-full border-4 border-neutral-300 bg-background text-3xl text-muted-foreground shadow-lg dark:border-neutral-700">
                   +
                 </div>
               )}
               {logoImage && (
                 <button
                   type="button"
-                  className="absolute top-0 right-0 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-0 top-0 z-10 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity hover:bg-black/80 group-hover:opacity-100"
                   onClick={handleRemoveLogo}
                   title="Remove logo"
                   style={{ transform: 'translate(40%, -40%)' }}
@@ -1594,12 +1632,13 @@ export default function Canvas() {
                   or
                 </motion.p>
                 <motion.p
-                  className="mb-4 text-xs text-muted-foreground/70"
+                  className="text-muted-foreground/70 mb-4 text-xs"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 1.1 }}
                 >
-                  💡 Tip: Use arrow keys to navigate fields, F1 for keyboard shortcuts
+                  💡 Tip: Use arrow keys to navigate fields, F1 for keyboard
+                  shortcuts
                 </motion.p>
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -1622,9 +1661,11 @@ export default function Canvas() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.9 }}
                 >
-                  <div className="flex items-center gap-4 my-6">
+                  <div className="my-6 flex items-center gap-4">
                     <Separator className="flex-1" />
-                    <span className="text-xs text-muted-foreground font-medium">OR</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      OR
+                    </span>
                     <Separator className="flex-1" />
                   </div>
                 </motion.div>
@@ -1782,7 +1823,6 @@ export default function Canvas() {
           </div>
         </motion.div>
       )}
-
     </motion.div>
   );
 }

@@ -14,7 +14,8 @@ export function useAutoSave() {
 
   // Auto-save effect
   useEffect(() => {
-    if (!autoSaveEnabled || !isDirty || fields.length === 0 || isLoadingForm) return;
+    if (!autoSaveEnabled || !isDirty || fields.length === 0 || isLoadingForm)
+      return;
 
     // Debounce auto-save to avoid excessive saves
     if (saveTimeoutRef.current) {

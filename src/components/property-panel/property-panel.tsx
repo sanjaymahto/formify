@@ -4,7 +4,13 @@ import { useFormStore } from '@/lib/store';
 import { Field } from '@/types';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CardSection, CheckboxWrapper, FlexRow, Grid2Col, SpaceY } from '@/components/ui';
+import {
+  CardSection,
+  CheckboxWrapper,
+  FlexRow,
+  Grid2Col,
+  SpaceY,
+} from '@/components/ui';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -112,7 +118,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <CheckboxWrapper
             id="required"
             checked={field.required}
-            onChange={(checked) => handleUpdate({ required: checked })}
+            onChange={checked => handleUpdate({ required: checked })}
             label="Required field"
             colors={checkboxColors}
           />
@@ -212,7 +218,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <CheckboxWrapper
             id="multiple"
             checked={field.fileConfig?.multiple || false}
-            onChange={(checked) =>
+            onChange={checked =>
               handleUpdate({
                 fileConfig: {
                   ...field.fileConfig,
@@ -659,10 +665,6 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               />
             </div>
           </div>
-
-
-
-
         </CardContent>
       </Card>
     );
@@ -807,10 +809,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <div className="h-2 w-2 rounded-full bg-green-500"></div>
-              <Label className="text-sm font-medium">Show this field when:</Label>
+              <Label className="text-sm font-medium">
+                Show this field when:
+              </Label>
             </div>
-            
-            <div className="space-y-3 rounded-lg border p-3 bg-muted/30">
+
+            <div className="bg-muted/30 space-y-3 rounded-lg border p-3">
               <div className="grid grid-cols-1 gap-3">
                 {/* Field Selection */}
                 <div className="space-y-1">
@@ -831,8 +835,10 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue>
-                        {field.conditional?.showIf?.fieldId 
-                          ? availableFields.find(f => f.id === field.conditional?.showIf?.fieldId)?.label || 'Unknown field'
+                        {field.conditional?.showIf?.fieldId
+                          ? availableFields.find(
+                              f => f.id === field.conditional?.showIf?.fieldId
+                            )?.label || 'Unknown field'
                           : 'Select a field'}
                       </SelectValue>
                     </SelectTrigger>
@@ -840,8 +846,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       {availableFields.length > 0 ? (
                         availableFields.map(f => (
                           <SelectItem key={f.id} value={f.id}>
-                            <span className="truncate max-w-[120px]" title={f.label}>
-                              {f.label.length > 20 ? `${f.label.substring(0, 20)}...` : f.label}
+                            <span
+                              className="max-w-[120px] truncate"
+                              title={f.label}
+                            >
+                              {f.label.length > 20
+                                ? `${f.label.substring(0, 20)}...`
+                                : f.label}
                             </span>
                           </SelectItem>
                         ))
@@ -856,7 +867,9 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
                 {/* Operator Selection */}
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Condition</Label>
+                  <Label className="text-xs text-muted-foreground">
+                    Condition
+                  </Label>
                   <Select
                     value={field.conditional?.showIf?.operator || 'equals'}
                     onValueChange={value =>
@@ -884,8 +897,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       <SelectItem value="equals">equals</SelectItem>
                       <SelectItem value="not_equals">does not equal</SelectItem>
                       <SelectItem value="contains">contains</SelectItem>
-                      <SelectItem value="not_contains">does not contain</SelectItem>
-                      <SelectItem value="greater_than">is greater than</SelectItem>
+                      <SelectItem value="not_contains">
+                        does not contain
+                      </SelectItem>
+                      <SelectItem value="greater_than">
+                        is greater than
+                      </SelectItem>
                       <SelectItem value="less_than">is less than</SelectItem>
                     </SelectContent>
                   </Select>
@@ -938,10 +955,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
               <div className="h-2 w-2 rounded-full bg-red-500"></div>
-              <Label className="text-sm font-medium">Hide this field when:</Label>
+              <Label className="text-sm font-medium">
+                Hide this field when:
+              </Label>
             </div>
-            
-            <div className="space-y-3 rounded-lg border p-3 bg-muted/30">
+
+            <div className="bg-muted/30 space-y-3 rounded-lg border p-3">
               <div className="grid grid-cols-1 gap-3">
                 {/* Field Selection */}
                 <div className="space-y-1">
@@ -962,8 +981,10 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue>
-                        {field.conditional?.hideIf?.fieldId 
-                          ? availableFields.find(f => f.id === field.conditional?.hideIf?.fieldId)?.label || 'Unknown field'
+                        {field.conditional?.hideIf?.fieldId
+                          ? availableFields.find(
+                              f => f.id === field.conditional?.hideIf?.fieldId
+                            )?.label || 'Unknown field'
                           : 'Select a field'}
                       </SelectValue>
                     </SelectTrigger>
@@ -971,8 +992,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       {availableFields.length > 0 ? (
                         availableFields.map(f => (
                           <SelectItem key={f.id} value={f.id}>
-                            <span className="truncate max-w-[120px]" title={f.label}>
-                              {f.label.length > 20 ? `${f.label.substring(0, 20)}...` : f.label}
+                            <span
+                              className="max-w-[120px] truncate"
+                              title={f.label}
+                            >
+                              {f.label.length > 20
+                                ? `${f.label.substring(0, 20)}...`
+                                : f.label}
                             </span>
                           </SelectItem>
                         ))
@@ -987,7 +1013,9 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
                 {/* Operator Selection */}
                 <div className="space-y-1">
-                  <Label className="text-xs text-muted-foreground">Condition</Label>
+                  <Label className="text-xs text-muted-foreground">
+                    Condition
+                  </Label>
                   <Select
                     value={field.conditional?.hideIf?.operator || 'equals'}
                     onValueChange={value =>
@@ -1015,8 +1043,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                       <SelectItem value="equals">equals</SelectItem>
                       <SelectItem value="not_equals">does not equal</SelectItem>
                       <SelectItem value="contains">contains</SelectItem>
-                      <SelectItem value="not_contains">does not contain</SelectItem>
-                      <SelectItem value="greater_than">is greater than</SelectItem>
+                      <SelectItem value="not_contains">
+                        does not contain
+                      </SelectItem>
+                      <SelectItem value="greater_than">
+                        is greater than
+                      </SelectItem>
                       <SelectItem value="less_than">is less than</SelectItem>
                     </SelectContent>
                   </Select>
@@ -1067,11 +1099,20 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
           {/* Help Text */}
           <div className="rounded-lg bg-blue-50 p-3 text-xs text-blue-700">
-            <div className="font-medium mb-1">How conditional logic works:</div>
+            <div className="mb-1 font-medium">How conditional logic works:</div>
             <ul className="space-y-1 text-blue-600">
-              <li>• <strong>Show when:</strong> Field appears only when the condition is true</li>
-              <li>• <strong>Hide when:</strong> Field is hidden when the condition is true</li>
-              <li>• Conditions are evaluated based on the selected field's current value</li>
+              <li>
+                • <strong>Show when:</strong> Field appears only when the
+                condition is true
+              </li>
+              <li>
+                • <strong>Hide when:</strong> Field is hidden when the condition
+                is true
+              </li>
+              <li>
+                • Conditions are evaluated based on the selected field's current
+                value
+              </li>
               <li>• You can use both conditions together for complex logic</li>
             </ul>
           </div>

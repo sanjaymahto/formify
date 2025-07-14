@@ -20,14 +20,13 @@ export const CheckboxWrapper: React.FC<CheckboxWrapperProps> = ({
   colors,
   disabled = false,
 }) => {
-  const baseClasses = 'h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors';
-  
+  const baseClasses =
+    'h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors';
+
   const getCheckboxClasses = () => {
     if (colors) {
       return `${baseClasses} ${
-        checked
-          ? `${colors.bg} ${colors.border}`
-          : 'border-border'
+        checked ? `${colors.bg} ${colors.border}` : 'border-border'
       } ${colors.focus} ${colors.hover}`;
     }
     return baseClasses;
@@ -46,7 +45,7 @@ export const CheckboxWrapper: React.FC<CheckboxWrapperProps> = ({
         type="checkbox"
         id={id}
         checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
+        onChange={e => onChange(e.target.checked)}
         disabled={disabled}
         className={getCheckboxClasses()}
         style={{
@@ -60,4 +59,4 @@ export const CheckboxWrapper: React.FC<CheckboxWrapperProps> = ({
       )}
     </div>
   );
-}; 
+};

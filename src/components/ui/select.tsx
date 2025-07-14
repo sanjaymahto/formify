@@ -154,16 +154,16 @@ function SelectContent({
 }: SelectContentProps) {
   const context = React.useContext(SelectContext);
   if (!context) throw new Error('SelectContent must be used within Select');
-  
+
   const [mounted, setMounted] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
-        const [coords, setCoords] = React.useState<{
-        top: number;
-        left: number;
-        width: number;
-        showAbove: boolean;
-      }>({ top: 0, left: 0, width: 0, showAbove: false });
+  const [coords, setCoords] = React.useState<{
+    top: number;
+    left: number;
+    width: number;
+    showAbove: boolean;
+  }>({ top: 0, left: 0, width: 0, showAbove: false });
 
   React.useEffect(() => {
     setMounted(true);
@@ -179,31 +179,31 @@ function SelectContent({
       const rect = (trigger as HTMLElement).getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
-      
+
       // Calculate available space
       const spaceBelow = viewportHeight - rect.bottom;
       const spaceAbove = rect.top;
-      
+
       // Determine if dropdown should appear above or below
       const shouldShowAbove = spaceBelow < 200 && spaceAbove > spaceBelow;
-      
+
       // Calculate position
-      const top = shouldShowAbove 
+      const top = shouldShowAbove
         ? rect.top + window.scrollY - 200 // Show above
-        : rect.bottom + window.scrollY;   // Show below
-      
+        : rect.bottom + window.scrollY; // Show below
+
       let left = rect.left + window.scrollX;
-      
+
       // Ensure dropdown doesn't go off-screen horizontally
       if (left + rect.width > viewportWidth + window.scrollX) {
         left = viewportWidth + window.scrollX - rect.width - 8;
       }
-      
+
       // Ensure dropdown doesn't go off-screen to the left
       if (left < window.scrollX) {
         left = window.scrollX + 8;
       }
-      
+
       setCoords({
         top,
         left,
@@ -215,14 +215,14 @@ function SelectContent({
 
   React.useEffect(() => {
     if (!context.open) return;
-    
+
     // Update position when dropdown opens
     updatePosition();
-    
+
     // Update position on scroll and resize
     window.addEventListener('scroll', updatePosition, true);
     window.addEventListener('resize', updatePosition);
-    
+
     return () => {
       window.removeEventListener('scroll', updatePosition, true);
       window.removeEventListener('resize', updatePosition);

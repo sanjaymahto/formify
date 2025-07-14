@@ -6,7 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Toast notification utility
-export const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning') => {
+export const showToast = (
+  message: string,
+  type: 'success' | 'error' | 'info' | 'warning'
+) => {
   // Create toast element
   const toast = document.createElement('div');
   toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg text-white text-sm font-medium transition-all duration-300 transform translate-x-full shadow-lg max-w-sm ${
@@ -40,15 +43,17 @@ export const showToast = (message: string, type: 'success' | 'error' | 'info' | 
 
 // Confirmation dialog utility
 export const showConfirm = (message: string): Promise<boolean> => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // Create overlay
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
-    
+    overlay.className =
+      'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+
     // Create dialog
     const dialog = document.createElement('div');
-    dialog.className = 'bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full shadow-xl';
-    
+    dialog.className =
+      'bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full shadow-xl';
+
     dialog.innerHTML = `
       <div class="mb-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Action</h3>
@@ -63,24 +68,28 @@ export const showConfirm = (message: string): Promise<boolean> => {
         </button>
       </div>
     `;
-    
+
     overlay.appendChild(dialog);
     document.body.appendChild(overlay);
-    
+
     // Handle button clicks
     const handleConfirm = () => {
       document.body.removeChild(overlay);
       resolve(true);
     };
-    
+
     const handleCancel = () => {
       document.body.removeChild(overlay);
       resolve(false);
     };
-    
-    dialog.querySelector('#confirm-btn')?.addEventListener('click', handleConfirm);
-    dialog.querySelector('#cancel-btn')?.addEventListener('click', handleCancel);
-    overlay.addEventListener('click', (e) => {
+
+    dialog
+      .querySelector('#confirm-btn')
+      ?.addEventListener('click', handleConfirm);
+    dialog
+      .querySelector('#cancel-btn')
+      ?.addEventListener('click', handleCancel);
+    overlay.addEventListener('click', e => {
       if (e.target === overlay) {
         handleCancel();
       }

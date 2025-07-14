@@ -4,4 +4,4 @@ export interface PreviewProps {
 
 export interface FormPreviewProps {
   className?: string;
-} 
+}

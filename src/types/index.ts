@@ -330,7 +330,10 @@ export interface FormState {
   setSelectedField: (id: string | null) => void;
   setFormTitle: (title: string) => void;
   togglePreviewMode: () => void;
-  updateFormData: (fieldId: string, value: string | number | boolean | string[]) => void;
+  updateFormData: (
+    fieldId: string,
+    value: string | number | boolean | string[]
+  ) => void;
   shouldShowField: (field: Field) => boolean;
   exportForm: () => FormData;
   importForm: (formData: FormData) => void;
@@ -354,7 +357,10 @@ export interface FormState {
   clearCurrentForm: () => void;
   clearHistory: () => void;
   getSessionForms: () => Record<string, SavedForm>;
-  limitFormsToMax: (forms: Record<string, SavedForm>, maxCount?: number) => Record<string, SavedForm>;
+  limitFormsToMax: (
+    forms: Record<string, SavedForm>,
+    maxCount?: number
+  ) => Record<string, SavedForm>;
 }
 
 // Template Types
@@ -369,7 +375,17 @@ export interface FormTemplate {
 
 // Settings Types
 export type Theme = 'light' | 'dark' | 'auto';
-export type ColorPalette = 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'pink' | 'red' | 'teal' | 'indigo' | 'yellow';
+export type ColorPalette =
+  | 'default'
+  | 'blue'
+  | 'green'
+  | 'purple'
+  | 'orange'
+  | 'pink'
+  | 'red'
+  | 'teal'
+  | 'indigo'
+  | 'yellow';
 export type FontSize = 'small' | 'medium' | 'large';
 
 export interface Settings {
@@ -405,4 +421,4 @@ export interface FieldDefinition {
 }
 
 // Component Types
-export * from './components'; 
+export * from './components';

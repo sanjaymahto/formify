@@ -1,9 +1,9 @@
 .preview-container {
-  @apply bg-background min-h-screen;
+  @apply min-h-screen bg-background;
 }
 
 .preview-content {
-  @apply max-w-2xl mx-auto p-6 space-y-6;
+  @apply mx-auto max-w-2xl space-y-6 p-6;
 }
 
 .preview-header {
@@ -83,7 +83,7 @@
 }
 
 .preview-field-color {
-  @apply w-full h-10 rounded border border-input;
+  @apply h-10 w-full rounded border border-input;
 }
 
 .preview-field-toggle {
@@ -91,7 +91,7 @@
 }
 
 .preview-field-divider {
-  @apply border-t border-border my-4;
+  @apply my-4 border-t border-border;
 }
 
 .preview-field-grid {
@@ -131,5 +131,5 @@
 }
 
 .preview-mode-toggle {
-  @apply fixed top-4 right-4 z-50;
-} 
+  @apply fixed right-4 top-4 z-50;
+}

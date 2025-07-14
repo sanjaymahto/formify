@@ -12,15 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import {
-  Settings,
-  X,
-  Palette,
-  Type,
-  Sun,
-  RotateCcw,
-  Eye,
-} from 'lucide-react';
+import { Settings, X, Palette, Type, Sun, RotateCcw, Eye } from 'lucide-react';
 import { useSettingsStore } from '@/lib/settings-store';
 import { FontSize, Theme } from '@/types';
 import { COLOR_PALETTES, FONT_SIZES, THEMES } from '@/constants';
@@ -29,10 +21,6 @@ interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-
-
-
 
 export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const settings = useSettingsStore();
@@ -165,8 +153,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </CardContent>
           </Card>
 
-
-
           {/* Accessibility Section */}
           <Card>
             <CardHeader>
@@ -195,8 +181,6 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                   }}
                 />
               </div>
-
-
             </CardContent>
           </Card>
         </div>

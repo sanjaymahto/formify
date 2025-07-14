@@ -14,7 +14,11 @@ export function SettingsButton({
   className = '',
   tooltipText = 'Customize app appearance and settings',
 }: SettingsButtonProps) {
-  const { value: isSettingsOpen, setTrue: openSettings, setFalse: closeSettings } = useToggle(false);
+  const {
+    value: isSettingsOpen,
+    setTrue: openSettings,
+    setFalse: closeSettings,
+  } = useToggle(false);
 
   return (
     <>
@@ -29,10 +33,7 @@ export function SettingsButton({
         <Settings className="h-5 w-5" />
       </Button>
 
-      <SettingsPanel
-        isOpen={isSettingsOpen}
-        onClose={closeSettings}
-      />
+      <SettingsPanel isOpen={isSettingsOpen} onClose={closeSettings} />
     </>
   );
 }

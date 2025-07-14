@@ -6,9 +6,11 @@ import { useFormStore } from '@/lib/store';
 import { FieldType } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { FIELD_CATEGORIES, DEFAULT_FIELD_LABELS, DEFAULT_FIELD_PLACEHOLDERS } from '@/constants';
-
-
+import {
+  FIELD_CATEGORIES,
+  DEFAULT_FIELD_LABELS,
+  DEFAULT_FIELD_PLACEHOLDERS,
+} from '@/constants';
 
 export default function Sidebar() {
   const [mounted, setMounted] = useState(false);

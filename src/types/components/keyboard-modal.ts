@@ -16,4 +16,4 @@ export interface ShortcutCategory {
   category: string;
   icon: React.ReactNode;
   shortcuts: Shortcut[];
-} 
+}

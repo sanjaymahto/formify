@@ -27,20 +27,21 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-
   const renderKey = (key: string) => {
     const isMultiKey = key.includes('+') || key.includes('/');
-    
+
     if (isMultiKey) {
       const keys = key.split(' / ');
       return (
         <div className="flex gap-1">
           {keys.map((k, index) => (
             <React.Fragment key={index}>
-              <kbd className="px-2 py-1 text-xs bg-muted rounded border font-mono">
+              <kbd className="rounded border bg-muted px-2 py-1 font-mono text-xs">
                 {k}
               </kbd>
-              {index < keys.length - 1 && <span className="text-muted-foreground">/</span>}
+              {index < keys.length - 1 && (
+                <span className="text-muted-foreground">/</span>
+              )}
             </React.Fragment>
           ))}
         </div>
@@ -48,7 +49,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     }
 
     return (
-      <kbd className="px-2 py-1 text-xs bg-muted rounded border font-mono">
+      <kbd className="rounded border bg-muted px-2 py-1 font-mono text-xs">
         {key}
       </kbd>
     );
@@ -65,16 +66,16 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
           transition={{ duration: 0.2 }}
         >
           <motion.div
-            className="max-w-4xl w-full mx-4 bg-background rounded-lg shadow-xl border"
+            className="mx-4 w-full max-w-4xl rounded-lg border bg-background shadow-xl"
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center justify-between border-b p-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
+                <div className="bg-primary/10 rounded-lg p-2">
                   <Keyboard className="h-5 w-5 text-primary" />
                 </div>
                 <div>
@@ -95,8 +96,8 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="max-h-[70vh] overflow-y-auto p-6">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 {KEYBOARD_SHORTCUTS.map((category, index) => (
                   <motion.div
                     key={category.category}
@@ -106,10 +107,10 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-muted rounded-md">
+                      <div className="rounded-md bg-muted p-1.5">
                         <category.icon className="h-4 w-4" />
                       </div>
-                      <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                      <h3 className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
                         {category.category}
                       </h3>
                     </div>
@@ -134,33 +135,37 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
 
               {/* Tips Section */}
               <motion.div
-                className="mt-8 p-4 bg-muted/50 rounded-lg border"
+                className="bg-muted/50 mt-8 rounded-lg border p-4"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.5 }}
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-1.5 bg-primary/10 rounded-md mt-0.5">
+                  <div className="bg-primary/10 mt-0.5 rounded-md p-1.5">
                     <Mouse className="h-4 w-4 text-primary" />
                   </div>
-                                     <div className="space-y-2">
-                     <h4 className="font-medium text-sm">Pro Tips</h4>
-                     <ul className="text-sm text-muted-foreground space-y-1">
-                       <li>• Canvas shortcuts work when building your form</li>
-                       <li>• Preview shortcuts work when testing your form</li>
-                       <li>• Press F1 anytime to see this help modal</li>
-                       <li>• Ctrl+D is great for duplicating similar fields</li>
-                       <li>• Use Tab to navigate form inputs in preview mode</li>
-                     </ul>
-                   </div>
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Pro Tips</h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
+                      <li>• Canvas shortcuts work when building your form</li>
+                      <li>• Preview shortcuts work when testing your form</li>
+                      <li>• Press F1 anytime to see this help modal</li>
+                      <li>• Ctrl+D is great for duplicating similar fields</li>
+                      <li>• Use Tab to navigate form inputs in preview mode</li>
+                    </ul>
+                  </div>
                 </div>
               </motion.div>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between p-6 border-t bg-muted/30">
+            <div className="bg-muted/30 flex items-center justify-between border-t p-6">
               <p className="text-xs text-muted-foreground">
-                Press <kbd className="px-1.5 py-0.5 text-xs bg-background rounded border">Esc</kbd> to close
+                Press{' '}
+                <kbd className="rounded border bg-background px-1.5 py-0.5 text-xs">
+                  Esc
+                </kbd>{' '}
+                to close
               </p>
               <Button
                 variant="outline"
@@ -178,4 +183,4 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
   );
 };
 
-export default KeyboardShortcutsModal; 
+export default KeyboardShortcutsModal;

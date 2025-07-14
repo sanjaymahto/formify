@@ -3,10 +3,7 @@
 import { useState } from 'react';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
-import {
-  formTemplates,
-  templateCategories
-} from '@/lib/templates';
+import { formTemplates, templateCategories } from '@/lib/templates';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

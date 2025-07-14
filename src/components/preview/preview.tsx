@@ -42,7 +42,10 @@ interface PreviewProps {
 }
 
 // Custom Tooltip Component
-const CustomTooltip: React.FC<{ content: string; children: React.ReactNode }> = ({ content, children }) => {
+const CustomTooltip: React.FC<{
+  content: string;
+  children: React.ReactNode;
+}> = ({ content, children }) => {
   const [isVisible, setIsVisible] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -62,7 +65,7 @@ const CustomTooltip: React.FC<{ content: string; children: React.ReactNode }> = 
   };
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -75,10 +78,10 @@ const CustomTooltip: React.FC<{ content: string; children: React.ReactNode }> = 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg whitespace-nowrap z-50"
+            className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white shadow-lg"
           >
             {content}
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+            <div className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -95,7 +98,9 @@ const Preview: React.FC<PreviewProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         // Exit preview mode by triggering the preview toggle
-        const previewButton = document.querySelector('[data-preview-toggle]') as HTMLButtonElement;
+        const previewButton = document.querySelector(
+          '[data-preview-toggle]'
+        ) as HTMLButtonElement;
         if (previewButton) {
           previewButton.click();
         }
@@ -177,20 +182,23 @@ const Preview: React.FC<PreviewProps> = ({
 
   const handleInputChange = (fieldId: string, value: any) => {
     updateFormData(fieldId, value);
-    
+
     // Get the field to check its type
     const field = fields.find(f => f.id === fieldId);
-    
+
     // Clear error when user starts typing
     if (errors[fieldId]) {
       setErrors(prev => ({ ...prev, [fieldId]: '' }));
     }
-    
+
     // Real-time validation for email fields
     if (field?.type === 'email' && value) {
       const emailValue = String(value).trim();
       if (!isValidEmail(emailValue)) {
-        setErrors(prev => ({ ...prev, [fieldId]: 'Please enter a valid email address' }));
+        setErrors(prev => ({
+          ...prev,
+          [fieldId]: 'Please enter a valid email address',
+        }));
       }
     }
   };
@@ -198,7 +206,8 @@ const Preview: React.FC<PreviewProps> = ({
   // Enhanced email validation function
   const isValidEmail = (email: string): boolean => {
     // More comprehensive email regex pattern
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     return emailRegex.test(email);
   };
 
@@ -309,10 +318,12 @@ const Preview: React.FC<PreviewProps> = ({
 
     const fieldError = errors[field.id];
     const fieldValue = storeFormData[field.id];
-    
+
     // Check if user has explicitly set a value (including empty string)
     const hasUserValue = field.id in storeFormData;
-    const displayValue = hasUserValue ? fieldValue : (field.advanced?.defaultValue?.toString() || '');
+    const displayValue = hasUserValue
+      ? fieldValue
+      : field.advanced?.defaultValue?.toString() || '';
 
     const baseFieldProps = {
       id: field.id,
@@ -388,7 +399,11 @@ const Preview: React.FC<PreviewProps> = ({
         case 'select':
           return (
             <Select
-              value={hasUserValue ? fieldValue || '' : (field.advanced?.defaultValue?.toString() || '')}
+              value={
+                hasUserValue
+                  ? fieldValue || ''
+                  : field.advanced?.defaultValue?.toString() || ''
+              }
               onValueChange={value => handleInputChange(field.id, value)}
               disabled={field.advanced?.disabled}
             >
@@ -439,7 +454,11 @@ const Preview: React.FC<PreviewProps> = ({
         case 'radio':
           return (
             <RadioGroup
-              value={hasUserValue ? fieldValue || '' : (field.advanced?.defaultValue?.toString() || '')}
+              value={
+                hasUserValue
+                  ? fieldValue || ''
+                  : field.advanced?.defaultValue?.toString() || ''
+              }
               onValueChange={value => handleInputChange(field.id, value)}
               disabled={field.advanced?.disabled}
               className="space-y-2"
@@ -458,7 +477,11 @@ const Preview: React.FC<PreviewProps> = ({
             <div className="flex items-center space-x-2">
               <Checkbox
                 id={field.id}
-                checked={hasUserValue ? fieldValue || false : (field.advanced?.defaultValue || false)}
+                checked={
+                  hasUserValue
+                    ? fieldValue || false
+                    : field.advanced?.defaultValue || false
+                }
                 onCheckedChange={checked =>
                   handleInputChange(field.id, checked)
                 }
@@ -596,7 +619,7 @@ const Preview: React.FC<PreviewProps> = ({
               const file = e.dataTransfer.files[0];
               if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = e => {
                   const result = e.target?.result as string;
                   handleInputChange(field.id, result);
                 };
@@ -605,12 +628,14 @@ const Preview: React.FC<PreviewProps> = ({
             }
           };
 
-          const handleAvatarFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const handleAvatarFileSelect = (
+            e: React.ChangeEvent<HTMLInputElement>
+          ) => {
             if (e.target.files && e.target.files.length > 0) {
               const file = e.target.files[0];
               if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = e => {
                   const result = e.target?.result as string;
                   handleInputChange(field.id, result);
                 };
@@ -927,9 +952,14 @@ const Preview: React.FC<PreviewProps> = ({
 
           // Get current grid data from form store
           const gridData = storeFormData[field.id] || [];
-          
+
           // Initialize with minimum rows if no data exists
-          const currentRows = gridData.length > 0 ? gridData : Array(gridConfig.minRows || 1).fill(null).map(() => ({}));
+          const currentRows =
+            gridData.length > 0
+              ? gridData
+              : Array(gridConfig.minRows || 1)
+                  .fill(null)
+                  .map(() => ({}));
 
           const addRow = () => {
             if (currentRows.length < (gridConfig.maxRows || 10)) {
@@ -945,7 +975,11 @@ const Preview: React.FC<PreviewProps> = ({
             }
           };
 
-          const updateRowData = (rowIndex: number, columnId: string, value: any) => {
+          const updateRowData = (
+            rowIndex: number,
+            columnId: string,
+            value: any
+          ) => {
             const newRows = [...currentRows];
             if (!newRows[rowIndex]) {
               newRows[rowIndex] = {};
@@ -967,7 +1001,7 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <Input
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -977,36 +1011,36 @@ const Preview: React.FC<PreviewProps> = ({
                   <Input
                     type="number"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
                 );
               case 'date':
                 return (
-                  <Input 
-                    type="date" 
+                  <Input
+                    type="date"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    className="h-8 text-xs" 
+                    onChange={e => handleChange(e.target.value)}
+                    className="h-8 text-xs"
                   />
                 );
               case 'time':
                 return (
-                  <Input 
-                    type="time" 
+                  <Input
+                    type="time"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    className="h-8 text-xs" 
+                    onChange={e => handleChange(e.target.value)}
+                    className="h-8 text-xs"
                   />
                 );
               case 'datetime':
                 return (
-                  <Input 
-                    type="datetime-local" 
+                  <Input
+                    type="datetime-local"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    className="h-8 text-xs" 
+                    onChange={e => handleChange(e.target.value)}
+                    className="h-8 text-xs"
                   />
                 );
               case 'email':
@@ -1014,7 +1048,7 @@ const Preview: React.FC<PreviewProps> = ({
                   <Input
                     type="email"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -1024,7 +1058,7 @@ const Preview: React.FC<PreviewProps> = ({
                   <Input
                     type="tel"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -1034,7 +1068,7 @@ const Preview: React.FC<PreviewProps> = ({
                   <Input
                     type="url"
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -1067,7 +1101,7 @@ const Preview: React.FC<PreviewProps> = ({
                   <input
                     type="checkbox"
                     checked={value || false}
-                    onChange={(e) => handleChange(e.target.checked)}
+                    onChange={e => handleChange(e.target.checked)}
                     className="h-4 w-4 rounded border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                   />
                 );
@@ -1075,7 +1109,7 @@ const Preview: React.FC<PreviewProps> = ({
                 return (
                   <Input
                     value={value}
-                    onChange={(e) => handleChange(e.target.value)}
+                    onChange={e => handleChange(e.target.value)}
                     placeholder={`Enter ${column.name.toLowerCase()}`}
                     className="h-8 text-xs"
                   />
@@ -1099,7 +1133,7 @@ const Preview: React.FC<PreviewProps> = ({
                     disabled={currentRows.length >= (gridConfig.maxRows || 10)}
                     className="h-7 px-2 text-xs"
                   >
-                    <Plus className="h-3 w-3 mr-1" />
+                    <Plus className="mr-1 h-3 w-3" />
                     Add Row
                   </Button>
                 )}
@@ -1120,7 +1154,7 @@ const Preview: React.FC<PreviewProps> = ({
                         </th>
                       ))}
                       {gridConfig.allowDeleteRows && (
-                        <th className="p-2 text-left font-medium w-12">
+                        <th className="w-12 p-2 text-left font-medium">
                           Actions
                         </th>
                       )}
@@ -1128,7 +1162,10 @@ const Preview: React.FC<PreviewProps> = ({
                   </thead>
                   <tbody>
                     {currentRows.map((row, rowIndex) => (
-                      <tr key={rowIndex} className="border-muted-foreground/10 border-b">
+                      <tr
+                        key={rowIndex}
+                        className="border-muted-foreground/10 border-b"
+                      >
                         {gridConfig.columns.map(column => (
                           <td key={column.id} className="p-2">
                             {renderGridInput(column, rowIndex)}
@@ -1141,7 +1178,9 @@ const Preview: React.FC<PreviewProps> = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => removeRow(rowIndex)}
-                              disabled={currentRows.length <= (gridConfig.minRows || 1)}
+                              disabled={
+                                currentRows.length <= (gridConfig.minRows || 1)
+                              }
                               className="h-6 w-6 p-0 text-red-500 hover:bg-red-50 hover:text-red-700"
                             >
                               <Trash2 className="h-3 w-3" />
@@ -1267,26 +1306,26 @@ const Preview: React.FC<PreviewProps> = ({
       if (field.layout.margin) layoutStyles.margin = field.layout.margin;
       if (field.layout.padding) layoutStyles.padding = field.layout.padding;
       if (field.layout.display) layoutStyles.display = field.layout.display;
-      if (field.layout.flexDirection) layoutStyles.flexDirection = field.layout.flexDirection;
-      if (field.layout.justifyContent) layoutStyles.justifyContent = field.layout.justifyContent;
-      if (field.layout.alignItems) layoutStyles.alignItems = field.layout.alignItems;
-      if (field.layout.gridTemplateColumns) layoutStyles.gridTemplateColumns = field.layout.gridTemplateColumns;
+      if (field.layout.flexDirection)
+        layoutStyles.flexDirection = field.layout.flexDirection;
+      if (field.layout.justifyContent)
+        layoutStyles.justifyContent = field.layout.justifyContent;
+      if (field.layout.alignItems)
+        layoutStyles.alignItems = field.layout.alignItems;
+      if (field.layout.gridTemplateColumns)
+        layoutStyles.gridTemplateColumns = field.layout.gridTemplateColumns;
       if (field.layout.gridGap) layoutStyles.gap = field.layout.gridGap;
     }
 
     return (
-      <div 
-        key={field.id} 
-        className="space-y-2"
-        style={layoutStyles}
-      >
+      <div key={field.id} className="space-y-2" style={layoutStyles}>
         {field.type !== 'divider' && field.type !== 'submit' && (
           <Label htmlFor={field.id} className="flex items-center space-x-2">
             <span>{field.label}</span>
             {field.required && <span className="text-destructive">*</span>}
             {field.advanced?.tooltip && (
               <CustomTooltip content={field.advanced.tooltip}>
-                <span className="text-xs text-muted-foreground cursor-help">
+                <span className="cursor-help text-xs text-muted-foreground">
                   ℹ️
                 </span>
               </CustomTooltip>
@@ -1305,7 +1344,7 @@ const Preview: React.FC<PreviewProps> = ({
         )}
 
         {field.advanced?.description && (
-          <p className="text-xs text-muted-foreground italic">
+          <p className="text-xs italic text-muted-foreground">
             {field.advanced.description}
           </p>
         )}
@@ -1321,22 +1360,33 @@ const Preview: React.FC<PreviewProps> = ({
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       {/* Cover Image */}
-      <div className="relative w-full h-48 rounded-xl overflow-hidden mb-[-3.5rem]">
+      <div className="relative mb-[-3.5rem] h-48 w-full overflow-hidden rounded-xl">
         {coverImage ? (
-          <img src={coverImage} alt="Cover" className="object-cover w-full h-full" />
+          <img
+            src={coverImage}
+            alt="Cover"
+            className="h-full w-full object-cover"
+          />
         ) : (
-          <div className="flex items-center justify-center w-full h-full bg-muted-foreground/10 text-muted-foreground text-lg font-medium">
+          <div className="bg-muted-foreground/10 flex h-full w-full items-center justify-center text-lg font-medium text-muted-foreground">
             Cover image
           </div>
         )}
       </div>
       {/* Logo (left-aligned, overlapping cover) */}
-      <div className="relative flex justify-start z-10" style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}>
+      <div
+        className="relative z-10 flex justify-start"
+        style={{ marginTop: '-2.5rem', marginBottom: '1.5rem' }}
+      >
         <div className="relative ml-6">
           {logoImage ? (
-            <img src={logoImage} alt="Logo" className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background object-cover shadow-lg" />
+            <img
+              src={logoImage}
+              alt="Logo"
+              className="h-20 w-20 rounded-full border-4 border-neutral-300 bg-background object-cover shadow-lg dark:border-neutral-700"
+            />
           ) : (
-            <div className="w-20 h-20 rounded-full border-4 border-neutral-300 dark:border-neutral-700 bg-background flex items-center justify-center text-3xl text-muted-foreground shadow-lg">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-neutral-300 bg-background text-3xl text-muted-foreground shadow-lg dark:border-neutral-700">
               +
             </div>
           )}
@@ -1399,23 +1449,22 @@ const Preview: React.FC<PreviewProps> = ({
                   </motion.div>
                 ) : (
                   <AnimatePresence>
-                    {fields
-                      .map((field, index) => (
-                        <motion.div
-                          key={field.id}
-                          initial={{ opacity: 0, x: -20, y: 10 }}
-                          animate={{ opacity: 1, x: 0, y: 0 }}
-                          exit={{ opacity: 0, x: 20, y: -10 }}
-                          transition={{
-                            duration: 0.4,
-                            delay: index * 0.1,
-                            ease: 'easeOut',
-                          }}
-                          layout
-                        >
-                          {renderField(field)}
-                        </motion.div>
-                      ))}
+                    {fields.map((field, index) => (
+                      <motion.div
+                        key={field.id}
+                        initial={{ opacity: 0, x: -20, y: 10 }}
+                        animate={{ opacity: 1, x: 0, y: 0 }}
+                        exit={{ opacity: 0, x: 20, y: -10 }}
+                        transition={{
+                          duration: 0.4,
+                          delay: index * 0.1,
+                          ease: 'easeOut',
+                        }}
+                        layout
+                      >
+                        {renderField(field)}
+                      </motion.div>
+                    ))}
                   </AnimatePresence>
                 )}
               </AnimatePresence>

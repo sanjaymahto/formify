@@ -26,13 +26,18 @@ const getClientTimestamp = (): number => {
 
 // Conditional logic evaluation function
 const evaluateCondition = (
-  condition: { fieldId?: string; operator?: string; value?: string | number | boolean },
+  condition: {
+    fieldId?: string;
+    operator?: string;
+    value?: string | number | boolean;
+  },
   formData: Record<string, string | number | boolean | string[]>
 ): boolean => {
   if (
     !condition?.fieldId ||
     !condition?.operator ||
-    condition?.value === undefined || condition?.value === null
+    condition?.value === undefined ||
+    condition?.value === null
   ) {
     return true; // No condition = always show
   }
@@ -87,8 +92,8 @@ export const useFormStore = create<FormState>()(
       formData: {}, // Initialize empty form data
       coverImage: null, // Add cover image to state
       logoImage: null, // Add logo image to state
-      setCoverImage: (image) => set({ coverImage: image, isDirty: true }),
-      setLogoImage: (image) => set({ logoImage: image, isDirty: true }),
+      setCoverImage: image => set({ coverImage: image, isDirty: true }),
+      setLogoImage: image => set({ logoImage: image, isDirty: true }),
 
       addField: field => {
         const state = get();
@@ -257,7 +262,10 @@ export const useFormStore = create<FormState>()(
           selectedFieldId: null,
         })),
 
-      updateFormData: (fieldId: string, value: string | number | boolean | string[]) => {
+      updateFormData: (
+        fieldId: string,
+        value: string | number | boolean | string[]
+      ) => {
         set(state => ({
           formData: {
             ...state.formData,
@@ -291,10 +299,10 @@ export const useFormStore = create<FormState>()(
 
       importForm: (formData: FormData) => {
         const state = get();
-        
+
         // Set loading flag to prevent auto-save during import
         set({ isLoadingForm: true });
-        
+
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
           type: 'clear',
@@ -318,10 +326,10 @@ export const useFormStore = create<FormState>()(
 
       loadTemplate: (template: FormTemplate) => {
         const state = get();
-        
+
         // Set loading flag to prevent auto-save during template loading
         set({ isLoadingForm: true });
-        
+
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
           type: 'load-template',
@@ -368,7 +376,7 @@ export const useFormStore = create<FormState>()(
       createNewForm: () => {
         const state = get();
         const formId = uuidv4();
-        
+
         // Clear current form and set new ID
         set({
           fields: [],
@@ -409,21 +417,21 @@ export const useFormStore = create<FormState>()(
       saveForm: (name?: string) => {
         const state = get();
         const currentFormId = state.getCurrentFormId();
-        
+
         if (!currentFormId) {
           // If no current form ID, create a new one without clearing the current form
           const newFormId = uuidv4();
-          
+
           // Create session with new form ID but preserve current form state
           const session: FormSession = {
             currentFormId: newFormId,
             forms: {},
           };
           localStorage.setItem('formkit-session', JSON.stringify(session));
-          
+
           // Continue with the save process using the new form ID
           const formData = state.exportForm();
-          
+
           // Get current session forms (should be empty for first save)
           const currentForms = state.getSessionForms();
           let allForms;
@@ -452,31 +460,34 @@ export const useFormStore = create<FormState>()(
             };
             allForms = { ...currentForms, [newFormId]: savedForm };
           }
-          
+
           // Limit to 10 forms by removing the oldest ones
           const limitedForms = state.limitFormsToMax(allForms, 10);
-          
+
           // Update session with limited forms
           const finalSession: FormSession = {
             currentFormId: newCurrentFormId,
             forms: limitedForms,
           };
-          
-          console.log('Store: Saving session with forms:', Object.keys(limitedForms).length);
+
+          console.log(
+            'Store: Saving session with forms:',
+            Object.keys(limitedForms).length
+          );
           console.log('Store: Form IDs:', Object.keys(limitedForms));
-          
+
           localStorage.setItem('formkit-session', JSON.stringify(finalSession));
 
           set({
             lastSaved: Date.now(),
             isDirty: false,
           });
-          
+
           return;
         }
 
         const formData = state.exportForm();
-        
+
         // Get current session forms
         const currentForms = state.getSessionForms();
         let allForms;
@@ -507,19 +518,22 @@ export const useFormStore = create<FormState>()(
           };
           allForms = { ...currentForms, [currentFormId]: savedForm };
         }
-        
+
         // Limit to 10 forms by removing the oldest ones
         const limitedForms = state.limitFormsToMax(allForms, 10);
-        
+
         // Update session with limited forms
         const session: FormSession = {
           currentFormId: newCurrentFormId,
           forms: limitedForms,
         };
-        
-        console.log('Store: Saving session with forms:', Object.keys(limitedForms).length);
+
+        console.log(
+          'Store: Saving session with forms:',
+          Object.keys(limitedForms).length
+        );
         console.log('Store: Form IDs:', Object.keys(limitedForms));
-        
+
         localStorage.setItem('formkit-session', JSON.stringify(session));
 
         set({
@@ -543,16 +557,16 @@ export const useFormStore = create<FormState>()(
         // Get current session forms
         const currentForms = state.getSessionForms();
         const allForms = { ...currentForms, [savedForm.id]: savedForm };
-        
+
         // Limit to 10 forms by removing the oldest ones
         const limitedForms = state.limitFormsToMax(allForms, 10);
-        
+
         // Update session with limited forms and set current form to the newly saved one
         const session: FormSession = {
           currentFormId: savedForm.id,
           forms: limitedForms,
         };
-        
+
         localStorage.setItem('formkit-session', JSON.stringify(session));
 
         set({
@@ -570,7 +584,10 @@ export const useFormStore = create<FormState>()(
           if (session) {
             const parsedSession: FormSession = JSON.parse(session);
             console.log('Store: Parsed session:', parsedSession);
-            console.log('Store: Number of forms:', Object.keys(parsedSession.forms || {}).length);
+            console.log(
+              'Store: Number of forms:',
+              Object.keys(parsedSession.forms || {}).length
+            );
             return parsedSession.forms || {};
           }
         } catch (error) {
@@ -588,10 +605,10 @@ export const useFormStore = create<FormState>()(
 
       loadSavedForm: (savedForm: SavedForm) => {
         const state = get();
-        
+
         // Set loading flag to prevent auto-save during loading
         set({ isLoadingForm: true });
-        
+
         const newHistory = state.history.slice(0, state.historyIndex + 1);
         newHistory.push({
           type: 'clear',
@@ -641,7 +658,7 @@ export const useFormStore = create<FormState>()(
 
         const forms = state.getSessionForms();
         const currentForm = forms[currentFormId];
-        
+
         if (currentForm && currentForm.isAutoSave) {
           return currentForm;
         }
@@ -669,24 +686,27 @@ export const useFormStore = create<FormState>()(
         });
       },
 
-      limitFormsToMax: (forms: Record<string, SavedForm>, maxCount: number = 10) => {
+      limitFormsToMax: (
+        forms: Record<string, SavedForm>,
+        maxCount: number = 10
+      ) => {
         const formEntries = Object.entries(forms);
         if (formEntries.length <= maxCount) {
           return forms;
         }
-        
+
         // Sort by timestamp (oldest first) and keep only the newest ones
         const sortedForms = formEntries
           .sort(([, a], [, b]) => a.timestamp - b.timestamp)
           .slice(-maxCount); // Keep only the newest forms
-        
+
         return Object.fromEntries(sortedForms);
       },
 
       clearCurrentForm: () => {
         // Clear session
         localStorage.removeItem('formkit-session');
-        
+
         set({
           fields: [],
           formTitle: 'Untitled Form',
@@ -703,15 +723,15 @@ export const useFormStore = create<FormState>()(
       startNewForm: () => {
         const state = get();
         const currentFormId = state.getCurrentFormId();
-        
+
         // If there's a current form with changes, auto-save it first
         if (currentFormId && state.isDirty && state.fields.length > 0) {
           state.saveForm(); // Auto-save current form
         }
-        
+
         // Create new form with unique ID
         const newFormId = uuidv4();
-        
+
         // Clear current form state
         set({
           fields: [],

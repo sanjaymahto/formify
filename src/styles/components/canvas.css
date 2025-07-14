@@ -3,15 +3,15 @@
 }
 
 .canvas-content {
-  @apply max-w-4xl mx-auto p-6 space-y-6;
+  @apply mx-auto max-w-4xl space-y-6 p-6;
 }
 
 .field-wrapper {
-  @apply relative group;
+  @apply group relative;
 }
 
 .field-container {
-  @apply relative p-4 border-2 border-dashed border-muted-foreground/20 rounded-lg transition-all duration-200;
+  @apply border-muted-foreground/20 relative rounded-lg border-2 border-dashed p-4 transition-all duration-200;
 }
 
 .field-container:hover {
@@ -19,11 +19,11 @@
 }
 
 .field-container.selected {
-  @apply border-primary ring-2 ring-primary/20;
+  @apply ring-primary/20 border-primary ring-2;
 }
 
 .field-container.drag-over {
-  @apply border-primary bg-primary/5;
+  @apply bg-primary/5 border-primary;
 }
 
 .field-container.dragging {
@@ -31,7 +31,7 @@
 }
 
 .field-header {
-  @apply flex items-center justify-between mb-2;
+  @apply mb-2 flex items-center justify-between;
 }
 
 .field-label {
@@ -39,27 +39,27 @@
 }
 
 .field-actions {
-  @apply flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity;
+  @apply flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100;
 }
 
 .field-drag-handle {
-  @apply cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground;
+  @apply cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing;
 }
 
 .field-delete-btn {
-  @apply text-destructive hover:text-destructive/80;
+  @apply hover:text-destructive/80 text-destructive;
 }
 
 .ghost-field {
-  @apply p-4 border-2 border-dashed border-muted-foreground/30 rounded-lg bg-muted/20;
+  @apply border-muted-foreground/30 bg-muted/20 rounded-lg border-2 border-dashed p-4;
 }
 
 .drop-zone {
-  @apply min-h-[200px] border-2 border-dashed border-muted-foreground/20 rounded-lg flex items-center justify-center transition-all duration-200;
+  @apply border-muted-foreground/20 flex min-h-[200px] items-center justify-center rounded-lg border-2 border-dashed transition-all duration-200;
 }
 
 .drop-zone.drag-over {
-  @apply border-primary bg-primary/5;
+  @apply bg-primary/5 border-primary;
 }
 
 .form-header {
@@ -79,13 +79,13 @@
 }
 
 .image-preview {
-  @apply w-32 h-32 border-2 border-dashed border-muted-foreground/20 rounded-lg flex items-center justify-center overflow-hidden;
+  @apply border-muted-foreground/20 flex h-32 w-32 items-center justify-center overflow-hidden rounded-lg border-2 border-dashed;
 }
 
 .image-preview img {
-  @apply w-full h-full object-cover;
+  @apply h-full w-full object-cover;
 }
 
 .image-actions {
-  @apply absolute top-2 right-2 flex gap-1;
-} 
+  @apply absolute right-2 top-2 flex gap-1;
+}

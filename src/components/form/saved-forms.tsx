@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { 
-  FolderOpen, 
-  Trash2, 
-  Save, 
-  Clock, 
+import {
+  FolderOpen,
+  Trash2,
+  Save,
+  Clock,
   FileText,
   X,
-  Check
+  Check,
 } from 'lucide-react';
 import { showToast, showConfirm } from '@/lib/utils';
 
@@ -24,7 +24,7 @@ export function SavedForms() {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveFormName, setSaveFormName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const getSavedForms = useFormStore(state => state.getSavedForms);
   const saveFormAs = useFormStore(state => state.saveFormAs);
   const loadSavedForm = useFormStore(state => state.loadSavedForm);
@@ -41,16 +41,16 @@ export function SavedForms() {
       console.log('SavedForms: Updating saved forms:', forms);
       setSavedForms(forms);
     };
-    
+
     updateSavedForms();
-    
+
     // Listen for storage changes to update the UI
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'formkit-session') {
         updateSavedForms();
       }
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [getSavedForms]);
@@ -104,7 +104,7 @@ export function SavedForms() {
     const confirmed = await showConfirm(
       `Are you sure you want to delete "${savedForm.name}"? This action cannot be undone.`
     );
-    
+
     if (confirmed) {
       try {
         deleteSavedForm(savedForm.id);
@@ -125,13 +125,13 @@ export function SavedForms() {
   };
 
   return (
-    <div className="mb-6 w-full max-w-4xl mx-auto">
-      <div className="text-center mb-4">
-        <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+    <div className="mx-auto mb-6 w-full max-w-4xl">
+      <div className="mb-4 text-center">
+        <h3 className="mb-2 flex items-center justify-center gap-2 text-lg font-semibold">
           <FolderOpen className="h-5 w-5 text-primary" />
           Load Saved Form
         </h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="mb-4 text-sm text-muted-foreground">
           Continue working on a previously saved form
         </p>
         {fields.length > 0 && (
@@ -139,7 +139,7 @@ export function SavedForms() {
             variant="outline"
             size="sm"
             onClick={() => setShowSaveDialog(true)}
-            className="flex items-center gap-2 mx-auto mb-4"
+            className="mx-auto mb-4 flex items-center gap-2"
           >
             <Save className="h-4 w-4" />
             Save Current Form
@@ -147,13 +147,13 @@ export function SavedForms() {
         )}
       </div>
 
-      <Card className="border border-border/50 bg-card/50 backdrop-blur-sm w-full">
+      <Card className="border-border/50 bg-card/50 w-full border backdrop-blur-sm">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <FileText className="h-4 w-4 text-muted-foreground" />
               Saved Form
-              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+              <span className="bg-primary/10 rounded-full px-2 py-0.5 text-xs font-medium text-primary">
                 {savedForms.length}
               </span>
             </CardTitle>
@@ -178,35 +178,36 @@ export function SavedForms() {
             >
               <CardContent className="pt-0">
                 {savedForms.length === 0 ? (
-                  <div className="text-center py-6 text-muted-foreground">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+                  <div className="py-6 text-center text-muted-foreground">
+                    <div className="bg-muted/50 mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full">
                       <FileText className="h-8 w-8 opacity-60" />
                     </div>
-                    <p className="text-sm font-medium mb-1">No saved form yet</p>
+                    <p className="mb-1 text-sm font-medium">
+                      No saved form yet
+                    </p>
                     <p className="text-xs">
-                      {fields.length > 0 
+                      {fields.length > 0
                         ? 'Save your current form to get started'
-                        : 'Create a form and save it to see it here'
-                      }
+                        : 'Create a form and save it to see it here'}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {savedForms.map((savedForm) => (
+                    {savedForms.map(savedForm => (
                       <motion.div
                         key={savedForm.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="group relative border border-border/50 rounded-lg p-4 hover:border-border hover:bg-muted/30 transition-all duration-200"
+                        className="border-border/50 hover:bg-muted/30 group relative rounded-lg border p-4 transition-all duration-200 hover:border-border"
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex items-center gap-2">
+                              <h4 className="truncate text-sm font-medium transition-colors group-hover:text-primary">
                                 {savedForm.name}
                               </h4>
-                              <span className="text-xs text-muted-foreground bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                              <span className="bg-primary/10 rounded-full px-2 py-0.5 text-xs font-medium text-muted-foreground text-primary">
                                 {getFieldCount(savedForm)} fields
                               </span>
                             </div>
@@ -216,24 +217,25 @@ export function SavedForms() {
                                 {formatDate(savedForm.timestamp)}
                               </div>
                               {savedForm.isAutoSave && (
-                                <span className="text-xs text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full">
+                                <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-600">
                                   Auto-saved
                                 </span>
                               )}
-                              {savedForm.formData.name && savedForm.formData.name !== savedForm.name && (
-                                <div className="flex items-center gap-1">
-                                  <FileText className="h-3 w-3" />
-                                  {savedForm.formData.name}
-                                </div>
-                              )}
+                              {savedForm.formData.name &&
+                                savedForm.formData.name !== savedForm.name && (
+                                  <div className="flex items-center gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    {savedForm.formData.name}
+                                  </div>
+                                )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="ml-4 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleLoadForm(savedForm)}
-                              className="flex items-center gap-1 h-8 px-3"
+                              className="flex h-8 items-center gap-1 px-3"
                             >
                               <FolderOpen className="h-3 w-3" />
                               Load
@@ -242,7 +244,7 @@ export function SavedForms() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteForm(savedForm)}
-                              className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -265,23 +267,23 @@ export function SavedForms() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
             onClick={() => setShowSaveDialog(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-background border border-border/50 rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+              className="border-border/50 mx-4 w-full max-w-md rounded-xl border bg-background p-6 shadow-2xl"
+              onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <h3 className="flex items-center gap-2 text-lg font-semibold">
                     <Save className="h-5 w-5 text-primary" />
                     Save Form
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     Give your form a name to save it for later
                   </p>
                 </div>
@@ -294,7 +296,7 @@ export function SavedForms() {
                   <X className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="form-name" className="text-sm font-medium">
@@ -303,10 +305,10 @@ export function SavedForms() {
                   <Input
                     id="form-name"
                     value={saveFormName}
-                    onChange={(e) => setSaveFormName(e.target.value)}
+                    onChange={e => setSaveFormName(e.target.value)}
                     placeholder={formTitle || 'Enter form name'}
                     className="mt-1"
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === 'Enter') {
                         handleSaveForm();
                       } else if (e.key === 'Escape') {
@@ -316,8 +318,8 @@ export function SavedForms() {
                     autoFocus
                   />
                 </div>
-                
-                <div className="flex items-center gap-3 justify-end pt-2">
+
+                <div className="flex items-center justify-end gap-3 pt-2">
                   <Button
                     variant="outline"
                     onClick={() => setShowSaveDialog(false)}
@@ -350,4 +352,4 @@ export function SavedForms() {
       </AnimatePresence>
     </div>
   );
-} 
+}

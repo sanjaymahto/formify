@@ -15,4 +15,4 @@ export const getColorPaletteConfig = (): typeof COLOR_CONFIGS => {
 
 export const getCheckboxColors = (colorPalette: ColorPalette): ColorConfig => {
   return COLOR_CONFIGS[colorPalette] || COLOR_CONFIGS.default;
-}; 
+};

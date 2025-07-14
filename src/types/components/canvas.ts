@@ -19,4 +19,4 @@ export interface CanvasProps {
 
 export interface GhostFieldProps {
   fieldType: string;
-} 
+}

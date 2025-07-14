@@ -1,4 +1,3 @@
-
 import {
   Type,
   Mail,
@@ -157,13 +156,25 @@ export const COLOR_PALETTES = [
   { value: 'default' as ColorPalette, label: 'Default', preview: '#000000' },
   { value: 'blue' as ColorPalette, label: 'Ocean Blue', preview: '#3b82f6' },
   { value: 'green' as ColorPalette, label: 'Forest Green', preview: '#10b981' },
-  { value: 'purple' as ColorPalette, label: 'Royal Purple', preview: '#8b5cf6' },
-  { value: 'orange' as ColorPalette, label: 'Sunset Orange', preview: '#f97316' },
+  {
+    value: 'purple' as ColorPalette,
+    label: 'Royal Purple',
+    preview: '#8b5cf6',
+  },
+  {
+    value: 'orange' as ColorPalette,
+    label: 'Sunset Orange',
+    preview: '#f97316',
+  },
   { value: 'pink' as ColorPalette, label: 'Rose Pink', preview: '#ec4899' },
   { value: 'red' as ColorPalette, label: 'Crimson Red', preview: '#ef4444' },
   { value: 'teal' as ColorPalette, label: 'Teal', preview: '#14b8a6' },
   { value: 'indigo' as ColorPalette, label: 'Indigo', preview: '#6366f1' },
-  { value: 'yellow' as ColorPalette, label: 'Golden Yellow', preview: '#eab308' },
+  {
+    value: 'yellow' as ColorPalette,
+    label: 'Golden Yellow',
+    preview: '#eab308',
+  },
 ];
 
 // Color Configurations
@@ -252,10 +263,10 @@ export const FONT_SIZES = [
     label: 'Medium',
     description: 'Standard size for most users',
   },
-  { 
-    value: 'large' as FontSize, 
-    label: 'Large', 
-    description: 'Enhanced readability' 
+  {
+    value: 'large' as FontSize,
+    label: 'Large',
+    description: 'Enhanced readability',
   },
 ];
 
@@ -279,7 +290,7 @@ export const KEYBOARD_SHORTCUTS = [
       { key: 'Delete / Backspace', description: 'Remove selected field' },
       { key: 'Ctrl+D', description: 'Duplicate selected field' },
       { key: 'Space', description: 'Toggle required field' },
-    ]
+    ],
   },
   {
     category: 'Preview Mode',
@@ -288,7 +299,7 @@ export const KEYBOARD_SHORTCUTS = [
       { key: 'Tab', description: 'Navigate between form inputs' },
       { key: 'Enter', description: 'Submit form (if submit button focused)' },
       { key: 'Escape', description: 'Exit preview mode' },
-    ]
+    ],
   },
   {
     category: 'Global Shortcuts',
@@ -299,15 +310,13 @@ export const KEYBOARD_SHORTCUTS = [
       { key: 'Ctrl+Z', description: 'Undo last action' },
       { key: 'Ctrl+Y', description: 'Redo last action' },
       { key: 'F1 / Ctrl+?', description: 'Show keyboard shortcuts' },
-    ]
+    ],
   },
   {
     category: 'Theme & Settings',
     icon: Sun,
-    shortcuts: [
-      { key: 'Ctrl+T', description: 'Toggle theme (light/dark)' },
-    ]
-  }
+    shortcuts: [{ key: 'Ctrl+T', description: 'Toggle theme (light/dark)' }],
+  },
 ];
 
 // Template Categories
@@ -334,10 +343,12 @@ export const TEMPLATE_CATEGORIES = [
 
 // Form Validation Patterns
 export const VALIDATION_PATTERNS = {
-  email: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+  email:
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
   phone: /^[\+]?[1-9][\d]{0,15}$/,
   url: /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/,
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  password:
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
 };
 
 // File Upload Constants
@@ -418,7 +429,13 @@ export const CODE_EDITOR_CONFIG = {
 export const LAYOUT_CONFIG = {
   displayOptions: ['block', 'inline', 'inline-block', 'flex', 'grid'],
   flexDirections: ['row', 'column'],
-  justifyContentOptions: ['flex-start', 'center', 'flex-end', 'space-between', 'space-around'],
+  justifyContentOptions: [
+    'flex-start',
+    'center',
+    'flex-end',
+    'space-between',
+    'space-around',
+  ],
   alignItemsOptions: ['flex-start', 'center', 'flex-end', 'stretch'],
 };
 
@@ -534,4 +551,4 @@ export const DEFAULT_TEMPLATES = [
     category: 'Business',
     icon: '💼',
   },
-]; 
+];

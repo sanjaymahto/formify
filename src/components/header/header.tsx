@@ -4,7 +4,19 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
-import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, X, Undo2, Redo2, Keyboard } from 'lucide-react';
+import {
+  Eye,
+  Edit3,
+  Save,
+  Sun,
+  Moon,
+  Clock,
+  CheckCircle,
+  X,
+  Undo2,
+  Redo2,
+  Keyboard,
+} from 'lucide-react';
 import { ExportImportButtons } from '@/components/export-import/export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
 import { SettingsButton } from '@/components/settings/settings-button';
@@ -43,7 +55,7 @@ const Header = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle shortcuts when not in preview mode
       if (isPreviewMode) return;
-      
+
       // Undo: Ctrl+Z
       if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
@@ -51,9 +63,12 @@ const Header = () => {
           undo();
         }
       }
-      
+
       // Redo: Ctrl+Y or Ctrl+Shift+Z
-      if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'z')) {
+      if (
+        (e.ctrlKey && e.key === 'y') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'z')
+      ) {
         e.preventDefault();
         if (canRedo) {
           redo();
@@ -82,8 +97,6 @@ const Header = () => {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [clearHistory]);
-
-
 
   // Handle save form with toast notification
   const handleSaveForm = () => {
@@ -119,7 +132,10 @@ const Header = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't handle shortcuts if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -330,7 +346,7 @@ const Header = () => {
                 size="icon"
                 onClick={undo}
                 disabled={!canUndo}
-                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
                 title="Undo (Ctrl+Z)"
               >
                 <Undo2 className="h-4 w-4" />
@@ -346,7 +362,7 @@ const Header = () => {
                 size="icon"
                 onClick={redo}
                 disabled={!canRedo}
-                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
                 title="Redo (Ctrl+Y)"
               >
                 <Redo2 className="h-4 w-4" />

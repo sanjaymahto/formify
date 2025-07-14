@@ -1,6 +1,6 @@
 export async function compressImage(
-  file: File, 
-  maxSize = 800, 
+  file: File,
+  maxSize = 800,
   quality = 0.7
 ): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -47,7 +47,13 @@ export async function compressImage(
 }
 
 export const validateImageFile = (file: File): string | null => {
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
   const maxSize = 5 * 1024 * 1024; // 5MB
 
   if (!allowedTypes.includes(file.type)) {
@@ -59,4 +65,4 @@ export const validateImageFile = (file: File): string | null => {
   }
 
   return null;
-}; 
+};
