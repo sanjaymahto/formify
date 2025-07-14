@@ -391,6 +391,7 @@ export interface FormState {
   loadAutoSaveData: (autoSaveData: SavedForm) => void;
   toggleAutoSave: () => void;
   clearCurrentForm: () => void;
+  clearHistory: () => void;
   getSessionForms: () => Record<string, SavedForm>;
   limitFormsToMax: (forms: Record<string, SavedForm>, maxCount?: number) => Record<string, SavedForm>;
 }
@@ -1212,13 +1213,18 @@ export const useFormStore = create<FormState>()(
         const state = get();
         return state.historyIndex < state.history.length - 1;
       },
+
+      clearHistory: () => {
+        set({
+          history: [],
+          historyIndex: -1,
+        });
+      },
     }),
     {
       name: 'form-builder-storage',
       partialize: state => ({
         fields: state.fields,
-        history: state.history,
-        historyIndex: state.historyIndex,
         lastSaved: state.lastSaved,
         autoSaveEnabled: state.autoSaveEnabled,
       }),

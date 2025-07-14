@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
-import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle } from 'lucide-react';
+import { Eye, Edit3, Save, Sun, Moon, Clock, CheckCircle, X, Undo2, Redo2 } from 'lucide-react';
 import { ExportImportButtons } from './export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
 import { SettingsButton } from './settings-button';
 import { showToast } from '@/lib/utils';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 const Header = () => {
   const isPreviewMode = useFormStore(state => state.isPreviewMode);
@@ -20,8 +21,63 @@ const Header = () => {
   const autoSaveEnabled = useFormStore(state => state.autoSaveEnabled);
   const lastSaved = useFormStore(state => state.lastSaved);
   const saveForm = useFormStore(state => state.saveForm);
+  const clearForm = useFormStore(state => state.clearForm);
+  const undo = useFormStore(state => state.undo);
+  const redo = useFormStore(state => state.redo);
+  const historyIndex = useFormStore(state => state.historyIndex);
+  const history = useFormStore(state => state.history);
+  const clearHistory = useFormStore(state => state.clearHistory);
   const { theme, updateSettings, colorPalette } = useSettingsStore();
   const { isDirty } = useAutoSave();
+
+  // Calculate undo/redo availability
+  const canUndo = historyIndex >= 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle shortcuts when not in preview mode
+      if (isPreviewMode) return;
+      
+      // Undo: Ctrl+Z
+      if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (canUndo) {
+          undo();
+        }
+      }
+      
+      // Redo: Ctrl+Y or Ctrl+Shift+Z
+      if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'z')) {
+        e.preventDefault();
+        if (canRedo) {
+          redo();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPreviewMode, canUndo, canRedo, undo, redo]);
+
+  // Clear history when component unmounts (session ends)
+  useEffect(() => {
+    return () => {
+      // Clear undo/redo history when the session ends
+      clearHistory();
+    };
+  }, [clearHistory]);
+
+  // Clear history when page is about to unload (browser close/refresh)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      clearHistory();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [clearHistory]);
 
   // Handle save form with toast notification
   const handleSaveForm = () => {
@@ -31,6 +87,25 @@ const Header = () => {
     } catch (error) {
       console.error('Save failed:', error);
       showToast('Failed to save form', 'error');
+    }
+  };
+
+  // Handle close form with auto-save
+  const handleCloseForm = () => {
+    try {
+      // Auto-save the form before closing
+      if (fields.length > 0) {
+        saveForm();
+        showToast('Form auto-saved before closing', 'info');
+      }
+      // Clear the form to start a new one
+      clearForm();
+      // Clear undo/redo history for the new session
+      clearHistory();
+      showToast('Form cleared - ready to create a new form', 'success');
+    } catch (error) {
+      console.error('Close failed:', error);
+      showToast('Failed to save form before closing', 'error');
     }
   };
 
@@ -191,6 +266,48 @@ const Header = () => {
           </motion.div>
         )}
 
+        {!isPreviewMode && (
+          <motion.div
+            className="flex items-center space-x-1"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={undo}
+                disabled={!canUndo}
+                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Undo (Ctrl+Z)"
+              >
+                <Undo2 className="h-4 w-4" />
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={redo}
+                disabled={!canRedo}
+                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Redo (Ctrl+Y)"
+              >
+                <Redo2 className="h-4 w-4" />
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+
         <SettingsButton
           className="h-8 w-8 p-0"
           tooltipText="Customize app appearance and settings"
@@ -218,35 +335,55 @@ const Header = () => {
           </Button>
         </motion.div>
 
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.2 }}
-        >
-          <Button
-            variant={isPreviewMode ? 'default' : 'outline'}
-            size="sm"
-            onClick={togglePreviewMode}
-            className="flex cursor-pointer items-center space-x-2"
-            title={
-              isPreviewMode
-                ? 'Switch to edit mode (Ctrl+P)'
-                : 'Switch to preview mode (Ctrl+P)'
-            }
+        {fields.length > 0 && (
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
           >
-            {isPreviewMode ? (
-              <>
-                <Edit3 className="h-4 w-4" />
-                <span>Edit</span>
-              </>
-            ) : (
-              <>
-                <Eye className="h-4 w-4" />
-                <span>Preview</span>
-              </>
-            )}
-          </Button>
-        </motion.div>
+            <Button
+              variant={isPreviewMode ? 'default' : 'outline'}
+              size="sm"
+              onClick={togglePreviewMode}
+              className="flex cursor-pointer items-center space-x-2"
+              title={
+                isPreviewMode
+                  ? 'Switch to edit mode (Ctrl+P)'
+                  : 'Switch to preview mode (Ctrl+P)'
+              }
+            >
+              {isPreviewMode ? (
+                <>
+                  <Edit3 className="h-4 w-4" />
+                  <span>Edit</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4" />
+                  <span>Preview</span>
+                </>
+              )}
+            </Button>
+          </motion.div>
+        )}
+
+        {!isPreviewMode && fields.length > 0 && (
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleCloseForm}
+              className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 hover:border-red-300 hover:bg-red-50 dark:hover:border-red-700 dark:hover:bg-red-950/20"
+              title="Close current form and start a new one"
+            >
+              <X className="h-4 w-4 text-red-600 dark:text-red-400" />
+            </Button>
+          </motion.div>
+        )}
 
         <AnimatePresence>
           {isPreviewMode && (
