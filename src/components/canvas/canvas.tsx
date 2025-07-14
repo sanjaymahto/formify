@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useFormStore, Field } from '@/lib/store';
+import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -43,19 +43,7 @@ import {
 import { useRef } from 'react';
 import { showToast } from '@/lib/utils';
 import { FieldType } from '@/types';
-
-interface FieldRendererProps {
-  field: Field;
-  isSelected: boolean;
-  onSelect: () => void;
-  onDelete: () => void;
-  onDragStart: (fieldId: string) => void;
-  onDragOver: (e: React.DragEvent, fieldId?: string) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent, fieldId?: string) => void;
-  isDragOver: boolean;
-  isDragging: boolean;
-}
+import { FieldRendererProps } from '@/types/components/canvas';
 
 const FieldRenderer: React.FC<FieldRendererProps> = ({
   field,

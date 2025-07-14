@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
 import { SettingsPanel } from '@/components/settings/settings-panel';
+import { useToggle } from '@/hooks/use-common-states';
 
 interface SettingsButtonProps {
   className?: string;
@@ -14,14 +14,14 @@ export function SettingsButton({
   className = '',
   tooltipText = 'Customize app appearance and settings',
 }: SettingsButtonProps) {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { value: isSettingsOpen, setTrue: openSettings, setFalse: closeSettings } = useToggle(false);
 
   return (
     <>
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => setIsSettingsOpen(true)}
+        onClick={openSettings}
         className={`h-10 w-10 cursor-pointer p-0 ${className}`}
         aria-label="Settings"
         title={tooltipText}
@@ -31,7 +31,7 @@ export function SettingsButton({
 
       <SettingsPanel
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={closeSettings}
       />
     </>
   );

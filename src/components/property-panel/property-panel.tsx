@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useFormStore, Field } from '@/lib/store';
+import { useFormStore } from '@/lib/store';
+import { Field } from '@/types';
 import { useSettingsStore } from '@/lib/settings-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardSection, CheckboxWrapper, FlexRow, Grid2Col, SpaceY } from '@/components/ui';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,91 +27,15 @@ import {
   PenTool,
   FileText,
 } from 'lucide-react';
-
-interface PropertyPanelProps {
-  field: Field | null;
-}
+import { PropertyPanelProps } from '@/types/components/property-panel';
+import { getCheckboxColors } from '@/utils/color-utils';
 
 const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   const fields = useFormStore(state => state.fields);
   const updateField = useFormStore(state => state.updateField);
   const { colorPalette } = useSettingsStore();
 
-  const getCheckboxColors = () => {
-    const colors = {
-      default: {
-        border: 'border-blue-500',
-        bg: 'bg-blue-500',
-        focus: 'focus:ring-blue-500/20',
-        hover: 'hover:border-blue-500/50',
-        cssColor: '#3b82f6',
-      },
-      blue: {
-        border: 'border-blue-500',
-        bg: 'bg-blue-500',
-        focus: 'focus:ring-blue-500/20',
-        hover: 'hover:border-blue-500/50',
-        cssColor: '#3b82f6',
-      },
-      green: {
-        border: 'border-green-500',
-        bg: 'bg-green-500',
-        focus: 'focus:ring-green-500/20',
-        hover: 'hover:border-green-500/50',
-        cssColor: '#10b981',
-      },
-      purple: {
-        border: 'border-purple-500',
-        bg: 'bg-purple-500',
-        focus: 'focus:ring-purple-500/20',
-        hover: 'hover:border-purple-500/50',
-        cssColor: '#8b5cf6',
-      },
-      orange: {
-        border: 'border-orange-500',
-        bg: 'bg-orange-500',
-        focus: 'focus:ring-orange-500/20',
-        hover: 'hover:border-orange-500/50',
-        cssColor: '#f97316',
-      },
-      pink: {
-        border: 'border-pink-500',
-        bg: 'bg-pink-500',
-        focus: 'focus:ring-pink-500/20',
-        hover: 'hover:border-pink-500/50',
-        cssColor: '#ec4899',
-      },
-      red: {
-        border: 'border-red-500',
-        bg: 'bg-red-500',
-        focus: 'focus:ring-red-500/20',
-        hover: 'hover:border-red-500/50',
-        cssColor: '#ef4444',
-      },
-      teal: {
-        border: 'border-teal-500',
-        bg: 'bg-teal-500',
-        focus: 'focus:ring-teal-500/20',
-        hover: 'hover:border-teal-500/50',
-        cssColor: '#14b8a6',
-      },
-      indigo: {
-        border: 'border-indigo-500',
-        bg: 'bg-indigo-500',
-        focus: 'focus:ring-indigo-500/20',
-        hover: 'hover:border-indigo-500/50',
-        cssColor: '#6366f1',
-      },
-      yellow: {
-        border: 'border-yellow-500',
-        bg: 'bg-yellow-500',
-        focus: 'focus:ring-yellow-500/20',
-        hover: 'hover:border-yellow-500/50',
-        cssColor: '#eab308',
-      },
-    };
-    return colors[colorPalette] || colors.default;
-  };
+  const checkboxColors = getCheckboxColors(colorPalette);
 
   if (!field) {
     return (
@@ -183,27 +109,13 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
         {/* Only show required checkbox for input fields */}
         {!['code', 'progress', 'divider', 'submit'].includes(field.type) && (
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="required"
-              checked={field.required}
-              onChange={e => handleUpdate({ required: e.target.checked })}
-              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
-                field.required
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
-                  : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-              style={{
-                accentColor: field.required
-                  ? getCheckboxColors().cssColor
-                  : undefined,
-              }}
-            />
-            <Label htmlFor="required" className="cursor-pointer select-none">
-              Required field
-            </Label>
-          </div>
+          <CheckboxWrapper
+            id="required"
+            checked={field.required}
+            onChange={(checked) => handleUpdate({ required: checked })}
+            label="Required field"
+            colors={checkboxColors}
+          />
         )}
       </CardContent>
     </Card>
@@ -297,34 +209,20 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
             />
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="multiple"
-              checked={field.fileConfig?.multiple || false}
-              onChange={e =>
-                handleUpdate({
-                  fileConfig: {
-                    ...field.fileConfig,
-                    multiple: e.target.checked,
-                  },
-                })
-              }
-              className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
-                field.fileConfig?.multiple
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
-                  : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
-              style={{
-                accentColor: field.fileConfig?.multiple
-                  ? getCheckboxColors().cssColor
-                  : undefined,
-              }}
-            />
-            <Label htmlFor="multiple" className="cursor-pointer select-none">
-              Allow multiple files
-            </Label>
-          </div>
+          <CheckboxWrapper
+            id="multiple"
+            checked={field.fileConfig?.multiple || false}
+            onChange={(checked) =>
+              handleUpdate({
+                fileConfig: {
+                  ...field.fileConfig,
+                  multiple: checked,
+                },
+              })
+            }
+            label="Allow multiple files"
+            colors={checkboxColors}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="accept">Accepted File Types</Label>
@@ -359,8 +257,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <Grid2Col>
+            <SpaceY>
               <Label htmlFor="minRating">Minimum Rating</Label>
               <Input
                 id="minRating"
@@ -377,8 +275,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   })
                 }
               />
-            </div>
-            <div className="space-y-2">
+            </SpaceY>
+            <SpaceY>
               <Label htmlFor="maxRating">Maximum Rating</Label>
               <Input
                 id="maxRating"
@@ -395,8 +293,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                   })
                 }
               />
-            </div>
-          </div>
+            </SpaceY>
+          </Grid2Col>
 
           <div className="space-y-2">
             <Label>Options</Label>
@@ -415,12 +313,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
                 }
                 className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                   field.ratingConfig?.allowHalf
-                    ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                    ? `${checkboxColors.bg} ${checkboxColors.border}`
                     : 'border-border'
-                } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+                } ${checkboxColors.focus} ${checkboxColors.hover}`}
                 style={{
                   accentColor: field.ratingConfig?.allowHalf
-                    ? getCheckboxColors().cssColor
+                    ? checkboxColors.cssColor
                     : undefined,
                 }}
               />
@@ -445,12 +343,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               }
               className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                 field.ratingConfig?.showLabels
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                  ? `${checkboxColors.bg} ${checkboxColors.border}`
                   : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              } ${checkboxColors.focus} ${checkboxColors.hover}`}
               style={{
                 accentColor: field.ratingConfig?.showLabels
-                  ? getCheckboxColors().cssColor
+                  ? checkboxColors.cssColor
                   : undefined,
               }}
             />
@@ -544,12 +442,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               }
               className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                 field.sliderConfig?.showValue
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                  ? `${checkboxColors.bg} ${checkboxColors.border}`
                   : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              } ${checkboxColors.focus} ${checkboxColors.hover}`}
               style={{
                 accentColor: field.sliderConfig?.showValue
-                  ? getCheckboxColors().cssColor
+                  ? checkboxColors.cssColor
                   : undefined,
               }}
             />
@@ -1660,12 +1558,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               }
               className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                 field.advanced?.hidden
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                  ? `${checkboxColors.bg} ${checkboxColors.border}`
                   : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              } ${checkboxColors.focus} ${checkboxColors.hover}`}
               style={{
                 accentColor: field.advanced?.hidden
-                  ? getCheckboxColors().cssColor
+                  ? checkboxColors.cssColor
                   : undefined,
               }}
             />
@@ -1689,12 +1587,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               }
               className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                 field.advanced?.readonly
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                  ? `${checkboxColors.bg} ${checkboxColors.border}`
                   : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              } ${checkboxColors.focus} ${checkboxColors.hover}`}
               style={{
                 accentColor: field.advanced?.readonly
-                  ? getCheckboxColors().cssColor
+                  ? checkboxColors.cssColor
                   : undefined,
               }}
             />
@@ -1718,12 +1616,12 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
               }
               className={`h-4 w-4 cursor-pointer rounded-md border border-border bg-background transition-colors ${
                 field.advanced?.disabled
-                  ? `${getCheckboxColors().bg} ${getCheckboxColors().border}`
+                  ? `${checkboxColors.bg} ${checkboxColors.border}`
                   : 'border-border'
-              } ${getCheckboxColors().focus} ${getCheckboxColors().hover}`}
+              } ${checkboxColors.focus} ${checkboxColors.hover}`}
               style={{
                 accentColor: field.advanced?.disabled
-                  ? getCheckboxColors().cssColor
+                  ? checkboxColors.cssColor
                   : undefined,
               }}
             />

@@ -379,34 +379,6 @@ export interface Settings {
   highContrast: boolean;
 }
 
-// Component Props Types
-export interface FieldRendererProps {
-  field: Field;
-  isSelected: boolean;
-  onSelect: () => void;
-  onDelete: () => void;
-  onDragStart: (fieldId: string) => void;
-  onDragOver: (e: React.DragEvent, fieldId?: string) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent, fieldId?: string) => void;
-  isDragOver: boolean;
-  isDragging: boolean;
-}
-
-export interface PropertyPanelProps {
-  field: Field | null;
-}
-
-export interface SettingsPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export interface KeyboardShortcutsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 // Color Configuration Types
 export interface ColorConfig {
   border: string;
@@ -430,39 +402,6 @@ export interface FieldDefinition {
   type: FieldType;
   label: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-}
-
-// Shortcut Types
-export interface Shortcut {
-  key: string;
-  description: string;
-}
-
-export interface ShortcutCategory {
-  category: string;
-  icon: React.ReactNode;
-  shortcuts: Shortcut[];
-}
-
-// Font Size Configuration
-export interface FontSizeConfig {
-  value: FontSize;
-  label: string;
-  description: string;
-}
-
-// Theme Configuration
-export interface ThemeConfig {
-  value: Theme;
-  label: string;
-  icon: React.ReactNode;
-}
-
-// Color Palette Configuration
-export interface ColorPaletteConfigItem {
-  value: ColorPalette;
-  label: string;
-  preview: string;
 }
 
 // Component Types
