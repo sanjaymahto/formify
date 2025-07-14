@@ -2,6 +2,19 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { FormTemplate } from './templates';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  Field,
+  FormData,
+  SavedForm,
+  FormSession,
+  FormState,
+  AddCommandData,
+  RemoveCommandData,
+  UpdateCommandData,
+  ReorderCommandData,
+  ClearCommandData,
+  LoadTemplateCommandData,
+} from '@/types';
 
 // Utility function to get timestamp
 const getClientTimestamp = (): number => {
@@ -11,303 +24,14 @@ const getClientTimestamp = (): number => {
   return Date.now();
 };
 
-export type FieldType =
-  | 'text'
-  | 'email'
-  | 'password'
-  | 'number'
-  | 'textarea'
-  | 'select'
-  | 'radio'
-  | 'checkbox'
-  | 'file' // File upload
-  | 'date' // Date picker
-  | 'time' // Time picker
-  | 'datetime' // Date and time picker
-  | 'rating' // Star rating
-  | 'slider' // Range slider
-  | 'phone' // Phone number
-  | 'url' // URL field
-  | 'color' // Color picker
-  | 'toggle' // Toggle switch
-  | 'divider' // Visual divider
-  | 'multi-select' // Multi-select dropdown
-  | 'tags' // Tags input
-  | 'grid' // Grid table with editable columns
-  | 'code' // Code editor
-  | 'image' // Image upload
-  | 'submit' // Submit button
-  | 'other'; // Other file types
 
-export type GridColumnType =
-  | 'text'
-  | 'number'
-  | 'date'
-  | 'time'
-  | 'datetime'
-  | 'email'
-  | 'phone'
-  | 'url'
-  | 'select'
-  | 'checkbox';
 
-export interface GridColumn {
-  id: string;
-  name: string;
-  type: GridColumnType;
-  required?: boolean;
-  placeholder?: string;
-  options?: string[]; // For select type columns
-  validation?: {
-    min?: number;
-    max?: number;
-    minLength?: number;
-    maxLength?: number;
-    pattern?: string;
-  };
-}
 
-export interface GridRow {
-  id: string;
-  data: Record<string, any>;
-}
-
-export interface Field {
-  id: string;
-  type: FieldType;
-  label: string;
-  placeholder?: string;
-  required: boolean;
-  options?: string[]; // For select and radio fields
-
-  // Advanced field properties
-  validation?: {
-    min?: number;
-    max?: number;
-    minLength?: number;
-    maxLength?: number;
-    pattern?: string; // Regex pattern
-    customValidation?: string; // Custom validation function
-  };
-
-  // File upload specific properties
-  fileConfig?: {
-    maxSize?: number; // MB
-    multiple?: boolean;
-    accept?: string; // File types
-    maxFiles?: number;
-    minFiles?: number;
-  };
-
-  // Date/time specific properties
-  dateConfig?: {
-    format?: string;
-    minDate?: string;
-    maxDate?: string;
-    defaultDate?: string;
-    timezone?: string;
-  };
-
-  // Rating specific properties
-  ratingConfig?: {
-    minRating?: number;
-    maxRating?: number;
-    allowHalf?: boolean;
-    showLabels?: boolean;
-    labels?: string[];
-  };
-
-  // Slider specific properties
-  sliderConfig?: {
-    min?: number;
-    max?: number;
-    step?: number;
-    defaultValue?: number;
-    showValue?: boolean;
-    showMarks?: boolean;
-    marks?: { value: number; label: string }[];
-  };
-
-  // Signature specific properties
-  signatureConfig?: {
-    width?: number;
-    height?: number;
-    penColor?: string;
-    backgroundColor?: string;
-    lineWidth?: number;
-  };
-
-  // Text input specific properties
-  textConfig?: {
-    autoFocus?: boolean;
-    spellCheck?: boolean;
-    maxLength?: number;
-    minLength?: number;
-    pattern?: string;
-  };
-
-  // Layout and styling properties
-  layout?: {
-    width?: string; // CSS width (e.g., '100%', '200px')
-    height?: string; // CSS height
-    margin?: string; // CSS margin
-    padding?: string; // CSS padding
-    display?: 'block' | 'inline' | 'inline-block' | 'flex' | 'grid';
-    flexDirection?: 'row' | 'column';
-    justifyContent?:
-      | 'flex-start'
-      | 'center'
-      | 'flex-end'
-      | 'space-between'
-      | 'space-around';
-    alignItems?: 'flex-start' | 'center' | 'flex-end' | 'stretch';
-    gridTemplateColumns?: string;
-    gridGap?: string;
-  };
-
-  // Conditional logic properties
-  conditional?: {
-    showIf?: {
-      fieldId?: string;
-      operator?:
-        | 'equals'
-        | 'not_equals'
-        | 'contains'
-        | 'not_contains'
-        | 'greater_than'
-        | 'less_than';
-      value?: string | number | boolean;
-    };
-    hideIf?: {
-      fieldId?: string;
-      operator?:
-        | 'equals'
-        | 'not_equals'
-        | 'contains'
-        | 'not_contains'
-        | 'greater_than'
-        | 'less_than';
-      value?: string | number | boolean;
-    };
-  };
-
-  // Grid specific properties
-  gridConfig?: {
-    columns: GridColumn[];
-    rows: GridRow[];
-    allowAddRows?: boolean;
-    allowDeleteRows?: boolean;
-    maxRows?: number;
-    minRows?: number;
-  };
-
-  // Code specific properties
-  codeConfig?: {
-    language?: string;
-    theme?: string;
-    lineNumbers?: boolean;
-    autoComplete?: boolean;
-    syntaxHighlighting?: boolean;
-  };
-
-  // Advanced properties
-  advanced?: {
-    helpText?: string;
-    errorMessage?: string;
-    hidden?: boolean;
-    readonly?: boolean;
-    disabled?: boolean;
-    defaultValue?: string | number | boolean;
-    description?: string;
-    tooltip?: string;
-    dataAttributes?: Record<string, string>;
-    customValidation?: string;
-    onChange?: string; // Custom onChange handler
-    onBlur?: string; // Custom onBlur handler
-    onFocus?: string; // Custom onFocus handler
-  };
-}
-
-export interface FormData {
-  fields: Field[];
-  version: string;
-  name?: string;
-  description?: string;
-  createdAt: string;
-  coverImage?: string | null;
-  logoImage?: string | null;
-}
-
-export interface SavedForm {
-  id: string;
-  formData: FormData;
-  timestamp: number;
-  version: number;
-  name: string;
-  isAutoSave?: boolean;
-}
-
-export interface AutoSaveData {
-  formData: FormData;
-  timestamp: number;
-  version: number;
-}
-
-export interface FormSession {
-  currentFormId: string | null;
-  forms: Record<string, SavedForm>;
-}
-
-interface AddCommandData {
-  field: Field;
-  index: number;
-}
-
-interface RemoveCommandData {
-  field: Field;
-  index: number;
-}
-
-interface UpdateCommandData {
-  id: string;
-  oldField: Field;
-  updates: Partial<Field>;
-  index: number;
-}
-
-interface ReorderCommandData {
-  fromIndex: number;
-  toIndex: number;
-  oldFields: Field[];
-}
-
-interface ClearCommandData {
-  oldFields: Field[];
-}
-
-interface LoadTemplateCommandData {
-  oldFields: Field[];
-  template: FormTemplate;
-}
-
-type CommandData =
-  | AddCommandData
-  | RemoveCommandData
-  | UpdateCommandData
-  | ReorderCommandData
-  | ClearCommandData
-  | LoadTemplateCommandData;
-
-interface Command {
-  type: 'add' | 'remove' | 'update' | 'reorder' | 'clear' | 'load-template';
-  data: CommandData;
-  timestamp: number;
-}
 
 // Conditional logic evaluation function
 const evaluateCondition = (
-  condition: any,
-  formData: Record<string, any>
+  condition: { fieldId?: string; operator?: string; value?: string | number | boolean },
+  formData: Record<string, string | number | boolean | string[]>
 ): boolean => {
   if (
     !condition?.fieldId ||
@@ -340,7 +64,7 @@ const evaluateCondition = (
 // Check if a field should be visible based on conditional logic
 const shouldShowField = (
   field: Field,
-  formData: Record<string, any>
+  formData: Record<string, string | number | boolean | string[]>
 ): boolean => {
   if (field.conditional?.showIf) {
     return evaluateCondition(field.conditional.showIf, formData);
@@ -351,56 +75,7 @@ const shouldShowField = (
   return true;
 };
 
-export interface FormState {
-  fields: Field[];
-  formTitle: string;
-  selectedFieldId: string | null;
-  isPreviewMode: boolean;
-  history: Command[];
-  historyIndex: number;
-  lastSaved: number | null;
-  isDirty: boolean;
-  autoSaveEnabled: boolean;
-  isLoadingForm: boolean; // Flag to prevent auto-save during form loading
-  formData: Record<string, any>; // Track current form values for conditional logic
-  coverImage?: string | null; // Add cover image to form state
-  logoImage?: string | null; // Add logo image to form state
-  setCoverImage: (image: string | null) => void;
-  setLogoImage: (image: string | null) => void;
-  addField: (field: Field) => void;
-  updateField: (id: string, updates: Partial<Field>) => void;
-  removeField: (id: string) => void;
-  reorderFields: (fromIndex: number, toIndex: number) => void;
-  setSelectedField: (id: string | null) => void;
-  setFormTitle: (title: string) => void;
-  togglePreviewMode: () => void;
-  updateFormData: (fieldId: string, value: any) => void; // Update form data for conditional logic
-  shouldShowField: (field: Field) => boolean; // Check if field should be visible
-  exportForm: () => FormData;
-  importForm: (formData: FormData) => void;
-  loadTemplate: (template: FormTemplate) => void;
-  clearForm: () => void;
-  undo: () => void;
-  redo: () => void;
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  // Unified form management
-  createNewForm: () => string;
-  startNewForm: () => string;
-  getCurrentFormId: () => string | null;
-  saveForm: (name?: string) => void;
-  saveFormAs: (name: string) => string;
-  getSavedForms: () => SavedForm[];
-  loadSavedForm: (savedForm: SavedForm) => void;
-  deleteSavedForm: (id: string) => void;
-  getAutoSaveData: () => SavedForm | null;
-  loadAutoSaveData: (autoSaveData: SavedForm) => void;
-  toggleAutoSave: () => void;
-  clearCurrentForm: () => void;
-  clearHistory: () => void;
-  getSessionForms: () => Record<string, SavedForm>;
-  limitFormsToMax: (forms: Record<string, SavedForm>, maxCount?: number) => Record<string, SavedForm>;
-}
+
 
 export const useFormStore = create<FormState>()(
   persist(
@@ -588,7 +263,7 @@ export const useFormStore = create<FormState>()(
           selectedFieldId: null,
         })),
 
-      updateFormData: (fieldId: string, value: any) => {
+      updateFormData: (fieldId: string, value: string | number | boolean | string[]) => {
         set(state => ({
           formData: {
             ...state.formData,
@@ -1015,7 +690,6 @@ export const useFormStore = create<FormState>()(
       },
 
       clearCurrentForm: () => {
-        const state = get();
         // Clear session
         localStorage.removeItem('formkit-session');
         

@@ -1,21 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export type ColorPalette =
-  | 'default'
-  | 'blue'
-  | 'green'
-  | 'purple'
-  | 'orange'
-  | 'pink'
-  | 'red'
-  | 'teal'
-  | 'indigo'
-  | 'yellow';
-
-export type FontSize = 'small' | 'medium' | 'large';
-
-export type Theme = 'light' | 'dark' | 'auto';
+import { Theme, ColorPalette, FontSize } from '@/types';
 
 export interface AppSettings {
   theme: Theme;
@@ -44,7 +29,7 @@ const defaultSettings: AppSettings = {
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...defaultSettings,
 
       updateSettings: newSettings => {

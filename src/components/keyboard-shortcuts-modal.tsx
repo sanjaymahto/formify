@@ -3,7 +3,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { X, Keyboard, Mouse, Eye, Edit3, Sun } from 'lucide-react';
+import { X, Keyboard, Mouse } from 'lucide-react';
+import { KEYBOARD_SHORTCUTS } from '@/constants';
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
@@ -25,48 +26,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
-  const shortcuts = [
-    {
-      category: 'Canvas Mode (Form Builder)',
-      icon: <Edit3 className="h-4 w-4" />,
-      shortcuts: [
-        { key: '↑ ↓', description: 'Navigate between form fields' },
-        { key: 'Enter', description: 'Edit selected field label' },
-        { key: 'Escape', description: 'Deselect field or cancel drag' },
-        { key: 'Ctrl+A', description: 'Select first field' },
-        { key: 'Delete / Backspace', description: 'Remove selected field' },
-        { key: 'Ctrl+D', description: 'Duplicate selected field' },
-        { key: 'Space', description: 'Toggle required field' },
-      ]
-    },
-    {
-      category: 'Preview Mode',
-      icon: <Eye className="h-4 w-4" />,
-      shortcuts: [
-        { key: 'Tab', description: 'Navigate between form inputs' },
-        { key: 'Enter', description: 'Submit form (if submit button focused)' },
-        { key: 'Escape', description: 'Exit preview mode' },
-      ]
-    },
-    {
-      category: 'Global Shortcuts',
-      icon: <Keyboard className="h-4 w-4" />,
-      shortcuts: [
-        { key: 'Ctrl+P', description: 'Toggle preview/edit mode' },
-        { key: 'Ctrl+S', description: 'Save form' },
-        { key: 'Ctrl+Z', description: 'Undo last action' },
-        { key: 'Ctrl+Y', description: 'Redo last action' },
-        { key: 'F1 / Ctrl+?', description: 'Show keyboard shortcuts' },
-      ]
-    },
-    {
-      category: 'Theme & Settings',
-      icon: <Sun className="h-4 w-4" />,
-      shortcuts: [
-        { key: 'Ctrl+T', description: 'Toggle theme (light/dark)' },
-      ]
-    }
-  ];
+
 
   const renderKey = (key: string) => {
     const isMultiKey = key.includes('+') || key.includes('/');
@@ -137,7 +97,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
             {/* Content */}
             <div className="p-6 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {shortcuts.map((category, index) => (
+                {KEYBOARD_SHORTCUTS.map((category, index) => (
                   <motion.div
                     key={category.category}
                     className="space-y-3"
@@ -147,7 +107,7 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
                   >
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-muted rounded-md">
-                        {category.icon}
+                        <category.icon className="h-4 w-4" />
                       </div>
                       <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
                         {category.category}

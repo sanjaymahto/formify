@@ -1,13 +1,4 @@
-import { FormData } from './store';
-
-export interface FormTemplate {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-  formData: FormData;
-}
+import { FormTemplate } from '@/types';
 
 export const formTemplates: FormTemplate[] = [
   {

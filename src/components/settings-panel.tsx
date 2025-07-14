@@ -18,56 +18,19 @@ import {
   Palette,
   Type,
   Sun,
-  Moon,
-  Monitor,
   RotateCcw,
   Eye,
 } from 'lucide-react';
-import {
-  useSettingsStore,
-  ColorPalette,
-  FontSize,
-  Theme,
-} from '@/lib/settings-store';
+import { useSettingsStore } from '@/lib/settings-store';
+import { FontSize, Theme } from '@/types';
+import { COLOR_PALETTES, FONT_SIZES, THEMES } from '@/constants';
 
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const colorPalettes: { value: ColorPalette; label: string; preview: string }[] =
-  [
-    { value: 'default', label: 'Default', preview: '#000000' },
-    { value: 'blue', label: 'Ocean Blue', preview: '#3b82f6' },
-    { value: 'green', label: 'Forest Green', preview: '#10b981' },
-    { value: 'purple', label: 'Royal Purple', preview: '#8b5cf6' },
-    { value: 'orange', label: 'Sunset Orange', preview: '#f97316' },
-    { value: 'pink', label: 'Rose Pink', preview: '#ec4899' },
-    { value: 'red', label: 'Crimson Red', preview: '#ef4444' },
-    { value: 'teal', label: 'Teal', preview: '#14b8a6' },
-    { value: 'indigo', label: 'Indigo', preview: '#6366f1' },
-    { value: 'yellow', label: 'Golden Yellow', preview: '#eab308' },
-  ];
 
-const fontSizes: { value: FontSize; label: string; description: string }[] = [
-  {
-    value: 'small',
-    label: 'Small',
-    description: 'Compact text for dense layouts',
-  },
-  {
-    value: 'medium',
-    label: 'Medium',
-    description: 'Standard size for most users',
-  },
-  { value: 'large', label: 'Large', description: 'Enhanced readability' },
-];
-
-const themes: { value: Theme; label: string; icon: React.ReactNode }[] = [
-  { value: 'light', label: 'Light', icon: <Sun className="h-4 w-4" /> },
-  { value: 'dark', label: 'Dark', icon: <Moon className="h-4 w-4" /> },
-  { value: 'auto', label: 'Auto', icon: <Monitor className="h-4 w-4" /> },
-];
 
 
 
@@ -112,7 +75,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
-                {themes.map(theme => (
+                {THEMES.map(theme => (
                   <Button
                     key={theme.value}
                     variant={
@@ -123,7 +86,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     }
                     className="flex h-auto cursor-pointer flex-col items-center space-y-2 py-4 transition-transform hover:scale-105"
                   >
-                    {theme.icon}
+                    <theme.icon className="h-4 w-4" />
                     <span className="text-xs">{theme.label}</span>
                   </Button>
                 ))}
@@ -141,7 +104,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-5 gap-3">
-                {colorPalettes.map(palette => (
+                {COLOR_PALETTES.map(palette => (
                   <Button
                     key={palette.value}
                     variant={
@@ -186,7 +149,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {fontSizes.map(size => (
+                    {FONT_SIZES.map(size => (
                       <SelectItem key={size.value} value={size.value}>
                         <div>
                           <div className="font-medium">{size.label}</div>

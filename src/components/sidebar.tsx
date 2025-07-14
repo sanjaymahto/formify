@@ -2,90 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { useFormStore, FieldType } from '@/lib/store';
+import { useFormStore } from '@/lib/store';
+import { FieldType } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import {
-  Type,
-  Mail,
-  Lock,
-  Hash,
-  FileText,
-  List,
-  CircleDot,
-  CheckSquare,
-  Upload,
-  Calendar,
-  Clock,
-  Star,
-  Sliders,
-  Phone,
-  Globe,
-  Palette,
-  ToggleLeft,
-  Minus,
-  Code,
-  Tags,
-  Grid3X3,
-  Image,
-  Send,
-} from 'lucide-react';
+import { FIELD_CATEGORIES, DEFAULT_FIELD_LABELS, DEFAULT_FIELD_PLACEHOLDERS } from '@/constants';
 
-const fieldCategories = [
-  {
-    name: 'Basic Fields',
-    fields: [
-      { type: 'text' as FieldType, label: 'Text Input', icon: Type },
-      { type: 'email' as FieldType, label: 'Email', icon: Mail },
-      { type: 'password' as FieldType, label: 'Password', icon: Lock },
-      { type: 'number' as FieldType, label: 'Number', icon: Hash },
-      { type: 'textarea' as FieldType, label: 'Text Area', icon: FileText },
-      { type: 'phone' as FieldType, label: 'Phone', icon: Phone },
-      { type: 'url' as FieldType, label: 'URL', icon: Globe },
-    ],
-  },
-  {
-    name: 'Selection Fields',
-    fields: [
-      { type: 'select' as FieldType, label: 'Dropdown', icon: List },
-      { type: 'radio' as FieldType, label: 'Radio Buttons', icon: CircleDot },
-      { type: 'checkbox' as FieldType, label: 'Checkbox', icon: CheckSquare },
-      { type: 'multi-select' as FieldType, label: 'Multi-Select', icon: Tags },
-      { type: 'toggle' as FieldType, label: 'Toggle', icon: ToggleLeft },
-      { type: 'rating' as FieldType, label: 'Rating', icon: Star },
-      { type: 'slider' as FieldType, label: 'Slider', icon: Sliders },
-      { type: 'color' as FieldType, label: 'Color Picker', icon: Palette },
-    ],
-  },
-  {
-    name: 'Date & Time',
-    fields: [
-      { type: 'date' as FieldType, label: 'Date Picker', icon: Calendar },
-      { type: 'time' as FieldType, label: 'Time Picker', icon: Clock },
-      { type: 'datetime' as FieldType, label: 'Date & Time', icon: Calendar },
-    ],
-  },
-  {
-    name: 'File Upload',
-    fields: [
-      { type: 'file' as FieldType, label: 'File Upload', icon: Upload },
-      { type: 'image' as FieldType, label: 'Image Upload', icon: Image },
-    ],
-  },
 
-  {
-    name: 'Layout & Structure',
-    fields: [
-      { type: 'divider' as FieldType, label: 'Divider', icon: Minus },
-      { type: 'grid' as FieldType, label: 'Grid Table', icon: Grid3X3 },
-      { type: 'submit' as FieldType, label: 'Submit Button', icon: Send },
-    ],
-  },
-  {
-    name: 'Complex Fields',
-    fields: [{ type: 'code' as FieldType, label: 'Code Editor', icon: Code }],
-  },
-];
 
 export default function Sidebar() {
   const [mounted, setMounted] = useState(false);
@@ -153,67 +76,11 @@ export default function Sidebar() {
   };
 
   const getDefaultLabel = (type: FieldType): string => {
-    const labels: Record<FieldType, string> = {
-      text: 'Text Input',
-      email: 'Email Address',
-      password: 'Password',
-      number: 'Number Input',
-      textarea: 'Text Area',
-      select: 'Dropdown Select',
-      radio: 'Radio Buttons',
-      checkbox: 'Checkbox',
-      file: 'File Upload',
-      date: 'Date Picker',
-      time: 'Time Picker',
-      datetime: 'Date & Time Picker',
-      rating: 'Rating',
-      slider: 'Slider',
-      phone: 'Phone Number',
-      url: 'Website URL',
-      color: 'Color Picker',
-      toggle: 'Toggle Switch',
-      divider: 'Divider',
-      'multi-select': 'Multi-Select',
-      tags: 'Tags Input',
-      grid: 'Grid Table',
-      code: 'Code Editor',
-      image: 'Image Upload',
-      submit: 'Submit',
-      other: 'Other Field',
-    };
-    return labels[type] || 'Field';
+    return DEFAULT_FIELD_LABELS[type] || 'Field';
   };
 
   const getDefaultPlaceholder = (type: FieldType): string => {
-    const placeholders: Record<FieldType, string> = {
-      text: 'Enter text...',
-      email: 'Enter email address...',
-      password: 'Enter password...',
-      number: 'Enter number...',
-      textarea: 'Enter your message...',
-      select: 'Select an option...',
-      radio: '',
-      checkbox: '',
-      file: 'Choose file...',
-      date: 'Select date...',
-      time: 'Select time...',
-      datetime: 'Select date and time...',
-      rating: '',
-      slider: '',
-      phone: 'Enter phone number...',
-      url: 'Enter website URL...',
-      color: '',
-      toggle: '',
-      divider: '',
-      'multi-select': 'Select options...',
-      tags: 'Add tags...',
-      grid: '',
-      code: 'Enter code...',
-      image: 'Choose image...',
-      submit: '',
-      other: 'Enter value...',
-    };
-    return placeholders[type] || '';
+    return DEFAULT_FIELD_PLACEHOLDERS[type] || '';
   };
 
   return (
@@ -241,7 +108,7 @@ export default function Sidebar() {
             </p>
           </motion.div>
 
-          {fieldCategories.map((category, categoryIndex) => (
+          {FIELD_CATEGORIES.map((category, categoryIndex) => (
             <motion.div
               key={category.name}
               className="space-y-2"
@@ -324,7 +191,7 @@ export default function Sidebar() {
                   );
                 })}
               </div>
-              {categoryIndex < fieldCategories.length - 1 && (
+              {categoryIndex < FIELD_CATEGORIES.length - 1 && (
                 <motion.div
                   initial={{ opacity: 0, scaleX: 0 }}
                   animate={{ opacity: 1, scaleX: 1 }}
