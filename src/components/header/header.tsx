@@ -301,10 +301,10 @@ const Header = () => {
             transition={{ duration: 0.2 }}
           >
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={toggleAutoSave}
-              className={`h-8 cursor-pointer px-2 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
+              className={`h-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400 border-green-300 dark:border-green-700' : 'text-gray-400 dark:text-gray-500'}`}
               title={`Auto-save is ${autoSaveEnabled ? 'enabled' : 'disabled'}`}
             >
               <Save className="mr-1 h-3 w-3" />
@@ -372,7 +372,6 @@ const Header = () => {
         </motion.div>
 
         <SettingsButton
-          className="h-8 w-8 p-0"
           tooltipText="Customize app appearance and settings"
         />
 
