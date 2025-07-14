@@ -38,7 +38,6 @@ import {
   Grid3X3,
   Sparkles,
   Send,
-  X,
 } from 'lucide-react';
 
 interface FieldRendererProps {
@@ -1319,91 +1318,7 @@ export default function Canvas() {
   const submitFields = fields.filter(field => field.type === 'submit');
   const otherFields = fields.filter(field => field.type !== 'submit');
 
-  // Keyboard shortcuts help component
-  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
-  // Add F1 and Ctrl+? to show keyboard help
-  React.useEffect(() => {
-    const handleHelpKey = (e: KeyboardEvent) => {
-      if (e.key === 'F1' || (e.ctrlKey && e.key === '?')) {
-        e.preventDefault();
-        setShowKeyboardHelp(prev => !prev);
-      }
-    };
-
-    document.addEventListener('keydown', handleHelpKey);
-    return () => document.removeEventListener('keydown', handleHelpKey);
-  }, []);
-
-  // Keyboard shortcuts help modal
-  const KeyboardHelpModal = () => {
-    if (!showKeyboardHelp) return null;
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="max-w-2xl w-full mx-4 bg-background rounded-lg shadow-lg border">
-          <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="text-xl font-semibold">Keyboard Shortcuts</h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowKeyboardHelp(false)}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Navigation</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>↑ ↓</span>
-                    <span>Navigate between fields</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Enter</span>
-                    <span>Edit field label</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Escape</span>
-                    <span>Deselect field / Cancel drag</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Ctrl+A</span>
-                    <span>Select first field</span>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Actions</h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span>Delete / Backspace</span>
-                    <span>Remove selected field</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Ctrl+D</span>
-                    <span>Duplicate selected field</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Space</span>
-                    <span>Toggle required field</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="pt-4 border-t">
-              <p className="text-sm text-muted-foreground">
-                Press <kbd className="px-2 py-1 text-xs bg-muted rounded border">F1</kbd> or <kbd className="px-2 py-1 text-xs bg-muted rounded border">Ctrl+?</kbd> to toggle this help.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <motion.div
@@ -1678,8 +1593,6 @@ export default function Canvas() {
         </motion.div>
       )}
 
-      {/* Keyboard shortcuts help modal */}
-      <KeyboardHelpModal />
     </motion.div>
   );
 }
