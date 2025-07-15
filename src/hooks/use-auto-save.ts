@@ -40,9 +40,6 @@ export function useAutoSave() {
     };
   }, [isDirty, autoSaveEnabled, fields, saveForm]);
 
-  // Auto-save data is now handled by the saved forms section in canvas
-  // No recovery dialog needed
-
   // Save before page unload
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useFormStore } from '@/lib/store';
 import { useSettingsStore } from '@/lib/settings-store';
@@ -596,7 +596,7 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
             </Button>
             {field.type !== 'submit' && (
               <div
-                className="cursor-grab cursor-pointer active:cursor-grabbing"
+                className="cursor-pointer active:cursor-grabbing"
                 onMouseDown={e => {
                   e.stopPropagation();
                   onDragStart(field.id);
@@ -1038,7 +1038,7 @@ export default function Canvas() {
   };
 
   // Scroll to selected field when it changes
-  React.useEffect(() => {
+   useEffect(() => {
     if (selectedFieldId) {
       console.log('Selected field changed to:', selectedFieldId);
       // Use a longer delay to ensure the field is fully rendered
@@ -1051,7 +1051,7 @@ export default function Canvas() {
   }, [selectedFieldId]);
 
   // Handle keyboard navigation and shortcuts
-  React.useEffect(() => {
+   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't handle keyboard shortcuts if user is typing in an input
       if (
