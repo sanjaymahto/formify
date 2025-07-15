@@ -329,9 +329,9 @@ export function FormPreview() {
             onValueChange={value => handleInputChange(field.id, value)}
           >
             {field.options?.map((option: string, index: number) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div key={index} className="flex items-center space-x-3 sm:space-x-2">
                 <RadioGroupItem value={option} />
-                <Label className="text-sm text-gray-600">{option}</Label>
+                <Label className="text-sm sm:text-base text-gray-600">{option}</Label>
               </div>
             ))}
           </RadioGroup>

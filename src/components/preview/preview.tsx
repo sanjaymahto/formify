@@ -461,12 +461,12 @@ const Preview: React.FC<PreviewProps> = ({
               }
               onValueChange={value => handleInputChange(field.id, value)}
               disabled={field.advanced?.disabled}
-              className="space-y-2"
+              className="space-y-3 sm:space-y-2"
             >
               {field.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2">
+                <div key={index} className="flex items-center space-x-3 sm:space-x-2">
                   <RadioGroupItem value={option} id={`${field.id}-${index}`} />
-                  <Label htmlFor={`${field.id}-${index}`}>{option}</Label>
+                  <Label htmlFor={`${field.id}-${index}`} className="text-sm sm:text-base">{option}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -1354,7 +1354,7 @@ const Preview: React.FC<PreviewProps> = ({
 
   return (
     <motion.div
-      className="mx-auto w-[60%] p-6"
+      className="mx-auto w-full p-4 pb-24 md:w-[80%] md:pb-4 lg:w-[60%]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}

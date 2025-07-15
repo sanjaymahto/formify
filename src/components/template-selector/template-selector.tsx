@@ -122,15 +122,15 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[80vh] w-full max-w-4xl flex-col rounded-lg border border-border bg-background shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 md:p-4">
+      <div className="flex max-h-[95vh] w-full max-w-4xl flex-col rounded-lg border border-border bg-background shadow-xl md:max-h-[85vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border p-6">
+        <div className="flex items-center justify-between border-b border-border p-4 md:p-6">
           <div>
-            <h2 className="text-xl font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground md:text-xl">
               Choose a Template
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground md:text-sm">
               Start with a pre-built form template or create from scratch
             </p>
           </div>
@@ -138,15 +138,16 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 cursor-pointer p-0"
+            className="h-10 w-10 cursor-pointer p-0 hover:bg-destructive/10 hover:text-destructive close-button sm:h-8 sm:w-8"
+            title="Close template selector"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Search and Filters */}
-        <div className="border-b border-border p-6">
-          <div className="flex gap-4">
+        <div className="border-b border-border p-4 md:p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
@@ -154,11 +155,11 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                   placeholder="Search templates..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="border-border bg-background pl-10 text-foreground placeholder:text-muted-foreground"
+                  className="border-border bg-background pl-10 text-foreground placeholder:text-muted-foreground h-12 sm:h-9"
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -200,49 +201,10 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                                         ? '#eab308'
                                         : '#3b82f6'
                       : undefined,
-                  borderColor:
-                    selectedCategory === 'All'
-                      ? buttonColors.border
-                          .replace('border-', '')
-                          .includes('blue')
-                        ? '#3b82f6'
-                        : buttonColors.border
-                              .replace('border-', '')
-                              .includes('green')
-                          ? '#10b981'
-                          : buttonColors.border
-                                .replace('border-', '')
-                                .includes('purple')
-                            ? '#8b5cf6'
-                            : buttonColors.border
-                                  .replace('border-', '')
-                                  .includes('orange')
-                              ? '#f97316'
-                              : buttonColors.border
-                                    .replace('border-', '')
-                                    .includes('pink')
-                                ? '#ec4899'
-                                : buttonColors.border
-                                      .replace('border-', '')
-                                      .includes('red')
-                                  ? '#ef4444'
-                                  : buttonColors.border
-                                        .replace('border-', '')
-                                        .includes('teal')
-                                    ? '#14b8a6'
-                                    : buttonColors.border
-                                          .replace('border-', '')
-                                          .includes('indigo')
-                                      ? '#6366f1'
-                                      : buttonColors.border
-                                            .replace('border-', '')
-                                            .includes('yellow')
-                                        ? '#eab308'
-                                        : '#3b82f6'
-                      : undefined,
-                  color: selectedCategory === 'All' ? '#ffffff' : undefined,
+                  color:
+                    selectedCategory === 'All' ? '#ffffff' : undefined,
                 }}
-                className={`cursor-pointer ${
+                className={`cursor-pointer h-10 px-3 text-xs md:h-8 md:px-2 md:text-sm ${
                   selectedCategory === 'All'
                     ? `${buttonColors.hover} ${buttonColors.focus}`
                     : 'hover:border-primary'
@@ -258,42 +220,6 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                   onClick={() => setSelectedCategory(category)}
                   style={{
                     backgroundColor:
-                      selectedCategory === category
-                        ? buttonColors.bg.replace('bg-', '').includes('blue')
-                          ? '#3b82f6'
-                          : buttonColors.bg.replace('bg-', '').includes('green')
-                            ? '#10b981'
-                            : buttonColors.bg
-                                  .replace('bg-', '')
-                                  .includes('purple')
-                              ? '#8b5cf6'
-                              : buttonColors.bg
-                                    .replace('bg-', '')
-                                    .includes('orange')
-                                ? '#f97316'
-                                : buttonColors.bg
-                                      .replace('bg-', '')
-                                      .includes('pink')
-                                  ? '#ec4899'
-                                  : buttonColors.bg
-                                        .replace('bg-', '')
-                                        .includes('red')
-                                    ? '#ef4444'
-                                    : buttonColors.bg
-                                          .replace('bg-', '')
-                                          .includes('teal')
-                                      ? '#14b8a6'
-                                      : buttonColors.bg
-                                            .replace('bg-', '')
-                                            .includes('indigo')
-                                        ? '#6366f1'
-                                        : buttonColors.bg
-                                              .replace('bg-', '')
-                                              .includes('yellow')
-                                          ? '#eab308'
-                                          : '#3b82f6'
-                        : undefined,
-                    borderColor:
                       selectedCategory === category
                         ? buttonColors.border
                             .replace('border-', '')
@@ -336,7 +262,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                     color:
                       selectedCategory === category ? '#ffffff' : undefined,
                   }}
-                  className={`cursor-pointer ${
+                  className={`cursor-pointer h-10 px-3 text-xs md:h-8 md:px-2 md:text-sm ${
                     selectedCategory === category
                       ? `${buttonColors.hover} ${buttonColors.focus}`
                       : 'hover:border-primary'
@@ -350,38 +276,38 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
         </div>
 
         {/* Templates Grid */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 md:pb-6">
           {filteredTemplates.length === 0 ? (
-            <div className="py-12 text-center">
+            <div className="py-8 text-center md:py-12">
               <div className="mb-4 text-muted-foreground">
-                <Search className="mx-auto h-12 w-12" />
+                <Search className="mx-auto h-8 w-8 md:h-12 md:w-12" />
               </div>
-              <h3 className="mb-2 text-lg font-medium text-foreground">
+              <h3 className="mb-2 text-base font-medium text-foreground md:text-lg">
                 No templates found
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-xs text-muted-foreground md:text-sm">
                 Try adjusting your search or category filter
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
               {filteredTemplates.map(template => (
                 <Card
                   key={template.id}
-                  className="hover:bg-accent/50 cursor-pointer border-border bg-card p-4 transition-all duration-200 hover:border-primary hover:shadow-lg"
+                  className="hover:bg-accent/50 cursor-pointer border-border bg-card p-4 transition-all duration-200 hover:border-primary hover:shadow-lg md:p-4"
                   onClick={() => handleLoadTemplate(template)}
                 >
-                  <div className="flex items-start space-x-3">
-                    <div className="text-2xl">{template.icon}</div>
+                  <div className="flex items-start space-x-3 md:space-x-3">
+                    <div className="text-2xl md:text-2xl">{template.icon}</div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="mb-1 font-medium text-foreground">
+                      <h3 className="mb-2 text-base font-medium text-foreground md:text-base">
                         {template.name}
                       </h3>
-                      <p className="mb-2 text-sm text-muted-foreground">
+                      <p className="mb-3 text-sm text-muted-foreground md:text-sm">
                         {template.description}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
+                        <span className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground md:px-2 md:py-1">
                           {template.category}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -396,8 +322,8 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="bg-muted/50 border-t border-border p-6">
+        {/* Footer - Desktop only */}
+        <div className="hidden md:block bg-muted/50 border-t border-border p-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               {filteredTemplates.length} template
@@ -443,7 +369,7 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
                                   ? '#eab308'
                                   : '#3b82f6',
               }}
-              className={`cursor-pointer ${buttonColors.focus}`}
+              className={`cursor-pointer h-9 w-auto text-sm ${buttonColors.focus}`}
               onMouseEnter={e => {
                 e.currentTarget.style.backgroundColor = buttonColors.border
                   .replace('border-', '')

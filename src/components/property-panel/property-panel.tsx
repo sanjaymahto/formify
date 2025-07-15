@@ -32,11 +32,21 @@ import {
   Grid3X3,
   PenTool,
   FileText,
+  X,
 } from 'lucide-react';
 import { PropertyPanelProps } from '@/types/components/property-panel';
 import { getCheckboxColors } from '@/utils/color-utils';
 
-const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
+interface ExtendedPropertyPanelProps extends PropertyPanelProps {
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+const PropertyPanel: React.FC<ExtendedPropertyPanelProps> = ({ 
+  field, 
+  onClose, 
+  isMobile = false 
+}) => {
   const fields = useFormStore(state => state.fields);
   const updateField = useFormStore(state => state.updateField);
   const { colorPalette } = useSettingsStore();
@@ -46,8 +56,8 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
   if (!field) {
     return (
       <motion.div
-        className="flex h-full w-[80%] flex-col border-l border-border bg-background"
-        initial={{ x: '85%', opacity: 0 }}
+        className="flex h-full w-full flex-col border-l border-border bg-background md:w-80"
+        initial={{ x: isMobile ? '100%' : '85%', opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
@@ -1677,28 +1687,50 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ field }) => {
 
   return (
     <motion.div
-      className="w-92 flex h-full flex-col border-l border-border bg-background"
-      initial={{ x: 320, opacity: 0 }}
+      className="flex h-full w-full flex-col border-l border-border bg-background md:w-80"
+      initial={{ x: isMobile ? '100%' : 320, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Mobile header with close button */}
+      {isMobile && (
+        <div className="flex items-center justify-between border-b border-border p-4 mobile-modal-header">
+          <div className="flex items-center space-x-2">
+            <Sliders className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Field Properties</h2>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-10 w-10 hover:bg-destructive/10 hover:text-destructive close-button"
+            title="Close properties"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto p-4 pb-20">
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <h2 className="mb-2 text-lg font-semibold">Field Properties</h2>
-            <p className="text-sm text-muted-foreground">
-              Configure the selected field
-            </p>
-          </motion.div>
+          {/* Desktop title - hidden on mobile */}
+          {!isMobile && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <h2 className="mb-2 text-lg font-semibold">Field Properties</h2>
+              <p className="text-sm text-muted-foreground">
+                Configure the selected field
+              </p>
+            </motion.div>
+          )}
 
           <AnimatePresence mode="wait">
             <motion.div

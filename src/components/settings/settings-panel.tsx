@@ -33,36 +33,37 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-lg bg-background text-foreground shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 md:p-4">
+      <div className="flex max-h-[95vh] w-full max-w-2xl flex-col rounded-lg bg-background text-foreground shadow-xl md:max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border p-6">
-          <div className="flex items-center space-x-3">
-            <Settings className="h-5 w-5" />
-            <h2 className="text-xl font-semibold">App Settings</h2>
+        <div className="flex items-center justify-between border-b border-border p-4 md:p-6">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <Settings className="h-4 w-4 md:h-5 md:w-5" />
+            <h2 className="text-lg font-semibold md:text-xl">App Settings</h2>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive md:h-8 md:w-8"
+            title="Close settings"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 space-y-6 overflow-y-auto p-6">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
           {/* Theme Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3 md:pb-4">
               <CardTitle className="flex items-center space-x-2 text-sm">
                 <Sun className="h-4 w-4" />
                 <span>Theme</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-3">
+            <CardContent className="space-y-3 md:space-y-4">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {THEMES.map(theme => (
                   <Button
                     key={theme.value}
@@ -72,7 +73,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     onClick={() =>
                       updateSettings({ theme: theme.value as Theme })
                     }
-                    className="flex h-auto cursor-pointer flex-col items-center space-y-2 py-4 transition-transform hover:scale-105"
+                    className="flex h-auto cursor-pointer flex-col items-center space-y-2 py-3 transition-transform hover:scale-105 md:py-4"
                   >
                     <theme.icon className="h-4 w-4" />
                     <span className="text-xs">{theme.label}</span>
@@ -84,14 +85,14 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
           {/* Color Palette Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3 md:pb-4">
               <CardTitle className="flex items-center space-x-2 text-sm">
                 <Palette className="h-4 w-4" />
                 <span>Color Palette</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-5 gap-3">
+            <CardContent className="space-y-3 md:space-y-4">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
                 {COLOR_PALETTES.map(palette => (
                   <Button
                     key={palette.value}
@@ -106,7 +107,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     className="flex h-auto cursor-pointer flex-col items-center space-y-2 px-2 py-3 transition-transform hover:scale-105"
                   >
                     <div
-                      className="h-6 w-6 rounded-full border border-border"
+                      className="h-5 w-5 rounded-full border border-border md:h-6 md:w-6"
                       style={{ backgroundColor: palette.preview }}
                     />
                     <span className="text-center text-xs">{palette.label}</span>
@@ -118,13 +119,13 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
           {/* Typography Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3 md:pb-4">
               <CardTitle className="flex items-center space-x-2 text-sm">
                 <Type className="h-4 w-4" />
                 <span>Typography</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 md:space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="fontSize">Font Size</Label>
                 <Select
@@ -133,7 +134,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     updateSettings({ fontSize: value as FontSize })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10 md:h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -155,15 +156,15 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
           {/* Accessibility Section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3 md:pb-4">
               <CardTitle className="flex items-center space-x-2 text-sm">
                 <Eye className="h-4 w-4" />
                 <span>Accessibility</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 md:space-y-4">
               <div className="flex items-center justify-between">
-                <div className="space-y-1">
+                <div className="space-y-1 flex-1 pr-4">
                   <Label htmlFor="highContrast">High Contrast</Label>
                   <p className="text-xs text-muted-foreground">
                     Increase contrast for better visibility
@@ -179,6 +180,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
                     );
                     updateSettings({ highContrast: e.target.checked });
                   }}
+                  className="flex-shrink-0"
                 />
               </div>
             </CardContent>
@@ -186,16 +188,18 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-border p-6">
+        <div className="flex flex-col space-y-3 border-t border-border p-4 md:flex-row md:items-center md:justify-between md:space-y-0 md:p-6">
           <Button
             variant="outline"
             onClick={resetSettings}
-            className="flex items-center space-x-2"
+            className="flex items-center justify-center space-x-2 w-full md:w-auto"
           >
             <RotateCcw className="h-4 w-4" />
             <span>Reset to Defaults</span>
           </Button>
-          <Button onClick={onClose}>Done</Button>
+          <Button onClick={onClose} className="w-full md:w-auto">
+            Done
+          </Button>
         </div>
       </div>
     </div>

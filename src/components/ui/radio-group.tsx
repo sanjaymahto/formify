@@ -44,7 +44,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
         <div
           ref={ref}
           data-slot="radio-group"
-          className={cn('grid gap-3', className)}
+          className={cn('grid gap-2 sm:gap-3', className)}
           role="radiogroup"
           {...props}
         />
@@ -74,7 +74,7 @@ const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
           name={context.name}
           data-slot="radio-group-item"
           className={cn(
-            'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs aspect-square size-4 shrink-0 appearance-none rounded-full border-2 border-gray-300 bg-white text-primary outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800',
+            'focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs aspect-square size-5 sm:size-4 shrink-0 appearance-none rounded-full border-2 border-gray-300 bg-white text-primary outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800',
             className
           )}
           {...props}
@@ -82,7 +82,7 @@ const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
         {isChecked && (
           <div
             data-slot="radio-group-indicator"
-            className="pointer-events-none absolute left-1/2 top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500"
+            className="pointer-events-none absolute left-1/2 top-1/2 size-2.5 sm:size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500"
           />
         )}
       </div>

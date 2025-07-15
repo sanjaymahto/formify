@@ -26,11 +26,11 @@ export function SettingsButton({
         variant="ghost"
         size="sm"
         onClick={openSettings}
-        className={`h-10 w-10 cursor-pointer p-0 ${className}`}
+        className={`h-8 w-8 cursor-pointer p-0 md:h-10 md:w-10 ${className}`}
         aria-label="Settings"
         title={tooltipText}
       >
-        <Settings className="h-5 w-5" />
+        <Settings className="h-4 w-4 md:h-5 md:w-5" />
       </Button>
 
       <SettingsPanel isOpen={isSettingsOpen} onClose={closeSettings} />

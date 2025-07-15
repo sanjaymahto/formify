@@ -16,6 +16,8 @@ import {
   Undo2,
   Redo2,
   Keyboard,
+  Menu,
+  Sliders,
 } from 'lucide-react';
 import { ExportImportButtons } from '@/components/export-import/export-import';
 import { useAutoSave } from '@/hooks/use-auto-save';
@@ -25,7 +27,17 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import KeyboardShortcutsModal from '@/components/keyboard-modal/keyboard-shortcuts-modal';
 
-const Header = () => {
+interface HeaderProps {
+  onSidebarToggle?: () => void;
+  onPropertyPanelToggle?: () => void;
+  isMobile?: boolean;
+}
+
+const Header = ({ 
+  onSidebarToggle, 
+  onPropertyPanelToggle, 
+  isMobile = false
+}: HeaderProps) => {
   const isPreviewMode = useFormStore(state => state.isPreviewMode);
   const togglePreviewMode = useFormStore(state => state.togglePreviewMode);
   const fields = useFormStore(state => state.fields);
@@ -40,6 +52,7 @@ const Header = () => {
   const historyIndex = useFormStore(state => state.historyIndex);
   const history = useFormStore(state => state.history);
   const clearHistory = useFormStore(state => state.clearHistory);
+  const selectedFieldId = useFormStore(state => state.selectedFieldId);
   const { theme, updateSettings, colorPalette } = useSettingsStore();
   const { isDirty } = useAutoSave();
 
@@ -240,30 +253,54 @@ const Header = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
+      {/* Left side - Logo and title */}
       <motion.div
-        className="flex items-center space-x-4"
+        className="flex items-center space-x-2 md:space-x-4"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
+        {/* Mobile sidebar toggle */}
+        {isMobile && !isPreviewMode && (
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onSidebarToggle}
+              className="h-8 w-8 md:hidden"
+              title="Toggle sidebar"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </motion.div>
+        )}
+
         <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
           <Link
             href="/"
             className="flex items-center space-x-2 transition-opacity hover:opacity-80"
           >
-            <span className="text-xl font-bold tracking-tight text-foreground">
+            <span className="text-lg font-bold tracking-tight text-foreground md:text-xl">
               formify*
             </span>
           </Link>
         </motion.div>
+
+        {/* Divider - hidden on mobile */}
         <motion.div
-          className="h-6 w-px bg-border"
+          className="hidden h-6 w-px bg-border md:block"
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
           transition={{ duration: 0.4, delay: 0.4 }}
         ></motion.div>
+
+        {/* Form title and info - hidden on mobile */}
         <motion.div
-          className="flex flex-col"
+          className="hidden flex-col md:flex"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
@@ -275,8 +312,10 @@ const Header = () => {
             {isPreviewMode ? 'Form Preview' : formTitle}
           </h1>
         </motion.div>
+
+        {/* Form info - hidden on mobile */}
         <motion.div
-          className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400"
+          className="hidden items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 md:flex"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
@@ -302,75 +341,99 @@ const Header = () => {
         </motion.div>
       </motion.div>
 
+      {/* Right side - Actions */}
       <motion.div
-        className="flex items-center space-x-3"
+        className="flex items-center space-x-2 md:space-x-3"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        {!isPreviewMode && <ExportImportButtons />}
+        {/* Desktop actions - hidden on mobile */}
+        <div className="hidden md:flex md:items-center md:space-x-3">
+          {!isPreviewMode && <ExportImportButtons />}
 
-        {!isPreviewMode && (
+          {!isPreviewMode && (
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleAutoSave}
+                className={`h-8 cursor-pointer px-2 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
+                title={`Auto-save is ${autoSaveEnabled ? 'enabled' : 'disabled'}`}
+              >
+                <Save className="mr-1 h-3 w-3" />
+                Auto-save {autoSaveEnabled ? 'ON' : 'OFF'}
+              </Button>
+            </motion.div>
+          )}
+
+          {!isPreviewMode && (
+            <motion.div
+              className="flex items-center space-x-1"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
+                  title="Undo (Ctrl+Z)"
+                >
+                  <Undo2 className="h-4 w-4" />
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
+                  title="Redo (Ctrl+Y)"
+                >
+                  <Redo2 className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Mobile property panel toggle */}
+        {isMobile && !isPreviewMode && selectedFieldId && (
           <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.2 }}
           >
             <Button
               variant="ghost"
-              size="sm"
-              onClick={toggleAutoSave}
-              className={`h-8 cursor-pointer px-2 text-xs ${autoSaveEnabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
-              title={`Auto-save is ${autoSaveEnabled ? 'enabled' : 'disabled'}`}
+              size="icon"
+              onClick={onPropertyPanelToggle}
+              className="h-8 w-8 md:hidden"
+              title="Toggle properties"
             >
-              <Save className="mr-1 h-3 w-3" />
-              Auto-save {autoSaveEnabled ? 'ON' : 'OFF'}
+              <Sliders className="h-4 w-4" />
             </Button>
           </motion.div>
         )}
 
-        {!isPreviewMode && (
-          <motion.div
-            className="flex items-center space-x-1"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={undo}
-                disabled={!canUndo}
-                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
-                title="Undo (Ctrl+Z)"
-              >
-                <Undo2 className="h-4 w-4" />
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={redo}
-                disabled={!canRedo}
-                className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50"
-                title="Redo (Ctrl+Y)"
-              >
-                <Redo2 className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-
+        {/* Common actions - visible on all screen sizes */}
         <motion.div
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -422,9 +485,9 @@ const Header = () => {
           >
             <Button
               variant={isPreviewMode ? 'default' : 'outline'}
-              size="sm"
+              size="icon"
               onClick={togglePreviewMode}
-              className="flex cursor-pointer items-center space-x-2"
+              className="h-8 w-8 cursor-pointer border-2 transition-all duration-200 hover:scale-110"
               data-preview-toggle
               title={
                 isPreviewMode
@@ -433,22 +496,18 @@ const Header = () => {
               }
             >
               {isPreviewMode ? (
-                <>
-                  <Edit3 className="h-4 w-4" />
-                  <span>Edit</span>
-                </>
+                <Edit3 className="h-4 w-4" />
               ) : (
-                <>
-                  <Eye className="h-4 w-4" />
-                  <span>Preview</span>
-                </>
+                <Eye className="h-4 w-4" />
               )}
             </Button>
           </motion.div>
         )}
 
+        {/* Close form button - desktop only */}
         {!isPreviewMode && fields.length > 0 && (
           <motion.div
+            className="hidden md:block"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
@@ -461,6 +520,25 @@ const Header = () => {
               title="Close current form and start a new one"
             >
               <X className="h-4 w-4 text-red-600 dark:text-red-400" />
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Mobile close form button */}
+        {isMobile && !isPreviewMode && fields.length > 0 && (
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleCloseForm}
+              className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive close-button"
+              title="Close form"
+            >
+              <X className="h-4 w-4" />
             </Button>
           </motion.div>
         )}
@@ -483,7 +561,7 @@ const Header = () => {
                 title="Save form (Ctrl+S)"
               >
                 <Save className="h-4 w-4" />
-                <span>Save Form</span>
+                <span className="hidden sm:inline">Save Form</span>
               </Button>
             </motion.div>
           )}

@@ -245,6 +245,83 @@ body {
   transition:
     background-color var(--transition-duration, 0.2s) ease,
     color var(--transition-duration, 0.2s) ease;
+  scroll-behavior: smooth;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Prevent horizontal scrolling */
+  html, body {
+    overflow-x: hidden;
+  }
+  
+  /* Improve touch targets */
+  button, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Better spacing for mobile */
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Improve form field spacing */
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  /* Mobile navigation improvements */
+  .mobile-nav-button {
+    transition: all 0.2s ease;
+  }
+  
+  .mobile-nav-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Better close button styling */
+  .close-button {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+  }
+  
+  .close-button:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: rgb(239, 68, 68);
+    transform: scale(1.05);
+  }
+  
+  .close-button:active {
+    transform: scale(0.95);
+  }
+  
+  /* Mobile modal improvements */
+  .mobile-modal-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .dark .mobile-modal-header {
+    background: rgba(0, 0, 0, 0.95);
+  }
+  
+  /* Mobile header improvements */
+  .mobile-header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 4px;
+  }
+}
+
+/* Tablet-specific styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Optimize for tablet landscape */
+  .max-w-4xl {
+    max-width: 90%;
+  }
 }
 
 /* Enhanced Button Styles */

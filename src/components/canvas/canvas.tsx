@@ -212,11 +212,11 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({
 
       case 'radio':
         return (
-          <RadioGroup className="space-y-2">
+          <RadioGroup className="space-y-3 sm:space-y-2">
             {field.options?.map((option, index) => (
-              <div key={index} className="flex items-center space-x-2">
+              <div key={index} className="flex items-center space-x-3 sm:space-x-2">
                 <RadioGroupItem value={option} id={`${field.id}-${index}`} />
-                <Label htmlFor={`${field.id}-${index}`}>{option}</Label>
+                <Label htmlFor={`${field.id}-${index}`} className="text-sm sm:text-base">{option}</Label>
               </div>
             ))}
           </RadioGroup>
@@ -1330,9 +1330,9 @@ export default function Canvas() {
 
         case 'radio':
           return (
-            <RadioGroup className="space-y-2">
+            <RadioGroup className="space-y-3 sm:space-y-2">
               {['Option 1', 'Option 2', 'Option 3'].map((option, index) => (
-                <div key={index} className="flex items-center space-x-2">
+                <div key={index} className="flex items-center space-x-3 sm:space-x-2">
                   <RadioGroupItem
                     value={option}
                     id={`ghost-${index}`}
@@ -1340,7 +1340,7 @@ export default function Canvas() {
                   />
                   <Label
                     htmlFor={`ghost-${index}`}
-                    className="text-muted-foreground"
+                    className="text-muted-foreground text-sm sm:text-base"
                   >
                     {option}
                   </Label>
@@ -1489,14 +1489,14 @@ export default function Canvas() {
       {/* Main content area with scroll */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-6"
+        className="flex-1 overflow-y-auto p-4 pb-24 md:p-6 md:pb-6"
         onDragEnter={handleDragEnter}
         onDragOver={e => handleDragOver(e)}
         onDragLeave={handleDragLeave}
         onDrop={e => handleDrop(e)}
       >
         <motion.div
-          className="mx-auto max-w-4xl space-y-4"
+          className="mx-auto w-full max-w-4xl space-y-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}

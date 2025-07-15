@@ -99,8 +99,8 @@ export default function Home() {
         }}
       >
         {/* Header */}
-        <header className="flex w-full items-center justify-between px-8 py-6">
-          <span className="text-2xl font-bold tracking-tight text-neutral-700 md:text-3xl">
+        <header className="flex w-full items-center justify-between px-4 py-4 md:px-8 md:py-6">
+          <span className="text-xl font-bold tracking-tight text-neutral-700 md:text-2xl lg:text-3xl">
             formify*
           </span>
           <SettingsButton
@@ -110,12 +110,12 @@ export default function Home() {
         </header>
 
         {/* Hero Section - centered */}
-        <main className="flex flex-1 flex-col items-center justify-center px-4">
-          <h1 className="mb-4 text-center text-4xl font-extrabold leading-tight text-neutral-700 md:text-5xl">
+        <main className="flex flex-1 flex-col items-center justify-center px-4 md:px-8">
+          <h1 className="mb-4 text-center text-3xl font-extrabold leading-tight text-neutral-700 md:text-4xl lg:text-5xl">
             The <span className="text-neutral-900">simplest</span> way to create
             forms
           </h1>
-          <p className="mb-8 max-w-xl text-center text-lg text-neutral-900">
+          <p className="mb-8 max-w-xl text-center text-base md:text-lg text-neutral-900">
             Say goodbye to boring forms. Meet formify — the free, intuitive form
             builder you've been looking for.
           </p>
@@ -153,9 +153,9 @@ export default function Home() {
         </main>
 
         {/* Footer - bottom left */}
-        <footer className="w-full px-8 pb-8 pt-12">
+        <footer className="w-full px-4 pb-8 pt-12 md:px-8">
           <div className="mx-auto flex max-w-screen-xl flex-col items-start gap-4">
-            <span className="mb-1 text-2xl font-bold tracking-tight text-neutral-700">
+            <span className="mb-1 text-xl font-bold tracking-tight text-neutral-700 md:text-2xl">
               formify*
             </span>
             <span className="text-xs text-neutral-400">© 2025 Formify</span>

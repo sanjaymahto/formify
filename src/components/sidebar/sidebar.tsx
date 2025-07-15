@@ -6,13 +6,20 @@ import { useFormStore } from '@/lib/store';
 import { FieldType } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { X, Plus } from 'lucide-react';
 import {
   FIELD_CATEGORIES,
   DEFAULT_FIELD_LABELS,
   DEFAULT_FIELD_PLACEHOLDERS,
 } from '@/constants';
 
-export default function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+  isMobile?: boolean;
+}
+
+export default function Sidebar({ onClose, isMobile = false }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
   const addField = useFormStore(state => state.addField);
   const setSelectedField = useFormStore(state => state.setSelectedField);
@@ -24,7 +31,7 @@ export default function Sidebar() {
 
   if (!mounted) {
     return (
-      <div className="w-96 overflow-y-auto border-r border-border bg-background p-4">
+      <div className="w-full overflow-y-auto border-r border-border bg-background p-4 md:w-80">
         <div className="space-y-4">
           <div>
             <h2 className="mb-4 text-lg font-semibold">Form Components</h2>
@@ -75,6 +82,11 @@ export default function Sidebar() {
     };
     addField(field);
     setSelectedField(field.id); // Auto-select the newly added field
+    
+    // Close sidebar on mobile after adding a field
+    if (isMobile && onClose) {
+      onClose();
+    }
   };
 
   const getDefaultLabel = (type: FieldType): string => {
@@ -87,28 +99,50 @@ export default function Sidebar() {
 
   return (
     <motion.div
-      className="flex h-full w-80 flex-col border-r border-border bg-background"
-      initial={{ x: -320, opacity: 0 }}
+      className="flex h-full w-full flex-col border-r border-border bg-background md:w-80"
+      initial={{ x: isMobile ? -320 : -384, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* Mobile header with close button */}
+      {isMobile && (
+        <div className="flex items-center justify-between border-b border-border p-4 mobile-modal-header">
+          <div className="flex items-center space-x-2">
+            <Plus className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Form Components</h2>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-10 w-10 hover:bg-destructive/10 hover:text-destructive close-button"
+            title="Close sidebar"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto p-4 pb-20">
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <h2 className="mb-4 text-lg font-semibold">Form Components</h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Drag and drop components to build your form
-            </p>
-          </motion.div>
+          {/* Desktop title - hidden on mobile */}
+          {!isMobile && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <h2 className="mb-4 text-lg font-semibold">Form Components</h2>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Drag and drop components to build your form
+              </p>
+            </motion.div>
+          )}
 
           {FIELD_CATEGORIES.map((category, categoryIndex) => (
             <motion.div

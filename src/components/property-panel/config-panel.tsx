@@ -256,15 +256,15 @@ export function ConfigPanel() {
                 </div>
               )}
               {selectedField.type === 'radio' && (
-                <div className="space-y-2">
+                <div className="space-y-3 sm:space-y-2">
                   {selectedField.options?.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2">
+                    <div key={index} className="flex items-center space-x-3 sm:space-x-2">
                       <input
                         type="radio"
                         disabled
-                        className="h-4 w-4 rounded-full border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+                        className="h-5 w-5 sm:h-4 sm:w-4 rounded-full border-2 border-gray-300 bg-transparent text-blue-500 focus-visible:ring-[3px] focus-visible:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
                       />
-                      <span className="text-sm text-gray-600">{option}</span>
+                      <span className="text-sm sm:text-base text-gray-600">{option}</span>
                     </div>
                   ))}
                 </div>
